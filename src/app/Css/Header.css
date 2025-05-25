@@ -1,0 +1,8 @@
+/* src/app/Css/Header.css */
+.header-root {
+  background-color: red;
+  color: white;
+  padding: 16px;
+  font-size: 1.5rem;
+  text-align: center;
+}
