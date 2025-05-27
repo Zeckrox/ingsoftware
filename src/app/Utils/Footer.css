@@ -1,0 +1,8 @@
+.footer-text {
+  color: red;
+  /* Puedes añadir más estilos si lo deseas */
+  font-size: 1rem;
+  padding: 1rem;
+  background-color: #f0f0f0;
+  margin-top: auto; /* Útil para mantener el footer abajo */
+}
