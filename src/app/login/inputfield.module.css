@@ -1,0 +1,73 @@
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.label {
+  color: #000;
+  font-family: Poppins, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.inputWrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding-left: 20px;
+}
+
+.input {
+  color: #555;
+  font-family: Poppins, -apple-system, Roboto, Helvetica, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  border: none;
+  outline: none;
+  width: 100%;
+  padding: 16px 0;
+}
+
+.icon {
+  aspect-ratio: 0.98;
+  object-fit: contain;
+  object-position: center;
+  width: 50px;
+}
+
+.passwordControls {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+}
+
+.visibilityIcon {
+  aspect-ratio: 1;
+  object-fit: contain;
+  object-position: center;
+  width: 24px;
+  cursor: pointer;
+}
+
+.lockContainer {
+  background-color: #ee9a12;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 51px;
+  height: 51px;
+  padding: 0 10px;
+}
+
+.lockIcon {
+  aspect-ratio: 0.96;
+  object-fit: contain;
+  object-position: center;
+  width: 24px;
+}
