@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  gap: 15px;
 }
 
 .title {
@@ -9,8 +10,18 @@
   text-align: center;
   align-self: center;
   font-family: Poppins, -apple-system, Roboto, Helvetica, sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.row {
+  display: flex;
+  gap: 15px;
+}
+
+.row > div {
+  flex: 1;
 }
 
 .submitButton {
@@ -18,18 +29,24 @@
   text-align: center;
   background-color: #ee9a12;
   border-radius: 8px;
-  margin-top: 36px;
-  padding: 13px 70px;
+  margin-top: 20px;
+  padding: 12px;
   font-family: Poppins, -apple-system, Roboto, Helvetica, sans-serif;
   font-size: 16px;
   font-weight: 600;
-  box-shadow: 0 12px 24px #010bfd1f;
+  box-shadow: 0 4px 12px rgba(1, 11, 253, 0.1);
   border: none;
   cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s;
+}
+
+.submitButton:hover {
+  background-color: #e08a0a;
 }
 
 .footer {
-  margin-top: 10px;
+  margin-top: 15px;
   align-self: center;
 }
 
@@ -37,7 +54,7 @@
   color: #9d9d9d;
   letter-spacing: -0.24px;
   font-family: Inter, -apple-system, Roboto, Helvetica, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   display: flex;
   align-items: center;
@@ -47,22 +64,21 @@
 .registerLink {
   color: #ff6b35;
   font-weight: 800;
-  padding: 8px;
+  padding: 4px;
   background: none;
   border: none;
   cursor: pointer;
+  font-size: 13px;
 }
 
-@media (width <= 991px) {
+@media (width <= 768px) {
+  .row {
+    flex-direction: column;
+    gap: 12px;
+  }
+
   .title {
-    margin-top: 40px;
-  }
-
-  .submitButton {
-    max-width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
+    font-size: 20px;
+    margin-bottom: 15px;
   }
 }
-
-

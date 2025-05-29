@@ -1,8 +1,7 @@
-import Header from './Utils/Header';
-import Footer from './Utils/Footer';
-import './globals.css';
+import GlobalHeader from './utils/Header';
+import GlobalFooter from './utils/Footer';
 
-export default function DashboardLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -10,12 +9,10 @@ export default function DashboardLayout({
   return (
     <html lang="en">
       <body>
-        <main>
-          <Header />
-          {children}
-          <Footer />
-        </main>
-      </body>
+      <GlobalHeader />
+      <main>{children}</main>
+      <GlobalFooter />
+     </body>
     </html>
   );
 }

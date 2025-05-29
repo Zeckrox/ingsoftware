@@ -1,9 +1,9 @@
 import * as React from "react";
 import Image from "next/image"; 
-import styles from "./login.module.css"; 
-import LoginForm  from "./loginform";
+import styles from "./register.module.css"; 
+import RegisterForm from "./registerForm";
 
-export default function Login() {
+export default function Register() {
   return (
     <main className={styles.login}>
       <section className={styles.container}>
@@ -22,7 +22,7 @@ export default function Login() {
             width={400} 
             height={100} 
           />
-          <LoginForm />
+          <RegisterForm />
         </div>
       </section>
     </main>

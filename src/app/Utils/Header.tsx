@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import './Header.css';
 import Image from 'next/image';
-import Logo from '../../components/UniversidadLogo.png';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,11 +11,10 @@ export default function Header() {
     <header className="header-container">
       <div className="logo-container">
         <Image 
-          src={Logo} 
+          src="/images/Logo-BPG.png" 
           alt="UNIMET Biblioteca Pedro Grases" 
           width={200} 
           height={60}
-          priority
         />
       </div>
       
