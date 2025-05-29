@@ -1,7 +1,7 @@
 import React from 'react';
 import './Footer.css';
 import Image from 'next/image';
-import Logo from '../../components/UniversidadLogo1.png';
+
 
 export default function Footer() {
   return (
@@ -9,9 +9,10 @@ export default function Footer() {
       <div className="footer-main-content">
         <div className="footer-brand">
           <Image 
-            src={Logo} 
+            src="/images/UniversidadLogo1.png" 
             alt="Universidad Metropolitana" 
             width={220}
+            
             height={70}
             className="unimet-logo"
           />
