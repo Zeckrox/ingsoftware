@@ -3,9 +3,13 @@
 import React, { useState } from 'react';
 import './Header.css';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname()
+
+  if(pathname=="/login" || pathname=="/register")return;
 
   return (
     <header className="header-container">

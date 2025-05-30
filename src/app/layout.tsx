@@ -6,9 +6,10 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
+  
   return (
     <html lang="en">
-      <body>
+      <body style={{margin:0}}>
       <GlobalHeader />
       <main>{children}</main>
       <GlobalFooter />
