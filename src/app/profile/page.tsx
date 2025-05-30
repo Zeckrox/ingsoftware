@@ -39,7 +39,7 @@ export default function ProfilePage() {
           </div>
           <div className={styles.detailItem}>
             <h3 className={styles.detailLabel}>Carrera</h3>
-            <p className={styles.detailValue}>Ingeniería de Sistemas</p>
+            <p className={styles.detailValue}>Ing. Sistemas</p>
           </div>
           <div className={styles.detailItem}>
             <h3 className={styles.detailLabel}>Teléfono</h3>
@@ -52,9 +52,9 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Reservas Activas CON BOTONES */}
+      {/* Reservas*/}
+      <h3 className={styles.sectionTitle}>Reservas Activas</h3>
       <div className={styles.reservationSection}>
-        <h3 className={styles.sectionTitle}>Reservas Activas</h3>
         <div className={styles.reservationCard}>
           <div className={styles.reservationImageContainer}>
             <Image 
@@ -74,14 +74,14 @@ export default function ProfilePage() {
         </div>
         {/* BOTONES EN RESERVAS ACTIVAS */}
         <div className={styles.reservationActions}>
-          <button className={styles.actionButton}>Modificar</button>
-          <button className={styles.cancelButton}>Cancelar</button>
+          <button className={styles.actionButton}>Modificar cant. personas</button>
+          <button className={styles.cancelButton}>Cancelar reserva</button>
         </div>
       </div>
 
-      {/* Historial SIN BOTONES */}
+      {/* Historial*/}
+      <h3 className={styles.sectionTitle}>Historial</h3>
       <div className={styles.reservationSection}>
-        <h3 className={styles.sectionTitle}>Historial</h3>
         <div className={styles.reservationCard}>
           <div className={styles.reservationImageContainer}>
             <Image 

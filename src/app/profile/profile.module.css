@@ -17,7 +17,7 @@
 
 .welcomeTitle {
   font-size: 1.8rem;
-  color: #2c3e50;
+  color: #444444;
   margin: 0;
 }
 
@@ -46,7 +46,7 @@
 
 .userName {
   font-size: 1.5rem;
-  color: #2c3e50;
+  color: #000000;
   margin: 0 0 0.5rem 0;
 }
 
@@ -68,23 +68,24 @@
 
 .detailLabel {
   font-size: 1rem;
-  color: #7f8c8d;
+  color: #000000;
   margin: 0 0 0.5rem 0;
   font-weight: normal;
 }
 
 .detailValue {
-  font-size: 1.2rem;
-  color: #2c3e50;
+  font-size: 1rem;
+  color: #000000;
   margin: 0;
-  font-weight: 600;
-  padding: 0.5rem 0;
+  font-weight: 500; /* Cambiado de 600 (semibold) a 500 (medium) */
+  padding: 0.5rem 1rem;
   border-bottom: 2px solid #f0f0f0;
+  background-color: #f5f5f5;
+  border-radius: 5px;
 }
-
 /* Sección de reservas */
 .reservationSection {
-  background: #fff;
+  background: #F0EFEF;
   border-radius: 10px;
   padding: 2rem;
   margin-bottom: 2rem;
@@ -92,11 +93,13 @@
 }
 
 .sectionTitle {
-  color: #2c3e50;
-  border-bottom: 2px solid #FF7E00;
+  color: #FF7E00;
+
+  font-size: 2rem;
+  text-align: center;
+  position: relative;
   padding-bottom: 0.5rem;
   margin-bottom: 1.5rem;
-  font-size: 1.3rem;
 }
 
 .reservationCard {
@@ -123,19 +126,27 @@
 }
 
 .reservationDetails h4 {
-  color: #3498db;
-  margin-top: 0;
-  margin-bottom: 1rem;
+  background-color: #FF7E00; 
+  color: white; 
+  font-size: 1.3rem;
+  padding: 0.5rem 5rem;
+  border-radius: 5px; 
+  display: inline-block; 
+  text-align: center;
+  margin: 0 auto 1.5rem; 
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+  border: none;
 }
 
 .reservationDetails p {
   margin: 0.5rem 0;
+  color: #000000;
   display: flex;
   gap: 0.5rem;
 }
 
 .reservationDetails strong {
-  color: #333;
+  color: #000000;
   min-width: 100px;
 }
 
@@ -160,12 +171,12 @@
 }
 
 .actionButton {
-  background: #3498db;
+  background: #FF7E00;
   color: white;
 }
 
 .cancelButton {
-  background: #e74c3c;
+  background: #FF7E00;
   color: white;
 }
 
