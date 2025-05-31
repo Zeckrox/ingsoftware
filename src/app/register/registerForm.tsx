@@ -1,4 +1,6 @@
 "use client";
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import styles from "./registerForm.module.css";
 import InputField from "../components/inputfield/inputField";
 import Divider from "../components/divider/divider";
@@ -6,9 +8,15 @@ import SocialLogin from "../components/boton_google/socialLogin";
 
 
 export default function RegisterForm() {
+  const router = useRouter(); 
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log("Form submitted!");
+  };
+
+  const handleRegisterClick = () => {
+    router.push('/login'); 
   };
 
   return (
@@ -37,7 +45,7 @@ export default function RegisterForm() {
         <InputField
           label="Número de teléfono"
           type="text"
-          placeholder="+58 412-1234567"
+          placeholder="0412 1234567"
         />
       </div>
 
@@ -100,7 +108,13 @@ export default function RegisterForm() {
       <footer className={styles.footer}>
         <p className={styles.registerText}>
           ¿Ya tienes una cuenta?
-          <button className={styles.registerLink}>Inicia sesión</button>
+          <button  
+            type="button" 
+            className={styles.registerLink} 
+            onClick={handleRegisterClick} 
+          >
+          Inicia sesión
+          </button>
         </p>
       </footer>
     </form>
