@@ -180,6 +180,67 @@
   color: white;
 }
 
+/* Estilo exclusivo para el badge de Mesa */
+.mesaBadge {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background-color: #FF7E00;
+  color: white;
+  padding: 6px 30px;
+  border-radius: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Requiere que el contenedor de la imagen tenga position:relative */
+.reservationImageContainer {
+  position: relative;
+}
+
+.reservationDetails h4 {
+  font-size: 1.3rem;
+  color: #FF7E00;
+  margin: 0 0 1.5rem 0;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  text-align: left;
+  display: block;
+}
+
+/* Mejora en los botones */
+.actionButton, .cancelButton {
+  padding: 0.8rem 1.8rem;
+  transition: all 0.2s ease;
+}
+
+.actionButton:hover, .cancelButton:hover {
+  transform: translateY(-2px);
+  opacity: 1;
+}
+
+.actionButton {
+  background: #FF7E00;
+}
+
+.cancelButton {
+  background: #e74c3c; /* Rojo para cancelar */
+}
+
+/* Mejora en la tarjeta de reserva */
+.reservationCard {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.reservationCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .detailsGrid {
