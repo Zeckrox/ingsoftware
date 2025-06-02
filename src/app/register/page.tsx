@@ -4,6 +4,8 @@ import styles from "./register.module.css";
 import RegisterForm from "./registerForm";
 
 export default function Register() {
+
+  
   return (
     <main className={styles.login}>
       <section className={styles.container}>
