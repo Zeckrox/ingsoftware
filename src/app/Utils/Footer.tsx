@@ -1,4 +1,4 @@
-'use client'; // Añade esto al inicio para usar hooks
+'use client';
 import React from 'react';
 import './Footer.css';
 import Image from 'next/image';
