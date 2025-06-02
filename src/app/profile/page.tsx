@@ -18,7 +18,7 @@ export default function ProfilePage() {
     nombre: 'María',
     apellido: 'Perez',
     carrera: 'Ing. Sistemas',
-    telefono: '+58 414-3686749',
+    telefono: '0414 3686749',
     genero: 'Mujer'
   });
 
