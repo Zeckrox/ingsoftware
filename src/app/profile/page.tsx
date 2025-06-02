@@ -49,7 +49,7 @@ export default function ProfilePage() {
       {/* Información del usuario */}
       <div className={styles.userInfoSection}>
         <h2 className={styles.userName}>{`${profileData.nombre} ${profileData.apellido}`}</h2>
-        <p className={styles.userEmail}>Elcorreo@seobtendra.delinicio.sesion linea 52 de profile, page.tsx</p>
+        <p className={styles.userEmail}>mperez@correo.unimet.edu.ve</p>
 
         <div className={styles.detailsGrid}>
           <div className={styles.detailItem}>

@@ -140,6 +140,16 @@ export default function EditProfilePage() {
               />
               Mujer
             </label>
+            <label>
+              <input
+                type="radio"
+                name="genero"
+                value="Otrogenero"
+                checked={formData.genero === 'Otro'}
+                onChange={handleChange}
+              />
+              Otro
+            </label>
           </div>
         </div>
 
