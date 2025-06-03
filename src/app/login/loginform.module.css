@@ -18,7 +18,7 @@
   text-align: center;
   background-color: #ee9a12;
   border-radius: 8px;
-  margin-top: 36px;
+  margin-top: 10px;
   padding: 13px 70px;
   font-family: Poppins, -apple-system, Roboto, Helvetica, sans-serif;
   font-size: 16px;
@@ -65,4 +65,15 @@
   }
 }
 
-
+.errorText {
+  color: #d32f2f; /* Un rojo vibrante para indicar error */
+  font-size: 0.875rem; /* Un tamaño de fuente un poco más pequeño para errores */
+  margin-top: 20px; /* Espacio superior para separarlo del elemento de arriba */
+  text-align: center; /* Centrar el texto del error */
+  background-color: #ffebee; /* Un fondo muy claro para resaltar */
+  border: 1px solid #ef9a9a; /* Un borde sutil para enmarcarlo */
+  padding: 8px 12px; /* Espaciado interno */
+  border-radius: 4px; /* Bordes ligeramente redondeados */
+  width: 100%; /* Ocupar el ancho completo del contenedor */
+  box-sizing: border-box; /* Incluir padding y border en el ancho total */
+}
