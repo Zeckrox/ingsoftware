@@ -11,6 +11,8 @@ interface InputFieldProps {
   showPasswordToggle?: boolean;
   lockIconSrc?: string;
   options?: string[];
+  value?: string;
+  onChange?: (e: React.ChangeEvent<any>) => void;
 }
 
 export default function InputField({
@@ -19,6 +21,8 @@ export default function InputField({
   placeholder,
   showPasswordToggle,
   options,
+  value,
+  onChange,
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -27,7 +31,7 @@ export default function InputField({
       <div className={styles.inputContainer}>
         <label className={styles.label}>{label}</label>
         <div className={styles.inputWrapper}>
-          <select className={styles.selectInput}>
+          <select className={styles.selectInput} value={value} onChange={onChange}>
             <option value="">{placeholder}</option>
             {options.map((option) => (
               <option key={option} value={option}>
@@ -48,6 +52,8 @@ export default function InputField({
           type={showPassword ? "text" : type}
           placeholder={placeholder}
           className={styles.input}
+          value={value}
+          onChange={onChange}
         />
         {showPasswordToggle && (
           <div className={styles.passwordControls}>
