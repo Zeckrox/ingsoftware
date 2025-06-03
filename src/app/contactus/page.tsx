@@ -1,9 +1,5 @@
 import styles from './contactus.module.css';
 import { Mail } from 'lucide-react';
-import { Poppins } from 'next/font/google';
-
-
-
 
 export default function ContactUs() {
   return (
@@ -46,9 +42,9 @@ export default function ContactUs() {
   );
 }
 
+// SE COMENTÓ PARA PODER HACER DEPLOY
 
-
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-});
+// const poppins = Poppins({
+//   subsets: ['latin'],
+//   weight: ['300', '400', '500', '600', '700'],
+// });
