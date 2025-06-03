@@ -50,8 +50,8 @@ const DayCell: React.FC<DayCellProps> = ({
 }) => {
   // Datos de ejemplo para los slots
   const exampleSlots = [
-    { time: "8:00am", type: "morning" },
-    { time: "2:00pm", type: "afternoon" },
+    { time: "8:00am", type: "morning" as const },
+    { time: "2:00pm", type: "afternoon" as const },
   ];
 
   return (

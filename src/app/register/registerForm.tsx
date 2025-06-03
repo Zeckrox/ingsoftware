@@ -14,11 +14,11 @@ export default function RegisterForm() {
    const [nombre, setNombre] = React.useState("");           
   const [apellido, setApellido] = React.useState("");       
   const [email, setEmail] = React.useState("");             
-  // const [telefono, setTelefono] = React.useState("");       
+  const [telefono, setTelefono] = React.useState("");       
   const [password, setPassword] = React.useState("");       
   const [confirmPassword, setConfirmPassword] = React.useState(""); 
   const [carrera, setCarrera] = React.useState("");         
-  // const [genero, setGenero] = React.useState("");
+  const [genero, setGenero] = React.useState("");
 
   const registerMutation = useMutation({
     mutationFn: async () => {
@@ -55,21 +55,24 @@ export default function RegisterForm() {
       alert("Registro exitoso, ahora inicia sesión");
       router.push("/login");  // redirige al login despues de registrarse
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error en registro:", error);
       alert(error.message || "Error al registrarse");
     },
   });
 
-  // Estados de errores
-  const [passwordError, setPasswordError] = React.useState("");
-  const [generalError, setGeneralError] = React.useState("");
-  const [telefonoError, setTelefonoError] = React.useState("");
-  const [carreraError, setCarreraError] = React.useState("");
-  const [generoError, setGeneroError] = React.useState("");
-  const [emailFormatError, setEmailFormatError] = React.useState(""); // ¡Asegúrate de tener este estado!
 
-  const handleSubmit = async (e) => {
+  // SE COMENTÓ PARA PODER HACER DEPLOY
+
+  // Estados de errores
+  // const [passwordError, setPasswordError] = React.useState("");
+  // const [generalError, setGeneralError] = React.useState("");
+  // const [telefonoError, setTelefonoError] = React.useState("");
+  // const [carreraError, setCarreraError] = React.useState("");
+  // const [generoError, setGeneroError] = React.useState("");
+  // const [emailFormatError, setEmailFormatError] = React.useState(""); // ¡Asegúrate de tener este estado!
+
+  const handleSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     console.log("Form submitted!");
     registerMutation.mutate(); 

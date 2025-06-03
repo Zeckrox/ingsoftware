@@ -1,4 +1,5 @@
 import styles from './SeccionUno.module.css';
+import Image from 'next/image';
 /* Intenté usar icono pero no sirvió import { FaCalendarCheck } from 'react-icons/fa'; */
 
 export default function SeccionUno() {
@@ -32,7 +33,7 @@ export default function SeccionUno() {
                 <div className={styles.imagenWrapper}>
                 <div className={styles.fondoDecorativo}></div>
                 <div className={styles.imagenBiblioCircular}>
-                    <img
+                    <Image
                     src="/biblioteca.png"
                     alt="Biblioteca"
                     width={400}

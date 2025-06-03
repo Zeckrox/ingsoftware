@@ -1,6 +1,5 @@
 import styles from './SeccionDos.module.css';
 import Image from 'next/image';
-import { FiSearch } from 'react-icons/fi';
 
 export default function SeccionDos() {
   return (
