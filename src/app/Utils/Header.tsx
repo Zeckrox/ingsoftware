@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import './Header.css';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation'
+import Link from 'next/link';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,10 +24,22 @@ export default function Header() {
       </div>
       
       <nav className={`nav-menu ${menuOpen ? 'active' : ''}`}>
+        
+        <Link href="/">
         <button className="nav-button">INICIO</button>
+        </Link>
+
+        <Link href="/aboutus">
         <button className="nav-button">NOSOTROS</button>
+        </Link>
+
+        <Link href="/contactus">
         <button className="nav-button">RESERVAR</button>
+        </Link>
+
+        <Link href="/login">
         <button className="nav-button login-button">INICIAR SESIÓN</button>
+        </Link>
       </nav>
       
       <button 
