@@ -17,7 +17,7 @@ export default function SeccionDos() {
     </div>
     <div className={styles.textoWrapper}>
     <p className={styles.subtitulo}>
-    <span className={styles.estrella}>✦</span> Espacios diseñados para <em> fortalecer </em> el aprendizaje
+    <span className={styles.estrella}>✦</span> Espacios diseñados para <em>  fortalecer  </em> el aprendizaje
     </p>
 
     <div className={styles.titulo}>

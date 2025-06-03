@@ -1,3 +1,7 @@
+.googleText {
+  flex: 1;
+}
+
 .googleButton {
   color: #080a0b;
   text-align: center;
@@ -14,24 +18,4 @@
   border: none;
   cursor: pointer;
   width: 100%;
-}
-
-.googleIcon {
-  aspect-ratio: 1.33;
-  object-fit: contain;
-  object-position: center;
-  width: 40px;
-}
-
-.googleText {
-  flex: 1;
-}
-
-@media (width <= 991px) {
-  .googleButton {
-    max-width: 100%;
-    padding-left: 20px;
-    padding-right: 20px;
-    gap: 40px;
-  }
 }

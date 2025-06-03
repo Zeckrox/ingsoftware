@@ -1,0 +1,256 @@
+.calendarContainer {
+  min-height: screen;
+  color: #111827;
+  background-color: #fff;
+  font-family: Figtree, sans-serif;
+  margin-left: 50px;
+  margin-right: 50px;
+}
+
+.calendarWrapper {
+  padding: 1rem;
+}
+
+.navLink {
+  color: inherit;
+  text-decoration: none;
+  font-size: 16px; /* Ajustamos el tamaño de la fuente */
+}
+
+.breadcrumb ol {
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 40px;
+  display: flex;
+  list-style: none;
+  padding: 0;
+}
+
+.breadcrumb li {
+  color: #000;
+  font-family: Poppins, sans-serif;
+  font-size: 20px;
+}
+
+.monthTitle {
+  margin-bottom: 1.5rem;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ee9a12; /* Color naranja para mantener el estilo de la app */
+}
+
+.calendarGrid {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1rem;
+  display: grid;
+}
+
+.weekdayHeader {
+  color: #f97316;
+  font-weight: 500;
+}
+
+.inactiveDayCell {
+  color: #6b7280;
+  padding: 0.5rem;
+}
+
+.dayCell {
+  padding: 0.5rem;
+  min-height: 100px;
+  transition: background-color 0.3s ease;
+}
+
+.dayNumber {
+  font-weight: 500;
+}
+
+.morningSlot {
+  background-color: #f3f4f6;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+}
+
+.middaySlot {
+  color: #16a34a;
+  background-color: #dcfce7;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+}
+
+.afternoonSlot {
+  color: #d97706;
+  background-color: #fef3c7;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+}
+
+.today {
+  background-color: rgba(22, 163, 74, 0.1); /* Verde claro semi-transparente */
+  border-radius: 8px;
+  border: 2px solid #16a34a; /* Borde verde */
+}
+
+.calendarNav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.navButton {
+  background: none;
+  border: 1px solid #ee9a12;
+  color: #ee9a12;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.navButton:hover {
+  background-color: #ee9a12;
+  color: white;
+}
+
+.clickableSlot {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.clickableSlot:hover {
+  transform: scale(1.05);
+}
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.modal input {
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  border: 1px solid #ddd;
+  border-radius: 0.25rem;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.addSlotButton {
+  background: none;
+  border: none;
+  color: #ee9a12;
+  cursor: pointer;
+  float: right;
+  font-size: 1.2rem;
+  padding: 0 5px;
+}
+
+.addSlotMenu {
+  position: absolute;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.addSlotMenu button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  border: none;
+  background: #f3f4f6;
+  cursor: pointer;
+  text-align: left;
+}
+
+.addSlotMenu button:hover {
+  background: #ee9a12;
+  color: white;
+}
+
+.slotContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+.deleteSlotButton {
+  position: absolute;
+  right: 2px;
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.slotContainer:hover .deleteSlotButton {
+  opacity: 1;
+}
+
+.eveningSlot {
+  color: #7c3aed;
+  background-color: #ede9fe;
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+}
+
+.pastDay {
+  background-color: #ddd;
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* Nuevo estilo para slots pasados, si los necesitas */
+.pastSlot {
+  background-color: #e0e0e0; /* Color más claro para indicar inactividad */
+  color: #a0a0a0; /* Color de texto más tenue */
+  border-radius: 0.25rem;
+  margin-top: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 12px;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
