@@ -82,3 +82,17 @@
     margin-bottom: 15px;
   }
 }
+
+.errorText {
+  color: #d32f2f; /* Un rojo vibrante para indicar error */
+  font-size: 0.875rem; /* Un tamaño de fuente un poco más pequeño para errores */
+  margin-top: 5px; /* Espacio superior para separarlo del elemento de arriba */
+  margin-bottom: 10px; /* Espacio inferior para separarlo del botón */
+  text-align: center; /* Centrar el texto del error */
+  background-color: #ffebee; /* Un fondo muy claro para resaltar */
+  border: 1px solid #ef9a9a; /* Un borde sutil para enmarcarlo */
+  padding: 8px 12px; /* Espaciado interno */
+  border-radius: 4px; /* Bordes ligeramente redondeados */
+  width: 100%; /* Ocupar el ancho completo del contenedor */
+  box-sizing: border-box; /* Incluir padding y border en el ancho total */
+}
