@@ -16,9 +16,12 @@ export default function ProfilePage() {
   //   career: '',
   // });
 
-  const { user } = useUser();
+  const { user, isLoadingUser } = useUser();
+  if (isLoadingUser || !user) {
+    return <div>Cargando...</div>;
+  }
   // console.log(user);
-
+  
   return (
     <div className={styles.profileContainer}>
       {/* Encabezado con botón de edición */}
