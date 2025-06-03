@@ -1,19 +1,33 @@
-// src/app/layout.tsx
-import Header from './HTML/Header';
-import Footer from './HTML/Footer'; // Nueva importación
+'use client'
 
-export default function RootLayout({
+import GlobalHeader from './utils/Header';
+import GlobalFooter from './utils/Footer';
+import { Poppins } from 'next/font/google';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { useState } from 'react'
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+});
+
+export default function MainLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
+
+  const [queryClient] = useState(() => new QueryClient())
+  
   return (
-    <html lang="es">
-      <body style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-        <Header />
-        <main style={{ flex: 1 }}>{children}</main>
-        <Footer />
-      </body>
+    <html lang="en"  className={poppins.className}>
+      <body style={{margin:0}}>
+      <QueryClientProvider client={queryClient}>
+        <GlobalHeader />
+        <main>{children}</main>
+        <GlobalFooter />
+      </QueryClientProvider>
+     </body>
     </html>
   );
 }
