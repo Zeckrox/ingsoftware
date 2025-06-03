@@ -16,6 +16,7 @@ interface UserContextType {
   login: (newToken: string) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  isLoadingUser: boolean;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -44,7 +45,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   // Consulta para obtener el usuario con React Query
-  const { data: user } = useQuery({
+  const { data: user, isLoading: isLoadingUser } = useQuery({
     queryKey: ['user', token],
     queryFn: async () => {
       if (!token) return null;
@@ -65,7 +66,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   });
 
   return (
-    <UserContext.Provider value={{ token, user: user as User, login, logout, isAuthenticated: !!token }}>
+    <UserContext.Provider value={{ token, user: user as User, login, logout, isAuthenticated: !!token, isLoadingUser }}>
       {children}
     </UserContext.Provider>
   );
