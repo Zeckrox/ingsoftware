@@ -13,6 +13,7 @@ export default function LoginForm() {
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [generalError, setGeneralError] = React.useState("");
 
   const loginMutation = useMutation({
     mutationFn: async () => {
@@ -37,7 +38,7 @@ export default function LoginForm() {
     },
     onError: (error) => {
       console.error("Fallo el login:", error);
-      alert("Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.");
+      setGeneralError("Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.");
     },
   });
   
@@ -72,6 +73,8 @@ export default function LoginForm() {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
       />
 
+      {generalError && <p className={styles.errorText}>{generalError}</p>}
+      
       <button type="submit" className={styles.submitButton} disabled={loginMutation.isPending}>
         {loginMutation.isPending ? "Cargando..." : "Inicia sesión"} 
       </button>

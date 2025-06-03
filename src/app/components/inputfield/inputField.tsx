@@ -3,10 +3,10 @@ import React from "react";
 import styles from "./inputfield.module.css";
 import Image from "next/image";
 
-// Update the interface to include value and onChange
+
 interface InputFieldProps {
   label: string;
-  type: "text" | "email" | "password" | "select" | "tel"; // Added "tel" for phone number semantic
+  type: "text" | "email" | "password" | "select" | "tel"; 
   placeholder: string;
   iconSrc?: string;
   showPasswordToggle?: boolean;
@@ -27,7 +27,7 @@ export default function InputField({
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
-  // For select type
+
   if (type === "select" && options) {
     return (
       <div className={styles.inputContainer}>
@@ -46,7 +46,6 @@ export default function InputField({
     );
   }
 
-  // For text, email, password, tel types
   return (
     <div className={styles.inputContainer}>
       <label className={styles.label}>{label}</label>
