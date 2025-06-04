@@ -1,7 +1,7 @@
 import * as React from "react";
 import Image from "next/image"; 
-import styles from "./login.module.css"; 
-import LoginForm  from "./loginform";
+import styles from "../../components/auth/login.module.css"; 
+import LoginForm  from "../../components/auth/loginform";
 
 export default function Login() {
 

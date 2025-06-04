@@ -2,9 +2,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import styles from "./loginform.module.css";
-import InputField from "../components/inputfield/inputField";
-import Divider from "../components/divider/divider";
-import SocialLogin from "../components/boton_google/socialLogin";
+import InputField from "../../components/ui/InputField/inputField";
 import { useMutation } from "@tanstack/react-query"; 
 
 
@@ -13,10 +11,12 @@ export default function LoginForm() {
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [generalError, setGeneralError] = React.useState("");
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("http://localhost:3000/auth/login", {
+      let url = "https://backendsoftware-production-c177.up.railway.app/auth/login"
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -37,7 +37,7 @@ export default function LoginForm() {
     },
     onError: (error) => {
       console.error("Fallo el login:", error);
-      alert("Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.");
+      setGeneralError("Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.");
     },
   });
   
@@ -72,12 +72,11 @@ export default function LoginForm() {
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
       />
 
+      {generalError && <p className={styles.errorText}>{generalError}</p>}
+      
       <button type="submit" className={styles.submitButton} disabled={loginMutation.isPending}>
         {loginMutation.isPending ? "Cargando..." : "Inicia sesión"} 
       </button>
-
-      <Divider />
-      <SocialLogin />
 
       <footer className={styles.footer}>
         <p className={styles.registerText}>

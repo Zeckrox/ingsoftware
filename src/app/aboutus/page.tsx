@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './aboutus.module.css';
+import styles from '../../components/styles/AboutUs/aboutus.module.css';
 import Image from 'next/image';
 
 export default function AboutUs() {
@@ -29,6 +29,8 @@ export default function AboutUs() {
             src="/imagenSaman.png"
             alt="Biblioteca Pedro Grases"
             className={styles.imagenSaman}
+            width={400} 
+            height={200} 
             />
         </div>
 
@@ -37,7 +39,8 @@ export default function AboutUs() {
         <div className={styles.parteEstudiantes}>
             <div className={styles.imageContainer}>
                 <div className={styles.fondoEstudiantes}></div>
-                <Image src="/estudiantes.png" alt="Estudiantes" className={styles.imagenEstudiantes} />
+                <Image src="/estudiantes.png" alt="Estudiantes" className={styles.imagenEstudiantes} width={400} 
+            height={100} />
             </div>
             <div className={styles.textoInfoBiblio2}>
                 <p>

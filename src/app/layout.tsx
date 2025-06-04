@@ -1,7 +1,7 @@
 'use client'
 
-import Header from './Utils/Header';
-import Footer from './Utils/Footer';
+import Header from '../components/utils/Header';
+import Footer from '../components/utils/Footer';
 import { Poppins } from 'next/font/google';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'

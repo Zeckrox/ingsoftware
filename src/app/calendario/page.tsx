@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import styles from "./calendario.module.css";
+import styles from "../../components/styles/Calendario/calendario.module.css";
 
 interface TimeSlotProps {
   time: string;
