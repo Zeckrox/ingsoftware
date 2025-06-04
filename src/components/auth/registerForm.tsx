@@ -34,7 +34,7 @@ export default function RegisterForm() {
         throw new Error("Las contraseñas no coinciden");
       }
 
-      const res = await fetch("http://localhost:3000/users/create", {  
+      const res = await fetch("https://backendsoftware-production-c177.up.railway.app/users/create", {  
         method: "POST",
         headers: {
           "Content-Type": "application/json",

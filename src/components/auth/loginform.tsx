@@ -15,7 +15,7 @@ export default function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      const res = await fetch("http://localhost:3000/auth/login", {
+      const res = await fetch("https://backendsoftware-production-c177.up.railway.app/auth/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

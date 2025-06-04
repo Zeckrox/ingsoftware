@@ -4,13 +4,13 @@ import { useRouter } from 'next/navigation';
 import styles from "../../../../components/styles/Profile/editForm.module.css";
 import { useUser } from '@/context/userContext';
 
-// type ProfileData = {
-//   nombre: string;
-//   apellido: string;
-//   carrera: string;
-//   telefono: string;
-//   genero: string;
-// };
+type ProfileData = {
+  nombre: string;
+  apellido: string;
+  carrera: string;
+  telefono: string;
+  genero: string;
+};
 
 export default function EditProfilePage() {
   const router = useRouter();
