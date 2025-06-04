@@ -1,4 +1,4 @@
-import styles from './contactus.module.css';
+import styles from '../../components/styles/ContactUs/contactus.module.css';
 import { Mail } from 'lucide-react';
 
 export default function ContactUs() {

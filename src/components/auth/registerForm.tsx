@@ -3,9 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import styles from "./registerForm.module.css";
-import InputField from "../components/inputfield/inputField";
-import Divider from "../components/divider/divider";
-import SocialLogin from "../components/boton_google/socialLogin";
+import InputField from "../../components/ui/InputField/inputField";
 import { useMutation } from "@tanstack/react-query"; 
 
 export default function RegisterForm() {
@@ -253,8 +251,6 @@ export default function RegisterForm() {
         {registerMutation.isPending ? "Registrando..." : "Registrarme"}
       </button>
 
-      <Divider />
-      <SocialLogin />
 
       <footer className={styles.footer}>
         <p className={styles.registerText}>

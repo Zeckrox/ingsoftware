@@ -2,9 +2,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import styles from "./loginform.module.css";
-import InputField from "../components/inputfield/inputField";
-import Divider from "../components/divider/divider";
-import SocialLogin from "../components/boton_google/socialLogin";
+import InputField from "../../components/ui/InputField/inputField";
 import { useMutation } from "@tanstack/react-query"; 
 
 
@@ -78,9 +76,6 @@ export default function LoginForm() {
       <button type="submit" className={styles.submitButton} disabled={loginMutation.isPending}>
         {loginMutation.isPending ? "Cargando..." : "Inicia sesión"} 
       </button>
-
-      <Divider />
-      <SocialLogin />
 
       <footer className={styles.footer}>
         <p className={styles.registerText}>

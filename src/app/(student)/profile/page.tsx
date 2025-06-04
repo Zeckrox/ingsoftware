@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from './profile.module.css';
+import styles from '../../../components/styles/Profile/profile.module.css';
 import { useUser } from '@/context/userContext';
 
 

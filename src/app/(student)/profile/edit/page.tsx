@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import styles from './editForm.module.css';
+import styles from "../../../../components/styles/Profile/editForm.module.css";
 import { useUser } from '@/context/userContext';
 
 // type ProfileData = {
