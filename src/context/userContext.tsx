@@ -49,7 +49,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     queryKey: ['user', token],
     queryFn: async () => {
       if (!token) return null;
-      const res = await fetch(`https://backendsoftware-production-c177.up.railway.app/users/findMyUser/${token}`);
+      let url = `https://backendsoftware-production-c177.up.railway.app/users/findMyUser/${token}`
+      const res = await fetch(url);
       if (!res.ok) throw new Error('No se pudo obtener el usuario');
       const data = await res.json();
       return {
