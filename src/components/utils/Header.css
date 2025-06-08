@@ -14,6 +14,11 @@
 .logo-container img {
   height: auto;
   max-width: 200px;
+  pointer-events: none;
+}
+
+.logo-container a {
+  display: flex;
 }
 
 .nav-menu {
@@ -69,6 +74,7 @@
   
   .nav-menu.active {
     display: flex;
+    z-index: 100;
   }
   
   .mobile-menu-button {

@@ -9,7 +9,7 @@ export default function SeccionUno() {
             <div className={styles.contenido}>
                 
             <div>
-                <h1 className={styles.titulo}>Reserva tu espacio</h1>
+                <h1 className={styles.titulo} style={{lineHeight: "42px"}}>Reserva tu espacio</h1>
                 <h1 className={styles.titulo}>para estudiar</h1>
 
                 <p className={styles.subtitulo}>

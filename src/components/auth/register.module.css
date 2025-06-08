@@ -39,6 +39,7 @@
   margin: 0 auto 20px;
   width: 250px;
   height: auto;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {

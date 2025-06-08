@@ -15,12 +15,14 @@ export default function Header() {
   return (
     <header className="header-container">
       <div className="logo-container">
-        <Image 
-          src="/images/Logo-BPG.png" 
-          alt="UNIMET Biblioteca Pedro Grases" 
-          width={200} 
-          height={60}
-        />
+        <Link href="/">
+          <Image 
+            src="/images/Logo-BPG.png" 
+            alt="UNIMET Biblioteca Pedro Grases" 
+            width={200} 
+            height={60}
+          />
+        </Link>
       </div>
       
       <nav className={`nav-menu ${menuOpen ? 'active' : ''}`}>
