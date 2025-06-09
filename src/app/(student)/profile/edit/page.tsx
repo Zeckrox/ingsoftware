@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from "../../../../components/styles/Profile/editForm.module.css";
 import { useUser } from '@/context/userContext';
-
+import { useMutation } from '@tanstack/react-query';
 type ProfileData = {
   nombre: string;
   apellido: string;
@@ -11,6 +11,7 @@ type ProfileData = {
   telefono: string;
   genero: string;
 };
+
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -23,6 +24,38 @@ export default function EditProfilePage() {
   });
 
   const { user } = useUser();
+
+  const patchMutation = useMutation({
+    mutationFn: async () => {
+      let url = `https://backendsoftware-production-c177.up.railway.app/users/${user?._id}`
+      const res = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.nombre,
+          lastName: formData.apellido,
+          career: formData.carrera
+          // TO DO: AUN NO GUARDAMOS EN BACK EL TELEFONO
+          // TO DO: AUN NO GUARDAMOS EN BACK EL GENERO
+          }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al editar la información");
+      }
+      return res.json(); //devuelve la respuesta en formato JSON
+    },
+    onSuccess: (data) => {
+      // Aquí utilice la forma nativa de JavaScript en vez del router de Next.js porque necesito que se recargue... 
+      // ...la pagina para mostrar la información cambiada. Si encuentro una forma de hacerlo con router lo arreglo!
+      window.location.href = "/profile";
+    },
+    onError: (error) => {
+      console.error("Fallo el editar perfil:", error);
+    },
+  });
 
   const carrerasDisponibles = ["Ingeniería de Sistemas",
             "Ingeniería Producción",
@@ -58,8 +91,7 @@ export default function EditProfilePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    localStorage.setItem('profileData', JSON.stringify(formData));
-    router.push('/profile');
+    patchMutation.mutate()
   };
 
   return (
@@ -161,7 +193,7 @@ export default function EditProfilePage() {
               <input
                 type="radio"
                 name="genero"
-                value="Otrogenero"
+                value="Otro"
                 checked={formData.genero === 'Otro'}
                 onChange={handleChange}
               />
