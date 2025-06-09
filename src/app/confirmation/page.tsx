@@ -55,33 +55,35 @@ const ConfirmationPage = () => {
           <div className={styles.dataRow}>
             <div className={styles.dataItem}>
               <span className={styles.dataLabel}>Nombre:</span>
-              <span className={styles.dataValue}>María</span>
+              <div className={styles.dataValueBox}>María</div>
             </div>
             <div className={styles.dataItem}>
               <span className={styles.dataLabel}>Apellido:</span>
-              <span className={styles.dataValue}>Pérez</span>
+              <div className={styles.dataValueBox}>Pérez</div>
             </div>
           </div>
           <div className={styles.dataRow}>
             <div className={styles.dataItem}>
               <span className={styles.dataLabel}>Email (Institucional):</span>
-              <span className={styles.dataValue}>maria.perez@correo.unimet.edu.ve</span>
+              <div className={styles.dataValueBox}>maria.perez@correo.unimet.edu.ve</div>
             </div>
             <div className={styles.dataItem}>
               <span className={styles.dataLabel}>Carrera:</span>
-              <span className={styles.dataValue}>Ingeniería de Sistemas</span>
+              <div className={styles.dataValueBox}>Ingeniería de Sistemas</div>
             </div>
           </div>
         </div>
 
-        <button className={styles.confirmButton}>Confirmar Reserva</button>
+        <div className={styles.confirmButtonContainer}>
+          <button className={styles.confirmButton}>Confirmar Reserva</button>
+        </div>
 
         <div className={styles.remindersSection}>
           <h3 className={styles.remindersTitle}>Recuerda:</h3>
           <ul className={styles.remindersList}>
-            <li>Llega a tiempo: Así aprovechas al máximo tu reserva.</li>
-            <li>Mantén el silencio: La biblioteca es para concentración.</li>
-            <li>Respeta el espacio: Deja todo ordenado.</li>
+            <li>Llega a tiempo: Así aprovechas al máximo tu reserva y no interrumpes a los demás.</li>
+            <li>Mantén el silencio: La biblioteca es un lugar para la concentración y el estudio.</li>
+            <li>Respeta el espacio compartido: Cuida las instalaciones y deja todo ordenado.</li>
           </ul>
           <h3 className={styles.finalMessage}>¡Disfruta de tu Biblioteca!</h3>
         </div>

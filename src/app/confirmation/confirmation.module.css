@@ -133,10 +133,16 @@
 }
 
 .dataGrid {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 15px;
   margin-bottom: 20px;
+}
+
+.dataRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
 }
 
 .dataItem {
@@ -147,21 +153,28 @@
 
 .dataLabel {
   font-weight: 600;
-  color: #555;
+  color: #fffff;
   font-size: clamp(14px, 3vw, 16px);
 }
 
-.dataValue {
+.dataValueBox {
+  background-color: #f5f5f5;
   color: #333;
   font-size: clamp(14px, 3vw, 16px);
-  padding-left: 15px;
+  padding: 12px 12px;
+  border-radius: 6px;
+
 }
 
 /* Botón */
-.confirmButton {
-  width: 100%;
-  padding: 12px;
+.confirmButtonContainer {
+  display: flex;
+  justify-content: center;
   margin: 20px 0;
+}
+
+.confirmButton {
+  padding: 12px 24px;
   background-color: #FF7E00;
   color: white;
   border: none;
@@ -170,6 +183,7 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s;
+  min-width: 200px;
 }
 
 .confirmButton:hover {
@@ -203,9 +217,21 @@
   color: #FF7E00;
   margin-top: 15px;
   font-weight: 600;
+  text-align: center;
 }
 
 /* Media queries específicas */
+@media (max-width: 768px) {
+  .dataRow {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .dataValueBox {
+    padding-left: 12px;
+  }
+}
+
 @media (max-width: 480px) {
   .navBar {
     justify-content: center;
@@ -213,13 +239,5 @@
   
   .imageContainer {
     max-width: 300px;
-  }
-  
-  .dataItem {
-    flex-direction: column;
-  }
-  
-  .dataValue {
-    padding-left: 0;
   }
 }
