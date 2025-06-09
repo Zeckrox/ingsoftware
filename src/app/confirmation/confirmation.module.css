@@ -197,7 +197,7 @@
 
 .remindersTitle {
   font-size: clamp(16px, 3vw, 18px);
-  color: #555;
+  color: #E67100;
   margin-bottom: 10px;
 }
 
@@ -208,6 +208,7 @@
 
 .remindersList li {
   margin-bottom: 8px;
+  color: black;
   font-size: clamp(14px, 3vw, 16px);
   line-height: 1.4;
 }
