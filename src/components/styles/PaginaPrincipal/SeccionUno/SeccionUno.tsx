@@ -26,7 +26,7 @@ export default function SeccionUno() {
                 </br>
                 <p className={styles.lunes}><strong>Lunes a Viernes</strong></p>
                 <p className={styles.horario}>
-                    <strong>Horario: </strong> 07:00 am – 10:00 pm
+                    <strong>Horario: </strong> 07:00 am – 5:00pm
                 </p>
                 </div>
 

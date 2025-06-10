@@ -1,10 +1,28 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styles from "../../components/styles/Calendario/calendario.module.css";
+import InputField from "../../components/ui/InputField/inputField";
+import { useRouter } from "next/navigation"; // Importa useRouter para la navegación
 
-interface TimeSlotProps {
-  time: string;
-  type: "morning" | "midday" | "afternoon" | "evening" | "past";
+// Simulamos el hook useUser para propósitos de demostración.
+// En una aplicación real, este hook vendría de tu sistema de autenticación (ej. NextAuth.js, Clerk).
+const useUser = () => {
+  // Puedes cambiar 'admin' a 'student' para probar la interfaz de estudiante
+  const [user, setUser] = useState({ role: "admin" });
+
+  // En una aplicación real, aquí podrías cargar el usuario del contexto o de una API
+  useEffect(() => {
+    // Ejemplo: simular una carga asíncrona o una verificación de token
+    // setTimeout(() => {
+    //   setUser({ role: "student" }); // O 'admin'
+    // }, 1000);
+  }, []);
+
+  return { user };
+};
+
+interface DayType {
+  type: "Dia Habil" | "Fin de semana" | "Vacaciones" | "Feriado" | "none";
   date: string;
 }
 
@@ -13,59 +31,103 @@ interface DayCellProps {
   isToday?: boolean;
   isCurrentMonth?: boolean;
   isPast?: boolean;
+  dayType: "Dia Habil" | "Fin de semana" | "Vacaciones" | "Feriado" | "none";
+  onTypeChange: (date: string, type: DayType["type"]) => void;
+  fullDate: string; // Añadimos fullDate para identificar el día
+  userRole: "admin" | "student"; // Añadimos el rol del usuario
+  onDayClickForStudent: (date: string) => void; // Nueva prop para el click del estudiante
 }
 
 interface CalendarHeaderProps {
   selectedMonth: number;
   selectedYear: number;
-  actividadName?: string;
+  onMonthChange: (increment: number) => void;
 }
-
-const TimeSlot: React.FC<TimeSlotProps> = ({ time, type }) => {
-  const getTimeSlotClass = (): string => {
-    switch (type) {
-      case "morning":
-        return styles.morningSlot;
-      case "midday":
-        return styles.middaySlot;
-      case "afternoon":
-        return styles.afternoonSlot;
-      case "evening":
-        return styles.eveningSlot;
-      case "past":
-        return styles.pastSlot; 
-      default:
-        return "";
-    }
-  };
-
-  return <div className={`${getTimeSlotClass()}`}>{time}</div>;
-};
 
 const DayCell: React.FC<DayCellProps> = ({
   day,
   isToday,
   isCurrentMonth = true,
   isPast,
+  dayType,
+  onTypeChange,
+  fullDate,
+  userRole,
+  onDayClickForStudent,
 }) => {
-  // Datos de ejemplo para los slots
-  const exampleSlots = [
-    { time: "8:00am", type: "morning" as const },
-    { time: "2:00pm", type: "afternoon" as const },
-  ];
+  // Un día es "habilitado" para un estudiante si es del mes actual, no es pasado y es "Dia Habil".
+  const isEnabledForStudent =
+    userRole === "student" &&
+    isCurrentMonth &&
+    !isPast &&
+    dayType === "Dia Habil";
+
+  const getDayCellColorClass = (): string => {
+    // Para estudiantes: verde si es día hábil, rojo si no lo es (feriado, fin de semana, vacaciones)
+    if (userRole === "student") {
+      switch (dayType) {
+        case "Dia Habil":
+          return styles.greenDay;
+        case "Fin de semana":
+        case "Vacaciones":
+        case "Feriado":
+          return styles.redDay;
+        default:
+          return ""; // Para 'none' o días pasados
+      }
+    } else {
+      // Para administradores: mantiene la lógica original
+      switch (dayType) {
+        case "Dia Habil":
+          return styles.greenDay;
+        case "Fin de semana":
+        case "Vacaciones":
+          return styles.redDay;
+        case "Feriado":
+          return styles.yellowDay;
+        default:
+          return "";
+      }
+    }
+  };
+
+  const dayCellClasses = `${styles.dayCell} ${
+    isToday && isCurrentMonth ? styles.today : ""
+  } ${isPast ? styles.pastDay : ""} ${getDayCellColorClass()} ${
+    userRole === "student" && !isEnabledForStudent ? styles.disabledDay : "" // Aplica estilo deshabilitado para estudiantes si no es hábil
+  }`;
+
+  const options = ["Dia Habil", "Fin de semana", "Vacaciones", "Feriado"];
+
+  // Manejador de click para estudiantes
+  const handleStudentDayClick = () => {
+    if (isEnabledForStudent) {
+      onDayClickForStudent(fullDate);
+    }
+  };
 
   return (
     <div
-      className={`${styles.dayCell} ${
-        isToday && isCurrentMonth ? styles.today : ""
-      } ${isPast ? styles.pastDay : ""}`}
+      className={dayCellClasses}
+      // Solo permite click para estudiantes si el día está habilitado
+      onClick={userRole === "student" && isEnabledForStudent ? handleStudentDayClick : undefined}
     >
       <div className={styles.dayNumber}>{day}</div>
-      {exampleSlots.map((slot, index) => (
-        <div key={`${day}-${slot.time}-${index}`} className={styles.slotContainer}>
-          <TimeSlot time={slot.time} type={isPast ? "past" : slot.type} date={day} />
-        </div>
-      ))}
+      {userRole === "admin" && isCurrentMonth && !isPast && ( // Solo el admin puede ver y cambiar los selects
+        <InputField
+          label=""
+          type="select"
+          placeholder="Seleccionar tipo"
+          options={options}
+          value={dayType === "none" ? "" : dayType}
+          onChange={(e) => onTypeChange(fullDate, e.target.value as DayType["type"])}
+        />
+      )}
+      {/* Mostrar el tipo de día para días pasados (admin) o para todos los días (estudiante) */}
+      {(userRole === "admin" && isPast && dayType !== "none") ||
+      (userRole === "student" && dayType !== "none") ? (
+        <div className={styles.dayTypeDisplay}>{dayType}</div>
+      ) : null}
     </div>
   );
 };
@@ -95,6 +157,7 @@ const WeekdayHeader: React.FC = () => {
 const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   selectedMonth,
   selectedYear,
+  onMonthChange,
 }) => {
   const months: string[] = [
     "Enero",
@@ -120,17 +183,17 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
               Inicio /
             </a>
           </li>
-          <li >Calendario</li>
+          <li>Calendario</li>
         </ol>
       </nav>
       <div className={styles.calendarNav}>
-        <button className={styles.navButton}>
+        <button className={styles.navButton} onClick={() => onMonthChange(-1)}>
           <span>←</span>
         </button>
         <h1 className={styles.monthTitle}>
           {months[selectedMonth]}, {selectedYear}
         </h1>
-        <button className={styles.navButton}>
+        <button className={styles.navButton} onClick={() => onMonthChange(1)}>
           <span>→</span>
         </button>
       </div>
@@ -139,35 +202,87 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 };
 
 const Calendar: React.FC = () => {
-  // Datos de ejemplo para la interfaz
-  const currentMonth = 4; 
-  const currentYear = 2025;
+  const { user } = useUser(); // Obtenemos el usuario y su rol
+  const router = useRouter(); // Inicializa el hook useRouter
+  const today = new Date();
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>(
+    {}
+  );
 
-  // Generar días de ejemplo para el calendario
+  useEffect(() => {
+    const newDayTypes: { [key: string]: DayType["type"] } = {};
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+      const d = new Date(currentYear, currentMonth, i);
+      const fullDate = d.toISOString().split("T")[0];
+      if (!dayTypes[fullDate]) {
+        // Inicializa los fines de semana como "Fin de semana" por defecto
+        if (d.getDay() === 0 || d.getDay() === 6) {
+          // 0 es domingo, 6 es sábado
+          newDayTypes[fullDate] = "Fin de semana";
+        } else {
+          newDayTypes[fullDate] = "none";
+        }
+      }
+    }
+    setDayTypes((prev) => ({ ...prev, ...newDayTypes }));
+  }, [currentMonth, currentYear]);
+
+  const handleMonthChange = (increment: number) => {
+    let newMonth = currentMonth + increment;
+    let newYear = currentYear;
+
+    if (newMonth > 11) {
+      newMonth = 0;
+      newYear++;
+    } else if (newMonth < 0) {
+      newMonth = 11;
+      newYear--;
+    }
+
+    setCurrentMonth(newMonth);
+    setCurrentYear(newYear);
+  };
+
+  const handleDayTypeChange = (date: string, type: DayType["type"]) => {
+    if (user.role === "admin") {
+      setDayTypes((prev) => ({
+        ...prev,
+        [date]: type,
+      }));
+    }
+  };
+
+  // Nueva función para manejar el clic en un día hábil para el estudiante
+  const handleDayClickForStudent = (date: string) => {
+    router.push(`/reservas`);
+  };
+
+  // --- Generar días del calendario ---
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  const firstDayWeekday = firstDayOfMonth.getDay() === 0 ? 7 : firstDayOfMonth.getDay();
 
-  const firstDayWeekday = firstDayOfMonth.getDay() || 7;
-  const prevMonthDays = Array.from({ length: firstDayWeekday - 1 }, (_, i) => {
-    const day = new Date(currentYear, currentMonth, -i);
-    return day.getDate().toString();
-  }).reverse();
+  const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+  const numDaysInMonth = lastDayOfMonth.getDate();
+
+  const prevMonthPlaceholders = Array.from({ length: firstDayWeekday - 1 }, (_, i) => i);
 
   const currentMonthDays = Array.from(
-    { length: lastDayOfMonth.getDate() },
+    { length: numDaysInMonth },
     (_, i) => (i + 1).toString()
   );
 
-  const totalDaysInGrid = 42;
-  const remainingDays = totalDaysInGrid - (prevMonthDays.length + currentMonthDays.length);
-  const nextMonthDays = Array.from(
-    { length: remainingDays },
-    (_, i) => (i + 1).toString()
-  );
+  const totalDaysDisplayed = prevMonthPlaceholders.length + currentMonthDays.length;
+  const remainingCells = totalDaysDisplayed % 7 === 0 ? 0 : 7 - (totalDaysDisplayed % 7);
 
-  const today = new Date();
+  const nextMonthPlaceholders = Array.from({ length: remainingCells }, (_, i) => i);
+
   const currentDate = today.getDate();
-  const isCurrentMonth = today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+  const isCurrentMonthView =
+    today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
   return (
     <>
@@ -176,15 +291,21 @@ const Calendar: React.FC = () => {
           <CalendarHeader
             selectedMonth={currentMonth}
             selectedYear={currentYear}
+            onMonthChange={handleMonthChange}
           />
           <div className={styles.calendarGrid}>
             <WeekdayHeader />
-            {prevMonthDays.map((day) => (
-              <div key={`prev-${day}`} className={styles.inactiveDayCell}>
-                {day}
-              </div>
+            {prevMonthPlaceholders.map((_, index) => (
+              <div key={`prev-placeholder-${index}`} className={styles.inactiveDayCell}></div>
             ))}
             {currentMonthDays.map((day) => {
+              const fullDate = new Date(
+                currentYear,
+                currentMonth,
+                parseInt(day)
+              )
+                .toISOString()
+                .split("T")[0];
               const isPast =
                 currentYear < today.getFullYear() ||
                 (currentYear === today.getFullYear() &&
@@ -197,20 +318,19 @@ const Calendar: React.FC = () => {
                 <DayCell
                   key={`current-${day}`}
                   day={day}
-                  isToday={parseInt(day) === currentDate && isCurrentMonth}
+                  isToday={parseInt(day) === currentDate && isCurrentMonthView}
                   isCurrentMonth={true}
                   isPast={isPast}
+                  dayType={dayTypes[fullDate] || "none"}
+                  onTypeChange={handleDayTypeChange}
+                  fullDate={fullDate}
+                  userRole={user.role as "admin" | "student"}
+                  onDayClickForStudent={handleDayClickForStudent} // Pasa la nueva función
                 />
               );
             })}
-            {nextMonthDays.map((day) => (
-              <DayCell
-                key={`next-${day}`}
-                day={day}
-                isToday={false}
-                isCurrentMonth={false}
-                isPast={false}
-              />
+            {nextMonthPlaceholders.map((_, index) => (
+              <div key={`next-placeholder-${index}`} className={styles.inactiveDayCell}></div>
             ))}
           </div>
         </div>
