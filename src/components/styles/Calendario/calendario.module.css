@@ -5,6 +5,7 @@
   font-family: Figtree, sans-serif;
   margin-left: 50px;
   margin-right: 50px;
+  margin-bottom: 50px;
 }
 
 .calendarWrapper {
@@ -36,7 +37,7 @@
   margin-bottom: 1.5rem;
   font-size: 28px;
   font-weight: 700;
-  color: #ee9a12; /* Color naranja para mantener el estilo de la app */
+  color: #ee9a12; 
 }
 
 .calendarGrid {
@@ -48,53 +49,54 @@
 .weekdayHeader {
   color: #f97316;
   font-weight: 500;
+  text-align: center;
 }
 
 .inactiveDayCell {
   color: #6b7280;
   padding: 0.5rem;
+  min-height: 100px; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .dayCell {
   padding: 0.5rem;
   min-height: 100px;
   transition: background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .dayNumber {
   font-weight: 500;
+  margin-bottom: 0.5rem; 
 }
 
-.morningSlot {
-  background-color: #f3f4f6;
-  border-radius: 0.25rem;
-  margin-top: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 12px;
+.greenDay {
+  background-color: #dcfce7; 
+  border: 1px solid #16a34a;
+   border-radius: 8px;
 }
 
-.middaySlot {
-  color: #16a34a;
-  background-color: #dcfce7;
-  border-radius: 0.25rem;
-  margin-top: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 12px;
+.redDay {
+  background-color: #fee2e2;
+  border: 1px solid #ef4444;
+   border-radius: 8px;
 }
 
-.afternoonSlot {
-  color: #d97706;
-  background-color: #fef3c7;
-  border-radius: 0.25rem;
-  margin-top: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 12px;
+.yellowDay {
+  background-color: #fef3c7; 
+  border: 1px solid #d97706;
+  border-radius: 8px;
 }
 
 .today {
-  background-color: rgba(22, 163, 74, 0.1); /* Verde claro semi-transparente */
+  background-color: rgba(22, 163, 74, 0.1); 
   border-radius: 8px;
-  border: 2px solid #16a34a; /* Borde verde */
+  border: 3px solid #16a34a; 
 }
 
 .calendarNav {
@@ -119,138 +121,40 @@
   color: white;
 }
 
-.clickableSlot {
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.clickableSlot:hover {
-  transform: scale(1.05);
-}
-
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal {
-  background-color: white;
-  padding: 2rem;
-  border-radius: 0.5rem;
-  width: 100%;
-  max-width: 500px;
-}
-
-.modal input {
-  width: 100%;
-  padding: 0.5rem;
-  margin: 0.5rem 0;
-  border: 1px solid #ddd;
-  border-radius: 0.25rem;
-}
-
-.modalButtons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.addSlotButton {
-  background: none;
-  border: none;
-  color: #ee9a12;
-  cursor: pointer;
-  float: right;
-  font-size: 1.2rem;
-  padding: 0 5px;
-}
-
-.addSlotMenu {
-  position: absolute;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 10;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.addSlotMenu button {
-  display: block;
-  width: 100%;
-  padding: 0.5rem;
-  margin: 0.25rem 0;
-  border: none;
-  background: #f3f4f6;
-  cursor: pointer;
-  text-align: left;
-}
-
-.addSlotMenu button:hover {
-  background: #ee9a12;
-  color: white;
-}
-
-.slotContainer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  margin-top: 0.25rem;
-}
-
-.deleteSlotButton {
-  position: absolute;
-  right: 2px;
-  background: none;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.slotContainer:hover .deleteSlotButton {
-  opacity: 1;
-}
-
-.eveningSlot {
-  color: #7c3aed;
-  background-color: #ede9fe;
-  border-radius: 0.25rem;
-  margin-top: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 12px;
-}
-
 .pastDay {
   background-color: #ddd;
   color: #999;
   cursor: not-allowed;
 }
 
-/* Nuevo estilo para slots pasados, si los necesitas */
-.pastSlot {
-  background-color: #e0e0e0; /* Color más claro para indicar inactividad */
-  color: #a0a0a0; /* Color de texto más tenue */
-  border-radius: 0.25rem;
-  margin-top: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 12px;
-  cursor: not-allowed;
-  opacity: 0.7;
+.pastDayTypeDisplay {
+    font-size: 0.8rem;
+    color: #555;
+    margin-top: 0.5rem;
+    text-align: center;
+    background-color: #e0e0e0;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+}
+
+
+.emptyDayCell {
+  padding: 0.5rem;
+  min-height: 100px;
+  background-color: #f8f8f8; 
+  border: 1px dashed #e0e0e0; 
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+
+.dayTypeDisplay {
+  font-size: 0.9em; 
+  font-weight: normal;
+  color: #555;
+  margin-top: 5px; 
+  text-align: center;
+  font-family: Poppins, sans-serif;
 }
