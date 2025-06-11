@@ -25,7 +25,7 @@ export default function LoginForm() {
       });
 
       if (!res.ok) {
-        throw new Error("Error al iniciar sesión");
+        throw new Error("error al iniciar sesión");
       }
       return res.json(); //devuelve la respuesta en formato JSON
 
