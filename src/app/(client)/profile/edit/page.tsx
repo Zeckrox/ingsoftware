@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from './editForm.module.css';
 import { useUser } from '@/context/userContext';
+import { useMutation } from '@tanstack/react-query';
 
 // type ProfileData = {
 //   nombre: string;
@@ -14,15 +15,41 @@ import { useUser } from '@/context/userContext';
 
 export default function EditProfilePage() {
   const router = useRouter();
-  const [formData, setFormData] = useState<ProfileData>({
-    nombre: '',
-    apellido: '',
-    carrera: 'Ing. Sistemas',
-    telefono: '',
-    genero: 'Mujer'
-  });
+  const { user, isLoadingUser } = useUser();
+  const updateUser = useMutation({
+    mutationFn: async () => {
 
-  const { user } = useUser();
+      const res = await fetch(`http://localhost:3000/users/${user._id}`, {  
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName: formData.nombre,
+          lastName: formData.apellido,
+          // telefono,
+          career: formData.carrera,
+          // genero,
+        }),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error al editar perfil");
+      }
+
+      return res.json();
+    },
+    onSuccess: (data) => {
+      console.log("Cambio exitoso:", data);
+      alert("Cambiado con exito");
+      router.push("/profile"); 
+    },
+    onError: (error: any) => {
+      console.error("Error en editar perfil:", error);
+      alert(error.message || "Error al editar perfil");
+    },
+  });
 
   const carrerasDisponibles = ["Ingeniería de Sistemas",
             "Ingeniería Producción",
@@ -45,10 +72,35 @@ export default function EditProfilePage() {
     if (savedData) setFormData(JSON.parse(savedData));
   }, []);
 
+  const [formData, setFormData] = useState<ProfileData>({
+    nombre: user?.firstName, 
+    apellido: user?.lastName,
+    carrera: user?.career,
+    telefono: '',
+    genero: 'Mujer'
+  });
+
+    useEffect(()=>{
+      if (user) {
+        setFormData({nombre: user?.firstName, 
+    apellido: user?.lastName,
+    telefono: '',
+    carrera: user?.career,
+  genero: 'Mujer'})
+      }
+    }, [user])
+  
+    if (isLoadingUser || !user) {
+      return <div>Cargando...</div>;
+    }
+
+    console.log(user._id)
+    // "http://localhost:3000/users/$`{user._id}`"
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     if (name === 'nombre' || name === 'apellido') {
-      if (value.length <= 15) setFormData(prev => ({ ...prev, [name]: value }));
+      if (value?.length <= 15) setFormData(prev => ({ ...prev, [name]: value }));
     } else if (name === 'telefono') {
       if (/^\d{0,11}$/.test(value.replace('+', ''))) setFormData(prev => ({ ...prev, [name]: value }));
     } else {
@@ -56,10 +108,11 @@ export default function EditProfilePage() {
     }
   };
 
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    updateUser.mutate();
     localStorage.setItem('profileData', JSON.stringify(formData));
-    router.push('/profile');
   };
 
   return (
@@ -75,13 +128,13 @@ export default function EditProfilePage() {
               type="text"
               id="nombre"
               name="nombre"
-              value={formData.nombre}
+              value={formData.nombre}  
               onChange={handleChange}
-              placeholder="Ej: Luis"
+              placeholder={"Ej: Luis"}
               maxLength={15}
               required
             />
-            <span className={styles.charCount}>{formData.nombre.length}/15</span>
+            <span className={styles.charCount}>{formData.nombre?.length}/15</span>
           </div>
 
           <div className={styles.formGroup}>
@@ -90,13 +143,13 @@ export default function EditProfilePage() {
               type="text"
               id="apellido"
               name="apellido"
-              value={formData.apellido}
+              value={formData.apellido} 
               onChange={handleChange}
               placeholder="Ej: Arrieta"
               maxLength={15}
               required
             />
-            <span className={styles.charCount}>{formData.apellido.length}/15</span>
+            <span className={styles.charCount}>{formData.apellido?.length}/15</span>
           </div>
         </div>
 

@@ -25,7 +25,7 @@ export default function LoginForm() {
       });
 
       if (!res.ok) {
-        throw new Error("Error al iniciar sesión");
+        throw new Error("error al iniciar sesión");
       }
       return res.json(); //devuelve la respuesta en formato JSON
 
@@ -37,7 +37,7 @@ export default function LoginForm() {
     },
     onError: (error) => {
       console.error("Fallo el login:", error);
-      alert("Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.");
+      // alert("Correo o contraseña incorrectos. Por favor, inténtalo de nuevo.");
     },
   });
   

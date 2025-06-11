@@ -11,7 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 export default function RegisterForm() {
   const router = useRouter(); 
   
-   const [nombre, setNombre] = React.useState("");           
+  const [nombre, setNombre] = React.useState("");           
   const [apellido, setApellido] = React.useState("");       
   const [email, setEmail] = React.useState("");             
   // const [telefono, setTelefono] = React.useState("");       
