@@ -137,3 +137,20 @@
   width: fit-content; 
   margin-top: 80px;
 }
+
+
+.mensajeContactanos {
+  text-decoration: none;
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #ff6600;
+  display: block;
+  text-align: center;
+  margin-top: 4.2rem;
+}
+
+
+.mensajeContactanos:hover {
+  color: #505bfd;
+  text-decoration: none;
+}
