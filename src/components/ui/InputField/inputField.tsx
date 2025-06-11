@@ -27,7 +27,6 @@ export default function InputField({
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
-
   if (type === "select" && options) {
     return (
       <div className={styles.inputContainer}>
@@ -46,6 +45,7 @@ export default function InputField({
     );
   }
 
+  // For text, email, password, tel types
   return (
     <div className={styles.inputContainer}>
       <label className={styles.label}>{label}</label>

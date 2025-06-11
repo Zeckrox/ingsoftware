@@ -37,13 +37,10 @@ interface DayCellProps {
   userRole: "admin" | "student"; // Añadimos el rol del usuario
   onDayClickForStudent: (date: string) => void; // Nueva prop para el click del estudiante
 }
-
 interface CalendarHeaderProps {
   selectedMonth: number;
   selectedYear: number;
   onMonthChange: (increment: number) => void;
-}
-
 const DayCell: React.FC<DayCellProps> = ({
   day,
   isToday,
