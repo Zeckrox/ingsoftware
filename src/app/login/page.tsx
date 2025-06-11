@@ -1,7 +1,8 @@
 import * as React from "react";
 import Image from "next/image"; 
-import styles from "./login.module.css"; 
-import LoginForm  from "./loginform";
+import styles from "../../components/auth/login.module.css"; 
+import LoginForm  from "../../components/auth/loginform";
+import Link from "next/link";
 
 export default function Login() {
 
@@ -16,13 +17,15 @@ export default function Login() {
           height={687} 
         />
         <div className={styles.formContainer}>
-          <Image
-            src="/images/Logo-BPG.png" 
-            alt="Logo"
-            className={styles.logo}
-            width={400} 
-            height={100} 
-          />
+          <Link href="/">
+            <Image
+              src="/images/Logo-BPG.png" 
+              alt="Logo"
+              className={styles.logo}
+              width={400} 
+              height={100} 
+            />
+          </Link>
           <LoginForm />
         </div>
       </section>

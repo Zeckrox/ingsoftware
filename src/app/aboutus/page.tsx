@@ -1,6 +1,6 @@
 import React from 'react';
-import styles from './aboutus.module.css';
-import { Poppins } from 'next/font/google';
+import styles from '../../components/styles/AboutUs/aboutus.module.css';
+import Image from 'next/image';
 
 export default function AboutUs() {
   return (
@@ -25,10 +25,12 @@ export default function AboutUs() {
         <br></br>
 
         <div>
-        <img
+        <Image
             src="/imagenSaman.png"
             alt="Biblioteca Pedro Grases"
             className={styles.imagenSaman}
+            width={400} 
+            height={200} 
             />
         </div>
 
@@ -37,7 +39,8 @@ export default function AboutUs() {
         <div className={styles.parteEstudiantes}>
             <div className={styles.imageContainer}>
                 <div className={styles.fondoEstudiantes}></div>
-                <img src="/estudiantes.png" alt="Estudiantes" className={styles.imagenEstudiantes} />
+                <Image src="/estudiantes.png" alt="Estudiantes" className={styles.imagenEstudiantes} width={400} 
+            height={100} />
             </div>
             <div className={styles.textoInfoBiblio2}>
                 <p>
@@ -55,7 +58,9 @@ export default function AboutUs() {
   );
 }
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
-});
+// SE COMENTÓ PARA PODER HACER DEPLOY
+
+// const poppins = Poppins({
+//   subsets: ['latin'],
+//   weight: ['300', '400', '500', '600', '700'],
+// });

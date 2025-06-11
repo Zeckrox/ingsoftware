@@ -1,9 +1,6 @@
-import SeccionUno from '../components/SeccionUno/SeccionUno';
-import SeccionDos from '../components/SeccionDos/SeccionDos';
-import SeccionTres from '../components/SeccionTres/SeccionTres';
-import { Poppins } from 'next/font/google';
-
-
+import SeccionUno from '../components/styles/PaginaPrincipal/SeccionUno/SeccionUno';
+import SeccionDos from '../components/styles/PaginaPrincipal/SeccionDos/SeccionDos';
+import SeccionTres from '../components/styles/PaginaPrincipal/SeccionTres/SeccionTres';
 
 export default function HomePage() {
   return (

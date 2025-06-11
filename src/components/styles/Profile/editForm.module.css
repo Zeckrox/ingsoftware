@@ -1,0 +1,191 @@
+.editContainer {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+.editTitle {
+  color: #FF7E00;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.8rem;
+}
+
+.formRow {
+  display: flex;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.formGroup {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroup label {
+  font-weight: 600;
+  color: #444;
+  font-size: 0.95rem;
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #f9f9f9;
+  transition: all 0.3s ease;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #FF7E00;
+  background: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 126, 0, 0.1);
+}
+
+.formGroup select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 1rem;
+}
+
+.charCount,
+.hint {
+  font-size: 0.75rem;
+  color: #777;
+  text-align: right;
+  margin-top: -0.2rem;
+}
+
+/* Estilos para radio buttons */
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.3rem;
+}
+
+.radioGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: normal;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.radioGroup input[type="radio"] {
+  padding: 0;
+  appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.radioGroup input[type="radio"]:checked {
+  border-color: #FF7E00;
+  background-color: #FF7E00;
+  box-shadow: inset 0 0 0 2px white;
+}
+
+/* Botones */
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.saveButton {
+  background: #FF7E00;
+  color: white;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.saveButton:hover {
+  background: #e67100;
+  transform: translateY(-1px);
+}
+
+.cancelButton {
+  background: #f0f0f0;
+  color: #555;
+  padding: 0.8rem 1.8rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1rem;
+}
+
+.cancelButton:hover {
+  background: #e0e0e0;
+  transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .formRow {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .editContainer {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+
+  .radioGroup {
+    justify-content: flex-start;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+  }
+
+  .saveButton,
+  .cancelButton {
+    width: 100%;
+    padding: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .editTitle {
+    font-size: 1.5rem;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    padding: 0.7rem 0.9rem;
+  }
+}

@@ -1,7 +1,7 @@
 'use client'
 
-import GlobalHeader from './utils/Header';
-import GlobalFooter from './utils/Footer';
+import Header from '../components/utils/Header';
+import Footer from '../components/utils/Footer';
 import { Poppins } from 'next/font/google';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -22,10 +22,11 @@ export default function MainLayout({
     <html lang="en"  className={poppins.className}>
       <body style={{margin:0}}>
       <QueryClientProvider client={queryClient}>
-        <GlobalHeader />
+        <Header />
         <main>{children}</main>
-        <GlobalFooter />
+        {/* <GlobalFooter /> */}
         <ReactQueryDevtools initialIsOpen={false} />
+        <Footer />
       </QueryClientProvider>
      </body>
     </html>
