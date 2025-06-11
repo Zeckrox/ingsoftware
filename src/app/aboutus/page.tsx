@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from './aboutus.module.css';
 import { Poppins } from 'next/font/google';
+import Link from 'next/link';
+
 
 export default function AboutUs() {
   return (
@@ -48,7 +50,9 @@ export default function AboutUs() {
             </div>
         </div>
 
-        <h3 className={styles.mensajeContactanos}>¡Contáctanos!</h3>
+        <Link href="/contactus" className={styles.mensajeContactanos}>
+          ¡Contáctanos!
+        </Link>
 
 
     </section>

@@ -1,5 +1,5 @@
-import GlobalHeader from './utils/Header';
-import GlobalFooter from './utils/Footer';
+import GlobalHeader from './Utils/Header';
+import GlobalFooter from './Utils/Footer';
 import { Poppins } from 'next/font/google';
 const poppins = Poppins({
   subsets: ['latin'],

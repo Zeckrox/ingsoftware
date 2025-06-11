@@ -33,7 +33,7 @@ export default function Header() {
         <button className="nav-button">NOSOTROS</button>
         </Link>
 
-        <Link href="/contactus">
+        <Link href="/reservar">
         <button className="nav-button">RESERVAR</button>
         </Link>
 
