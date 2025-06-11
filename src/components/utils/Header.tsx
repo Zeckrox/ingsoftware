@@ -3,12 +3,24 @@
 import React, { useState } from 'react';
 import './Header.css';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation'
+import { usePathname,  useRouter } from 'next/navigation'
 import Link from 'next/link';
+import Modal from 'react-modal';
+import styles from './Modal.module.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname()
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+   const router = useRouter(); 
+
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
+  const handleCalendarioClick = () => {
+      router.push('/calendario'); 
+      closeModal();
+   };
 
   if(pathname=="/login" || pathname=="/register")return;
 
@@ -35,9 +47,8 @@ export default function Header() {
         <button className="nav-button">NOSOTROS</button>
         </Link>
 
-        <Link href="/contactus">
-        <button className="nav-button">RESERVAR</button>
-        </Link>
+        <button className="nav-button" onClick={openModal}>RESERVAR</button>
+
 
         <Link href="/login">
         <button className="nav-button login-button">INICIAR SESIÓN</button>
@@ -50,6 +61,35 @@ export default function Header() {
       >
         ☰
       </button>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+        >
+        <div className={styles.modalContent}>
+            <button className={styles.closeButton} onClick={closeModal}>×</button>
+            <h2 className={styles.modalTitle}>Reservar</h2>
+        </div>
+            <div className={styles.whiteSquare}>
+                <div className={styles.optionsContainer}>
+                <button 
+                    className={styles.optionButton}
+                    onClick={handleCalendarioClick} 
+                >
+                    Cubículo
+                </button>
+                <div className={styles.orangeBar}/>
+                <button 
+                    className={styles.optionButton}
+                    onClick={handleCalendarioClick} 
+                >
+                    Mesa
+                </button>
+                </div>
+            </div>
+        </Modal>
     </header>
   );
 }

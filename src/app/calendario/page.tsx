@@ -41,6 +41,8 @@ interface CalendarHeaderProps {
   selectedMonth: number;
   selectedYear: number;
   onMonthChange: (increment: number) => void;
+}
+
 const DayCell: React.FC<DayCellProps> = ({
   day,
   isToday,

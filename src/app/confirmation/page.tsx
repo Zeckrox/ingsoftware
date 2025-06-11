@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './confirmation.module.css';
+import styles from '../../components/styles/Confirmation/confirmation.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
 

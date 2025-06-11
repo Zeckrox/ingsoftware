@@ -1,8 +1,17 @@
+'use client';
 import React from 'react';
 import styles from '../../components/styles/AboutUs/aboutus.module.css';
 import Image from 'next/image';
+import { useRouter } from "next/navigation";
 
 export default function AboutUs() {
+  const router = useRouter(); 
+
+  const handleContactClick = () => {
+      router.push('/contactus'); 
+
+   };
+
   return (
     <section className={styles.aboutSection}>
       <div className={styles.container}>
@@ -51,7 +60,7 @@ export default function AboutUs() {
             </div>
         </div>
 
-        <h3 className={styles.mensajeContactanos}>¡Contáctanos!</h3>
+        <button className={styles.mensajeContactanos} onClick={handleContactClick}>¡Contáctanos!</button>
 
 
     </section>
