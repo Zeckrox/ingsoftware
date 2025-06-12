@@ -1,6 +1,6 @@
 'use client';
 import React from "react";
-import styles from './reservar.module.css';
+import styles from '../../components/styles/Reserva/reservar.module.css';
 import { Poppins } from 'next/font/google';
 
 
@@ -92,7 +92,6 @@ const Reservar = () => {
                 <select id="piso" className={styles.opcionesPisoSala}>
                     <option value="pb">Pb</option>
                     <option value="p1">P1</option>
-                    <option value="p2">P2</option>
                 </select>
             </div>
 

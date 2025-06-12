@@ -17,10 +17,15 @@ export default function Header() {
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
-  const handleCalendarioClick = () => {
-      router.push('/calendario'); 
-      closeModal();
-   };
+  const handleCalendariomClick = () => {
+    router.push('/calendariom'); 
+    closeModal();
+  };
+
+  const handleCalendariocClick = () => {
+    router.push('/calendarioc'); 
+    closeModal();
+  };
 
   if(pathname=="/login" || pathname=="/register")return;
 
@@ -76,14 +81,14 @@ export default function Header() {
                 <div className={styles.optionsContainer}>
                 <button 
                     className={styles.optionButton}
-                    onClick={handleCalendarioClick} 
+                    onClick={handleCalendariocClick} 
                 >
                     Cubículo
                 </button>
                 <div className={styles.orangeBar}/>
                 <button 
                     className={styles.optionButton}
-                    onClick={handleCalendarioClick} 
+                    onClick={handleCalendariomClick} 
                 >
                     Mesa
                 </button>

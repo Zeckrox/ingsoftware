@@ -178,11 +178,11 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
       <nav className={styles.breadcrumb} aria-label="breadcrumb">
         <ol>
           <li>
-            <a href="/destinos" className={styles.navLink}>
+            <a href="/" className={styles.navLink}>
               Inicio /
             </a>
           </li>
-          <li>Calendario</li>
+          <li>Calendario Cubículos</li>
         </ol>
       </nav>
       <div className={styles.calendarNav}>

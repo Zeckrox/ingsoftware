@@ -8,14 +8,18 @@ export default function SeccionTres() {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const router = useRouter(); 
 
-    const openModal = () => setModalIsOpen(true);
-    const closeModal = () => setModalIsOpen(false);
-  
-    const handleCalendarioClick = () => {
-      router.push('/calendario'); 
-      closeModal();
-    };
-  
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
+  const handleCalendariomClick = () => {
+    router.push('/calendariom'); 
+    closeModal();
+  };
+
+  const handleCalendariocClick = () => {
+    router.push('/calendarioc'); 
+    closeModal();
+  };
 
   return (
     <section className={styles.fondoBibliotecaSillas}>
@@ -40,14 +44,14 @@ export default function SeccionTres() {
                 <div className={styles.optionsContainer}>
                 <button 
                     className={styles.optionButton}
-                    onClick={handleCalendarioClick} 
+                    onClick={handleCalendariocClick} 
                 >
                     Cubículo
                 </button>
                 <div className={styles.orangeBar}/>
                 <button 
                     className={styles.optionButton}
-                    onClick={handleCalendarioClick} 
+                    onClick={handleCalendariomClick} 
                 >
                     Mesa
                 </button>
