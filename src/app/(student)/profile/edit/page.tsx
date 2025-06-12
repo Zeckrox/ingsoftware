@@ -19,7 +19,7 @@ export default function EditProfilePage() {
   const updateUser = useMutation({
     mutationFn: async () => {
 
-      const res = await fetch(`http://localhost:3000/users/${user._id}`, {  
+      const res = await fetch(`https://backendsoftware.vercel.app/users/${user?._id}`, {  
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -53,7 +53,7 @@ export default function EditProfilePage() {
 
   const patchMutation = useMutation({
     mutationFn: async () => {
-      let url = `https://backendsoftware-production-c177.up.railway.app/users/${user?._id}`
+      let url = `https://backendsoftware.vercel.app/users/${user?._id}`
       const res = await fetch(url, {
         method: "PATCH",
         headers: {

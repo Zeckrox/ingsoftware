@@ -15,7 +15,7 @@ export default function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      let url = "https://backendsoftware-production-c177.up.railway.app/auth/login"
+      let url = "https://backendsoftware.vercel.app/auth/login"
       const res = await fetch(url, {
         method: "POST",
         headers: {
