@@ -2,11 +2,14 @@
 import React from "react";
 import styles from '../../components/styles/Reserva/reservar.module.css';
 import { Poppins } from 'next/font/google';
+import Modal from 'react-modal';
 
 
 
 const Reservar = () => {
   const [seleccionadas, setSeleccionadas] = React.useState<number[]>([]); // esta función crea una lista vacía donde se va a agregar el numero de la mesa que se clickee
+  const [modalIsOpen, setModalIsOpen] = React.useState(false);
+
 
   const toggleSeleccion = (numero: number) => { //agerag o quita el num de la lista
     setSeleccionadas((prev) =>
@@ -15,6 +18,11 @@ const Reservar = () => {
         : [...prev, numero]   
     );
   };
+
+    const openModal = () => setModalIsOpen(true);
+    const closeModal = () => setModalIsOpen(false);
+
+
 
   return (
 
@@ -70,7 +78,7 @@ const Reservar = () => {
                     </select>
                 </div>
 
-                <button type="submit" className={styles.botonCambios}>Reservar</button>
+                <button onClick={openModal}type="button" className={styles.botonCambios}>Reservar</button>
                 </form>
 
                 <div className={styles.infoHorarios}>
@@ -80,6 +88,37 @@ const Reservar = () => {
                 </div>
             </div>
         </div>
+
+    <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+        >
+
+            <button className={styles.closeButton} onClick={closeModal}>×</button>
+             <div className={styles.contentContainer}>
+                {/* Sección izquierda (texto) */}
+                <div className={styles.textSection}>
+                    <h2 className={styles.modalTitle}>Mesa 5</h2>
+                    <h2 className={styles.textoInfoPopReserva}>Sala de Referencia</h2>
+                    <h2 className={styles.textoInfoPopReserva}>Día: Viernes 07 FEB</h2>
+                    <h2 className={styles.textoInfoPopReserva}>Horario: 8am - 8:30am</h2>
+                    <h2 className={styles.textoInfoPopReserva}>Cantidad de personas: 4</h2>
+
+                    <button className={styles.reserveButton}>Reservar</button>
+                </div>
+
+                {/* Sección derecha (imagen) */}
+                <div className={styles.imageSection}>
+                    <img src="/fotoResevas.png" alt="Mesa 5" className={styles.image} />
+                </div>
+            </div>
+    </Modal>
+
+
+
+
 
 
     <div className={styles.columnaDerecha}>

@@ -309,3 +309,168 @@
   border-radius: 40px;
   z-index: 0;
 }
+
+
+
+
+
+
+
+/* Estilos del Modal */
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ============ MODAL STRUCTURE ============ */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 450px;
+  background: #f0efef;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ============ MODAL COMPONENTS ============ */
+.modalTitle {
+  width: 100%;
+  margin: 0;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 12px;
+  text-align: left;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  box-sizing: border-box;
+}
+
+.whiteSquare {
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.optionsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+
+
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .modal {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+  }
+  
+  .modalTitle {
+    font-size: 1.7rem;
+  }
+  
+  .optionButton {
+    padding: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .closeButton {
+    width: 30px;
+    height: 30px;
+    font-size: 2rem;
+  }
+}
+
+
+
+/* hello hello intentoooooooooo */
+
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.contentContainer {
+  display: flex;
+  color: #000;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.textSection {
+  flex: 1;
+  color: black;
+
+}
+
+.modalTitle {
+  font-size: 2rem;
+  color: orange;
+  margin-bottom: 1rem;
+}
+
+.reserveButton {
+  background-color: #f60;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  box-shadow: 0 5px 10px rgba(255, 102, 0, 0.4);
+  cursor: pointer;
+}
+
+.imageSection img {
+  width: 180px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+
+.textoInfoPopReserva {
+  color: black;
+  font-size: 15px;
+  font-weight: 300;
+}
