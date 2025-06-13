@@ -3,19 +3,7 @@ import React, { useState, useEffect } from "react";
 import styles from "../../components/styles/Calendario/calendario.module.css";
 import InputField from "../../components/ui/InputField/inputField";
 import { useRouter } from "next/navigation";
-
-const useUser = () => {
-  const [user, setUser] = useState({ role: "admin" });
-
-  useEffect(() => {
-    const fetchUserRole = async () => {
-      // Simulado: puedes ajustar si tienes JWT en localStorage
-    };
-    fetchUserRole();
-  }, []);
-
-  return { user };
-};
+import { useUser } from "@/context/userContext";
 
 interface DayType {
   type: "Dia Habil" | "Fin de semana" | "Vacaciones" | "Feriado" | "none";
@@ -28,10 +16,10 @@ interface DayCellProps {
   isCurrentMonth?: boolean;
   isPast?: boolean;
   dayType: DayType["type"];
-  onTypeChange: (date: string, type: DayType["type"]) => void;
   fullDate: string;
-  userRole: "admin" | "student";
+  onTypeChange: (date: string, type: DayType["type"]) => void;
   onDayClick: (date: string) => void;
+  userRole: "admin" | "student";
 }
 
 interface CalendarHeaderProps {
@@ -51,7 +39,11 @@ const DayCell: React.FC<DayCellProps> = ({
   userRole,
   onDayClick,
 }) => {
-  const isClickable = isCurrentMonth && !isPast && dayType === "Dia Habil";
+  const isClickable =
+    isCurrentMonth &&
+    !isPast &&
+    dayType === "Dia Habil" &&
+    userRole === "student";
 
   const getDayCellColorClass = (): string => {
     switch (dayType) {
@@ -75,6 +67,7 @@ const DayCell: React.FC<DayCellProps> = ({
 
   const options = ["Dia Habil", "Fin de semana", "Vacaciones", "Feriado"];
 
+    const router = useRouter();
   const handleDayCellClick = () => {
     if (isClickable) {
       onDayClick(fullDate);
@@ -82,20 +75,28 @@ const DayCell: React.FC<DayCellProps> = ({
   };
 
   return (
-    <div className={dayCellClasses} onClick={isClickable ? handleDayCellClick : undefined}>
+    <div
+      className={dayCellClasses}
+      onClick={isClickable ? handleDayCellClick : undefined}
+    >
       <div className={styles.dayNumber}>{day}</div>
-      {userRole === "admin" && isCurrentMonth && !isPast && (
+      {userRole === "admin" && isCurrentMonth && !isPast && dayType === "Dia Habil" && (
         <InputField
           label=""
           type="select"
           placeholder="Seleccionar tipo"
           options={options}
           value={dayType === "none" ? "" : dayType}
-          onChange={(e) => onTypeChange(fullDate, e.target.value as DayType["type"])}
+          onChange={(e) =>
+            onTypeChange(fullDate, e.target.value as DayType["type"])
+          }
         />
       )}
       {(userRole === "admin" && isPast && dayType !== "none") ||
-      (userRole === "student" && dayType !== "none" && !isClickable && !isPast) ? (
+      (userRole === "student" &&
+        dayType !== "none" &&
+        !isClickable &&
+        !isPast) ? (
         <div className={styles.dayTypeDisplay}>
           {dayType === "Fin de semana" ? "Cerrado" : dayType}
         </div>
@@ -105,7 +106,15 @@ const DayCell: React.FC<DayCellProps> = ({
 };
 
 const WeekdayHeader: React.FC = () => {
-  const weekdays = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"];
+  const weekdays = [
+    "LUNES",
+    "MARTES",
+    "MIERCOLES",
+    "JUEVES",
+    "VIERNES",
+    "SABADO",
+    "DOMINGO",
+  ];
   return (
     <>
       {weekdays.map((day) => (
@@ -123,34 +132,50 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
   onMonthChange,
 }) => {
   const months = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
   ];
 
   return (
     <>
-      <nav className={styles.breadcrumb}>
-        <ol>
-          <li><a href="/" className={styles.navLink}>Inicio /</a></li>
-          <li>Calendario Mesas</li>
-        </ol>
-      </nav>
       <div className={styles.calendarNav}>
-        <button className={styles.navButton} onClick={() => onMonthChange(-1)}>←</button>
-        <h1 className={styles.monthTitle}>{months[selectedMonth]}, {selectedYear}</h1>
-        <button className={styles.navButton} onClick={() => onMonthChange(1)}>→</button>
+        <button className={styles.navButton} onClick={() => onMonthChange(-1)}>
+          ←
+        </button>
+        <h1 className={styles.monthTitle}>
+          {months[selectedMonth]}, {selectedYear}
+        </h1>
+        <button className={styles.navButton} onClick={() => onMonthChange(1)}>
+          →
+        </button>
       </div>
     </>
   );
 };
 
 const Calendar: React.FC = () => {
-  const { user } = useUser();
   const router = useRouter();
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>({});
+  const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>(
+    {}
+  );
+  const { user, isLoadingUser } = useUser();
+
+  if (isLoadingUser || !user) {
+    return <div>Cargando usuario...</div>;
+  }
 
   useEffect(() => {
     const newDayTypes: { [key: string]: DayType["type"] } = {};
@@ -162,7 +187,7 @@ const Calendar: React.FC = () => {
       if (d.getDay() === 0 || d.getDay() === 6) {
         newDayTypes[fullDate] = "Fin de semana";
       } else if (!dayTypes[fullDate]) {
-        newDayTypes[fullDate] = "none";
+        newDayTypes[fullDate] = "Dia Habil";  // <-- cambio aquí
       } else {
         newDayTypes[fullDate] = dayTypes[fullDate];
       }
@@ -173,8 +198,13 @@ const Calendar: React.FC = () => {
   const handleMonthChange = (increment: number) => {
     let newMonth = currentMonth + increment;
     let newYear = currentYear;
-    if (newMonth > 11) { newMonth = 0; newYear++; }
-    else if (newMonth < 0) { newMonth = 11; newYear--; }
+    if (newMonth > 11) {
+      newMonth = 0;
+      newYear++;
+    } else if (newMonth < 0) {
+      newMonth = 11;
+      newYear--;
+    }
     setCurrentMonth(newMonth);
     setCurrentYear(newYear);
   };
@@ -192,20 +222,32 @@ const Calendar: React.FC = () => {
   };
 
   const handleDayClick = (date: string) => {
-    router.push(`/reservar`);
+    router.push(`/reservarm?date=${date}`);
   };
 
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
-  const firstDayWeekday = firstDayOfMonth.getDay() === 0 ? 7 : firstDayOfMonth.getDay();
+  const firstDayWeekday =
+    firstDayOfMonth.getDay() === 0 ? 7 : firstDayOfMonth.getDay();
   const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
   const numDaysInMonth = lastDayOfMonth.getDate();
 
-  const prevMonthPlaceholders = Array.from({ length: firstDayWeekday - 1 }, (_, i) => i);
-  const currentMonthDays = Array.from({ length: numDaysInMonth }, (_, i) => (i + 1).toString());
+  const prevMonthPlaceholders = Array.from(
+    { length: firstDayWeekday - 1 },
+    (_, i) => i
+  );
+  const currentMonthDays = Array.from(
+    { length: numDaysInMonth },
+    (_, i) => (i + 1).toString()
+  );
 
-  const totalDaysDisplayed = prevMonthPlaceholders.length + currentMonthDays.length;
-  const remainingCells = totalDaysDisplayed % 7 === 0 ? 0 : 7 - (totalDaysDisplayed % 7);
-  const nextMonthPlaceholders = Array.from({ length: remainingCells }, (_, i) => i);
+  const totalDaysDisplayed =
+    prevMonthPlaceholders.length + currentMonthDays.length;
+  const remainingCells =
+    totalDaysDisplayed % 7 === 0 ? 0 : 7 - (totalDaysDisplayed % 7);
+  const nextMonthPlaceholders = Array.from(
+    { length: remainingCells },
+    (_, i) => i
+  );
 
   const currentDate = today.getDate();
   const isCurrentMonthView =
@@ -222,13 +264,23 @@ const Calendar: React.FC = () => {
         <div className={styles.calendarGrid}>
           <WeekdayHeader />
           {prevMonthPlaceholders.map((_, index) => (
-            <div key={`prev-placeholder-${index}`} className={styles.inactiveDayCell}></div>
+            <div
+              key={`prev-placeholder-${index}`}
+              className={styles.inactiveDayCell}
+            ></div>
           ))}
           {currentMonthDays.map((day) => {
-            const fullDate = new Date(currentYear, currentMonth, parseInt(day)).toISOString().split("T")[0];
+            const fullDate = new Date(
+              currentYear,
+              currentMonth,
+              parseInt(day)
+            )
+              .toISOString()
+              .split("T")[0];
             const isPast =
               currentYear < today.getFullYear() ||
-              (currentYear === today.getFullYear() && currentMonth < today.getMonth()) ||
+              (currentYear === today.getFullYear() &&
+                currentMonth < today.getMonth()) ||
               (currentYear === today.getFullYear() &&
                 currentMonth === today.getMonth() &&
                 parseInt(day) < today.getDate());
@@ -249,7 +301,10 @@ const Calendar: React.FC = () => {
             );
           })}
           {nextMonthPlaceholders.map((_, index) => (
-            <div key={`next-placeholder-${index}`} className={styles.inactiveDayCell}></div>
+            <div
+              key={`next-placeholder-${index}`}
+              className={styles.inactiveDayCell}
+            ></div>
           ))}
         </div>
       </div>

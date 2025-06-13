@@ -6,7 +6,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: "student";
+  role: "student" | "admin";
   career: string;
 }
 

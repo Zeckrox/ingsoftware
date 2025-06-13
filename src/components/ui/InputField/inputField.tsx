@@ -13,6 +13,7 @@ interface InputFieldProps {
   lockIconSrc?: string;
   options?: string[];
   value?: string;
+  disabled?: boolean; // <-- ¡Añade esta prop!
   onChange?: (e: React.ChangeEvent<any>) => void;
 }
 
