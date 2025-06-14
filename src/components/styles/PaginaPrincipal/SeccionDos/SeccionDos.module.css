@@ -1,0 +1,115 @@
+.seccionDos {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  max-width: 1200px;
+}
+
+
+@media (max-width: 768px) {
+  .container {
+  flex-direction: column;
+  }
+}
+
+.imagenWrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 450px;
+  overflow: visible;
+}
+
+
+
+.imagenEntradaBiblio {
+  background-color: white;
+  border-radius: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  transform: translateX(-130px);
+  z-index: 1;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+
+.subtitulo {
+  font-weight: 500;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.subtitulo span{
+  color: #f57e00;
+}
+
+
+.estrella {
+  font-size: 1.5rem;
+  margin-right: 0.5rem;
+}
+
+
+
+.titulo {
+  font-size: 2.5rem;
+  font-weight: 500;
+  color: #1E1E1E;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+
+
+
+.numero16 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #1E1E1E;
+  margin-right: 0.25rem;
+}
+
+
+
+.iconosInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+
+
+.iconosPropiedades {
+  font-size: 1.5rem;
+  margin-top: 0.2rem;
+}
+
+
+
+.iconosSubtitulos {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #f97316;
+  margin: 0;
+}
+
+
+
+.iconosTexto {
+  font-size: 0.85rem;
+  margin: 0;
+  color: #1E1E1E;
+}

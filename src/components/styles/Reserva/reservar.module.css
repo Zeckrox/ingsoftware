@@ -1,0 +1,510 @@
+.contenedorGeneral {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 48px;
+  padding: 40px;
+  flex-wrap: wrap;
+  margin-bottom: 7rem;
+}
+
+.columnaIzquierda {
+  position: relative;
+  flex: 400px;
+  max-width: 400px;
+}
+
+.columnaDerecha {
+  flex: 2;
+  min-width: 460px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tituloReserva {
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: 'Poppins', sans-serif;
+  color: #1f1f1f;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.fondoNaranjaArriba {
+  position: absolute;
+  top: 50;
+  left: 0;
+  width: 450px;
+  height: 360px;
+  background-color: #f97316;
+  border-radius: 40px;
+  z-index: 0;
+}
+
+.contenedorForm {
+  top: 100;
+  left: 50;
+  position: relative;
+  background-color: rgb(240, 239, 239);
+  padding: 24px;
+  border-radius: 40px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1;
+}
+
+.tituloForm {
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: black;
+}
+
+.subtituloForm {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #000;
+}
+
+.formPreguntas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.titulosPreguntas {
+  display: flex;
+  flex-direction: column;
+}
+
+.titulosPreguntas label {
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: #000;
+  font-weight: 500;
+}
+
+.titulosPreguntas select,
+.titulosPreguntas input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.titulosPreguntas input[disabled] {
+  background-color: #ffffff;
+  color: #888;
+}
+
+.botonCambios {
+  background-color: #ff6e07;
+  font-family: 'Poppins', sans-serif;
+  color: white;
+  font-weight: 600;
+  font-size: 20px;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: fit-content;
+  align-self: center;
+  margin-top: 2rem;
+}
+
+.botonCambios:hover {
+  background-color: #eb6821;
+}
+
+.infoHorarios {
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 16px;
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.infoHorariosTexto {
+  font-size: 16px;
+  text-align: center;
+  color: #666;
+  margin-top: 0px;
+  margin-bottom: 0px;
+
+}
+
+
+
+/* Seccion derecha*/
+
+.pisoSala {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pisoSalaTexto label{
+  display: flex;
+  flex-direction: column;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16.16px;
+  color: #000;
+}
+
+.pisoSala label {
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: #333;
+}
+
+.opcionesPisoSala {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background-color: #f3f3f3;
+  font-size: 0.9rem;
+  font-family: 'Poppins', sans-serif;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  min-width: 200px;
+}
+
+
+
+/* Mapa*/
+
+.mapa {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+
+.seccionSuperiorMapa {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+
+.mesa,
+.redonda {
+  width: 40px;
+  height: 40px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  background-color: #43db64;
+  transition: background-color 0.2s ease;
+}
+
+.redonda {
+  border-radius: 50%;
+}
+
+.mesaSeleccionada {
+  background-color: #e41212 !important;
+}
+
+.filaArriba {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+
+.columnaMesas {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.espacio {
+  width: 20px;
+  height: 30px;
+}
+
+
+.separacionesRayasVerticales {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  align-items: center;
+  margin: 0 12px;
+}
+
+.rayaVertical {
+  width: 15px;
+  height: 144px;
+  background-color: #d9d9d9;
+}
+
+.espacioRayasHorizontales {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rayaHorizontal {
+  width: 130px;
+  height: 15px;
+  background-color: #d9d9d9;
+  margin-left: 20px;
+}
+
+.seccionInferiorMapa {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  margin-top: 24px;
+}
+
+
+.meson {
+  width: 50px;
+  height: 80px;
+  border-radius: 10%;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  background-color: #43db64;
+  transition: background-color 0.2s ease;
+}
+
+
+.mapaContenedor {
+  background-color: #f2f2f2;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  width: 620px;
+  margin-left: 90px;
+  position: relative;
+}
+
+
+.fondoNaranjaAbajo {
+  position: absolute;
+  top: 430px;
+  left: 920px;
+  width: 400px;
+  height: 310px;
+  background-color: #f97316;
+  border-radius: 40px;
+  z-index: 0;
+}
+
+
+
+
+
+
+
+/* Estilos del Modal */
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ============ MODAL STRUCTURE ============ */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 450px;
+  background: #f0efef;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ============ MODAL COMPONENTS ============ */
+.modalTitle {
+  width: 100%;
+  margin: 0;
+  color: white;
+  font-size: 2rem;
+  font-weight: bold;
+  border-radius: 12px;
+  text-align: left;
+  display: flex;
+  justify-content: left;
+  align-items: left;
+  box-sizing: border-box;
+}
+
+.whiteSquare {
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.optionsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+
+
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .modal {
+    padding: 2rem 1.5rem;
+    border-radius: 12px;
+  }
+  
+  .modalTitle {
+    font-size: 1.7rem;
+  }
+  
+  .optionButton {
+    padding: 1rem;
+    font-size: 1.5rem;
+  }
+  
+  .closeButton {
+    width: 30px;
+    height: 30px;
+    font-size: 2rem;
+  }
+}
+
+
+
+/* hello hello intentoooooooooo */
+
+
+.closeButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  font-size: 1.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.contentContainer {
+  display: flex;
+  color: #000;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.textSection {
+  flex: 1;
+  color: black;
+
+}
+
+.modalTitle {
+  font-size: 2rem;
+  color: orange;
+  margin-bottom: 1rem;
+}
+
+.reserveButton {
+  background-color: #f60;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  font-weight: bold;
+  font-size: 1rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  box-shadow: 0 5px 10px rgba(255, 102, 0, 0.4);
+  cursor: pointer;
+}
+
+.imageSection img {
+  width: 180px;
+  height: auto;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+
+.textoInfoPopReserva {
+  color: black;
+  font-size: 15px;
+  font-weight: 300;
+}
+
+/* Estilos extra para cubiculos */
+/* Agrega esto a tu CSS */
+.filaArriba {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.filaMedio {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.filaMedio .columnaMesas {
+  margin-left: 60px; /* Ajusta este valor para centrar la mesa 2 debajo del espacio entre 4 y 5 */
+}
+
+.filaAbajo {
+  display: flex;
+  justify-content: center;
+}
+
+.filaAbajo .columnaMesas {
+  margin-left: 120px; /* Ajusta este valor para centrar la mesa 1 debajo de la 2 */
+}
+
+.columnaMesas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
