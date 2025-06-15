@@ -1,5 +1,5 @@
 'use client';
-import React,  { useEffect, useState, useCallback  } from "react";
+import React,  { useEffect, useState, useCallback, Suspense  } from "react";
 import { useSearchParams, useRouter } from 'next/navigation'; 
 import styles from '../../components/styles/Reserva/reservar.module.css';
 import { Poppins } from 'next/font/google';
@@ -39,9 +39,8 @@ const allSalas = {
     ]
 };
 
-
-const Reservar = () => {
-    const router = useRouter(); 
+function Inside(){
+   const router = useRouter(); 
     const [seleccionada, setSeleccionada] = React.useState<number | null>(null);    
     const [modalIsOpen, setModalIsOpen] = React.useState(false);
     const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
@@ -387,6 +386,14 @@ const Reservar = () => {
       </div>
     </div>
   );
+}
+
+const Reservar = () => {
+   return(
+    <Suspense>
+      <Inside/>
+    </Suspense>
+   )
 };
 
 export default Reservar;

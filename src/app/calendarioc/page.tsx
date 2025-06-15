@@ -86,7 +86,7 @@ const DayCell: React.FC<DayCellProps> = ({
           type="select"
           placeholder="Seleccionar tipo"
           options={options}
-          value={dayType === "none" ? "" : dayType}
+          value={dayType === "none" as DayType["type"]? "" : dayType}
           onChange={(e) =>
             onTypeChange(fullDate, e.target.value as DayType["type"])
           }
