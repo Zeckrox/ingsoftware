@@ -1,30 +1,29 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import styles from '../../../components/styles/Profile/profile.module.css';
 import { useUser } from '@/context/userContext';
-
+import { useRouter } from 'next/navigation';
 
 export default function ProfilePage() {
-  // const [profileData, setProfileData] = useState<any>({
-  //   firstName: '',
-  //   lastName: '',
-  //   role: 'student',
-  //   email: '',
-  //   career: '',
-  // });
-
+  const router = useRouter()
   const { user, isLoadingUser } = useUser();
   if (isLoadingUser || !user) {
     return <div>Cargando...</div>;
   }
-  // console.log(user);
-  
+
+  function handleLogOut(){
+    localStorage.removeItem("token")
+    router.push("/")
+  }
+
   return (
     <div className={styles.profileContainer}>
       {/* Encabezado con botón de edición */}
+      <div className={styles.logOutContainer}>
+        <button className={styles.logOut} onClick={handleLogOut}>Cerrar Sesion</button>
+      </div>
       <div className={styles.headerContainer}>
         <h1 className={styles.welcomeTitle}>Bienvenido</h1>
         <Link href="/profile/edit" className={styles.editLink}>
