@@ -6,7 +6,7 @@ interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: "student";
+  role: "student" | "admin";
   career: string;
 }
 
@@ -24,7 +24,6 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
 
-  // Al montar el componente, intenta recuperar el token
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
@@ -32,24 +31,21 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  // Función para iniciar sesión y guardar token
   const login = (newToken: string) => {
     localStorage.setItem('token', newToken);
     setToken(newToken);
   };
 
-  // Función para cerrar sesión y limpiar token
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
   };
 
-  // Consulta para obtener el usuario con React Query
   const { data: user, isLoading: isLoadingUser } = useQuery({
     queryKey: ['user', token],
     queryFn: async () => {
       if (!token) return null;
-      let url = `https://backendsoftware-production-c177.up.railway.app/users/findMyUser/${token}`
+      let url = `https://backendsoftware.vercel.app/users/findMyUser/${token}`
       const res = await fetch(url);
       if (!res.ok) throw new Error('No se pudo obtener el usuario');
       const data = await res.json();
@@ -73,7 +69,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// Hook personalizado para acceder al contexto
 export const useUser = () => {
   const context = useContext(UserContext);
   if (!context) {

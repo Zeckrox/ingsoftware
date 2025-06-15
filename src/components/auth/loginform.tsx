@@ -15,7 +15,7 @@ export default function LoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: async () => {
-      let url = "https://backendsoftware-production-c177.up.railway.app/auth/login"
+      let url = "https://backendsoftware.vercel.app/auth/login"
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -25,7 +25,7 @@ export default function LoginForm() {
       });
 
       if (!res.ok) {
-        throw new Error("Error al iniciar sesión");
+        throw new Error("error al iniciar sesión");
       }
       return res.json(); //devuelve la respuesta en formato JSON
 

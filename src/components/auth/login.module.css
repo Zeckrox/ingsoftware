@@ -1,8 +1,6 @@
 .login {
   background-color:#ffffff;
-  overflow: hidden;
   height: 100vh;
-  position: relative;
 }
 
 .container {
@@ -47,6 +45,7 @@
   width: 200px;
   margin: 0 auto 0 auto; 
   display: block;
+  pointer-events: none;
 }
 
 @media (width <= 991px) {

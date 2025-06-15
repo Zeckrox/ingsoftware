@@ -33,7 +33,7 @@ export default function RegisterForm() {
        if (password !== confirmPassword) {
         throw new Error("Las contraseñas no coinciden");
       }
-      let url = "https://backendsoftware-production-c177.up.railway.app/users/create"
+      let url = "https://backendsoftware.vercel.app/users/create"
       const res = await fetch(url, {  
         method: "POST",
         headers: {

@@ -13,6 +13,7 @@ interface InputFieldProps {
   lockIconSrc?: string;
   options?: string[];
   value?: string;
+  disabled?: boolean; // <-- ¡Añade esta prop!
   onChange?: (e: React.ChangeEvent<any>) => void;
 }
 
@@ -26,7 +27,6 @@ export default function InputField({
   onChange,
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false);
-
 
   if (type === "select" && options) {
     return (

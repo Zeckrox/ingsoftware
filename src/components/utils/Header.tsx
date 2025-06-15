@@ -3,24 +3,43 @@
 import React, { useState } from 'react';
 import './Header.css';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation'
+import { usePathname,  useRouter } from 'next/navigation'
 import Link from 'next/link';
+import Modal from 'react-modal';
+import styles from './Modal.module.css';
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname()
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+   const router = useRouter(); 
+
+  const openModal = () => setModalIsOpen(true);
+  const closeModal = () => setModalIsOpen(false);
+
+  const handleCalendariomClick = () => {
+    router.push('/calendariom'); 
+    closeModal();
+  };
+
+  const handleCalendariocClick = () => {
+    router.push('/calendarioc'); 
+    closeModal();
+  };
 
   if(pathname=="/login" || pathname=="/register")return;
 
   return (
     <header className="header-container">
       <div className="logo-container">
-        <Image 
-          src="/images/Logo-BPG.png" 
-          alt="UNIMET Biblioteca Pedro Grases" 
-          width={200} 
-          height={60}
-        />
+        <Link href="/">
+          <Image 
+            src="/images/Logo-BPG.png" 
+            alt="UNIMET Biblioteca Pedro Grases" 
+            width={200} 
+            height={60}
+          />
+        </Link>
       </div>
       
       <nav className={`nav-menu ${menuOpen ? 'active' : ''}`}>
@@ -33,9 +52,8 @@ export default function Header() {
         <button className="nav-button">NOSOTROS</button>
         </Link>
 
-        <Link href="/contactus">
-        <button className="nav-button">RESERVAR</button>
-        </Link>
+        <button className="nav-button" onClick={openModal}>RESERVAR</button>
+
 
         <Link href="/login">
         <button className="nav-button login-button">INICIAR SESIÓN</button>
@@ -48,6 +66,35 @@ export default function Header() {
       >
         ☰
       </button>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+        >
+        <div className={styles.modalContent}>
+            <button className={styles.closeButton} onClick={closeModal}>×</button>
+            <h2 className={styles.modalTitle}>Reservar</h2>
+        </div>
+            <div className={styles.whiteSquare}>
+                <div className={styles.optionsContainer}>
+                <button 
+                    className={styles.optionButton}
+                    onClick={handleCalendariocClick} 
+                >
+                    Cubículo
+                </button>
+                <div className={styles.orangeBar}/>
+                <button 
+                    className={styles.optionButton}
+                    onClick={handleCalendariomClick} 
+                >
+                    Mesa
+                </button>
+                </div>
+            </div>
+        </Modal>
     </header>
   );
 }

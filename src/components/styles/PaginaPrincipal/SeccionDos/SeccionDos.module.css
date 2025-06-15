@@ -4,8 +4,6 @@
   padding: 4rem 2rem;
 }
 
-
-
 .container {
   display: flex;
   align-items: center;
@@ -14,6 +12,11 @@
 }
 
 
+@media (max-width: 768px) {
+  .container {
+  flex-direction: column;
+  }
+}
 
 .imagenWrapper {
   flex: 1;
@@ -42,7 +45,6 @@
 
 
 .subtitulo {
-  color: #f57e00;
   font-weight: 500;
   font-size: 0.95rem;
   margin-bottom: 1.5rem;
@@ -50,10 +52,12 @@
   align-items: center;
 }
 
+.subtitulo span{
+  color: #f57e00;
+}
 
 
 .estrella {
-  color: #f57e00;
   font-size: 1.5rem;
   margin-right: 0.5rem;
 }
