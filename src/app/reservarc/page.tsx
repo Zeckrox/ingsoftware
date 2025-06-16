@@ -3,6 +3,8 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from 'next/navigation'; 
 import styles from '../../components/styles/Reserva/reservar.module.css';
 import SalaReferencia from "@/components/styles/Reserva/MapasCubiculos/salaReferencia";
+import Pasillo from "@/components/styles/Reserva/MapasCubiculos/pasillo";
+import SalaCientifica from "@/components/styles/Reserva/MapasCubiculos/salaCientifica";
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
 
@@ -30,7 +32,7 @@ const peopleOptions = [
 
 const allSalas = {
   pb: ["Sala Referencia"],
-  p1: ["Sala Científica", "Pasillo"]
+  p1: [ "Pasillo", "Sala Científica"]
 };
 
 const Reservar = () => {
@@ -156,6 +158,19 @@ const Reservar = () => {
   // Verificar si se debe mostrar el mapa
   const mostrarMapa = selectedPiso === 'pb' && selectedSala === 'Sala Referencia';
 
+  const renderMapComponent = () => {
+      switch (selectedSala) {
+        case "Sala Referencia":
+          return <SalaReferencia seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        case "Pasillo":
+          return <Pasillo seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        case "Sala Científica":
+          return <SalaCientifica seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        default:
+          return <p>Selecciona una sala para ver el mapa.</p>; // O un componente de mapa por defecto
+      }
+    };
+
   return (
     <div className={styles.contenedorGeneral}>
       <div className={styles.columnaIzquierda}>
@@ -267,7 +282,6 @@ const Reservar = () => {
 
       <div className={styles.columnaDerecha}>
         <h2 className={styles.tituloReserva}>Reservación de Cubículo</h2>
-        <div className={styles.fondoNaranjaAbajo}></div>
 
         <div className={styles.pisoSala}>
           <div className={styles.pisoSalaTexto}>
@@ -298,13 +312,10 @@ const Reservar = () => {
           </div>
         </div>
         
-        {/* Mostrar el mapa solo si es piso PB y Sala Referencia - sin mensaje alternativo */}
-        {mostrarMapa && (
-          <SalaReferencia 
-            seleccionada={seleccionada} 
-            toggleSeleccion={toggleSeleccion} 
-          />
-        )}
+
+          {/* Renderizado condicional del componente de mapa */}
+          {renderMapComponent()}
+
       </div>
     </div>
   );
