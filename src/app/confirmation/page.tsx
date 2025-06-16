@@ -136,7 +136,7 @@ const ConfirmationPage = () => {
         </div>
 
         <div className={styles.confirmButtonContainer}>
-          <button className={styles.confirmButton}>Confirmar Reserva</button>
+          <button className={styles.confirmButton}>Aceptar</button>
         </div>
 
         <div className={styles.remindersSection}>

@@ -5,6 +5,9 @@ import styles from '../../components/styles/Reserva/reservar.module.css';
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
 import SalaReferencia from "@/components/styles/Reserva/MapasMesas/salaReferencia";
+import { useMutation } from '@tanstack/react-query';
+import { useUser } from '@/context/userContext';
+
 
 const startTimeOptions = [
   "08:00 a.m.", "08:30 a.m.", "09:00 a.m.", "09:30 a.m.",
@@ -54,7 +57,97 @@ const Reservar = () => {
 
     const [selectedPiso, setSelectedPiso] = useState<string>('pb'); 
     const [availableSalas, setAvailableSalas] = useState<string[]>(allSalas.pb); 
-    const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia'); 
+    const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia');
+    const [numerosOcupados, setNumerosOcupados] = useState<number[]>([]);
+
+
+    //PUSE YO!!: para tener la fecha de la url que esta como date:
+    const [date, setDate] = useState('');
+    const { user, isLoadingUser } = useUser();
+
+    //AMBOS PUSE YO!!
+    useEffect(() => {
+      const paramss = new URLSearchParams(window.location.search);
+      const dateFromUrl = paramss.get('date');
+      if (dateFromUrl) setDate(dateFromUrl);
+    }, []);
+
+    useEffect(() => {
+      if (horaInicio && duracion > 0 && date) {
+        getAvailableSpots.mutate();
+      }
+    }, [horaInicio, duracion, date]);
+
+    // AQUI get y post 
+    //GET
+    const getAvailableSpots = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('http://localhost:3000/reservations/availableSpots', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: date,   //sale del url     
+            type: 'table',        
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'error al obtener espacios');
+        }
+
+        return res.json();
+      },
+      onSuccess: (data) => {
+        // alert('Consulta exitosa');
+        console.log('Espacios disponibles:', getAvailableSpots.data);
+        const numeros = data.map((reserva: any) => reserva.tableId.number);
+        setNumerosOcupados(numeros);
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
+    //POST
+    const createReserv = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('http://localhost:3000/reservations/createReservation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user._id, //sale del usercontext
+            number: seleccionada, //sale de aqui
+            type: 'table', //CAMBIAR !! en cubiculo
+            date: date,
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+
+        return res.json();
+      },
+      onSuccess: () => {
+        alert('reserva exitosa');
+        closeModal();
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
+
 
     // useEffect para leer la fecha de la URL cuando el componente se monta
     useEffect(() => {
@@ -130,8 +223,10 @@ const Reservar = () => {
         calculateHoraFin();
     }, [horaInicio, duracion, calculateHoraFin]);
 
-
-
+    //PUSE YO!!!
+    if (isLoadingUser || !user) {
+      return <div>Cargando...</div>;
+    }
     
   const toggleSeleccion = (numero: number) => {
     setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
@@ -179,6 +274,18 @@ const Reservar = () => {
       alert("Por favor, selecciona una mesa.");
       return;
     }
+
+    // PUSE YO!!  
+
+    if (!user) {
+      alert("Debes iniciar sesión.");
+      return;
+    }
+
+    //PUSE YO:!!
+    createReserv.mutate();
+
+
     // 2. Crear los parámetros de la URL
     const queryParams = new URLSearchParams();
     queryParams.append('mesa', String(seleccionada));
@@ -198,7 +305,7 @@ const Reservar = () => {
     const renderMapComponent = () => {
       switch (selectedSala) {
         case "Sala Referencia":
-          return <SalaReferencia seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+          return <SalaReferencia seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} ocupados={numerosOcupados}/>; //PUSE YO!! ocupados
         case "Sala de Humanidades":
           <h1>Sala Humanidades</h1>
           return;
@@ -220,6 +327,7 @@ const Reservar = () => {
       }
     };
 
+    
   return (
 
     <div className={styles.contenedorGeneral}>
@@ -316,7 +424,8 @@ const Reservar = () => {
             </div>
         </div>
 
-    <Modal
+    {/* AQUI MODAL PARA CONFIRMAR!!! */}
+    <Modal  
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         className={styles.modal}
