@@ -154,3 +154,80 @@
   color: #505bfd;
   text-decoration: none;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+  
+    .infoBiblio1 {
+    max-width: 90%;
+    font-size: 18px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  
+  .imagenSaman {
+    width: 95%;
+    height: auto;
+    right: 0;
+    top: 0;
+}
+  
+  
+  .container {
+    align-items: center;
+    gap: 20px;
+    text-align: justify;
+}
+  
+
+
+
+
+
+
+  
+  .parteEstudiantes {
+    flex-direction: column-reverse; 
+    align-items: center;
+    gap: 20px;
+    text-align: center;
+  }
+
+  .imageContainer {
+    width: 90%;
+  }
+
+  .imagenEstudiantes {
+    width: 80%;
+    height: auto;
+    right: 0;
+    top: 0;
+  }
+
+  .fondoEstudiantes {
+    width: 50%;
+    height: 200px;
+    left: 20;
+    top: 60;
+    border-radius: 20px;
+  }
+
+  .textoInfoBiblio2 {
+    max-width: 90%;
+    font-size: 18px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
