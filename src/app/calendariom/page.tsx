@@ -43,7 +43,7 @@ const DayCell: React.FC<DayCellProps> = ({
     isCurrentMonth &&
     !isPast &&
     dayType === "Dia Habil" &&
-    userRole === "student";
+    (userRole === "student" || userRole === "admin");
 
   const getDayCellColorClass = (): string => {
     switch (dayType) {
@@ -59,15 +59,14 @@ const DayCell: React.FC<DayCellProps> = ({
     }
   };
 
-  const dayCellClasses = `${styles.dayCell} ${
-    isToday && isCurrentMonth ? styles.today : ""
-  } ${isPast ? styles.pastDay : ""} ${getDayCellColorClass()} ${
-    !isClickable ? styles.disabledDay : ""
-  }`;
+    const dayCellClasses = `${styles.dayCell} ${
+        isToday && isCurrentMonth ? styles.today : ""
+      } ${isPast ? styles.pastDay : ""} ${getDayCellColorClass()} ${
+        !isClickable && dayType === "Dia Habil" ? styles.disabledDay : ""
+      }`; 
 
   const options = ["Dia Habil", "Fin de semana", "Vacaciones", "Feriado"];
 
-    const router = useRouter();
   const handleDayCellClick = () => {
     if (isClickable) {
       onDayClick(fullDate);
@@ -80,13 +79,14 @@ const DayCell: React.FC<DayCellProps> = ({
       onClick={isClickable ? handleDayCellClick : undefined}
     >
       <div className={styles.dayNumber}>{day}</div>
-      {userRole === "admin" && isCurrentMonth && !isPast && dayType === "Dia Habil" && (
+      {userRole === "admin" && isCurrentMonth && !isPast && (
         <InputField
           label=""
           type="select"
           placeholder="Seleccionar tipo"
           options={options}
-          value={dayType === "none" ? "" : dayType}
+          value={dayType === "none"  as DayType["type"]? "" : dayType}
+          onClick={(e) => e.stopPropagation()}
           onChange={(e) =>
             onTypeChange(fullDate, e.target.value as DayType["type"])
           }

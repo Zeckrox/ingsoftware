@@ -2,7 +2,7 @@
 
 import styles from './SeccionUno.module.css';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useRouter } from "next/navigation";
 
@@ -23,12 +23,18 @@ export default function SeccionUno() {
     closeModal();
   };
 
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        Modal.setAppElement(document.body);
+      }
+    }, []);
+
   return (
     <section className={styles.banner}>
       <div className={styles.container}>
         <div className={styles.contenido}>
           <div>
-            <h1 className={styles.titulo}>Reserva tu espacio</h1>
+            <h1 className={styles.titulo} style={{lineHeight: "45px"}}>Reserva tu espacio</h1>
             <h1 className={styles.titulo}>para estudiar</h1>
 
             <p className={styles.subtitulo}>

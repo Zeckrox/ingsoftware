@@ -1,0 +1,86 @@
+.mapaContenedorCientifica{
+  background-color: #f2f2f2;
+  border-radius: 24px;
+  padding: 24px;
+  width: 450px; 
+  margin-left: 90px;
+  position: relative;
+  align-items: center;
+   box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.15);
+}
+
+.salaCientificaContenedor {
+  display: flex; /* Ahora los dos grandes bloques (izq y der) se alinean horizontalmente */
+  align-items: flex-start; /* Alinea los dos bloques desde arriba */
+  gap: 30px; /* Espacio entre la columna izquierda y la derecha */
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 10px;
+  align-self: center;
+}
+
+/* Contenedor para la columna principal izquierda (6 mesas y separadores) */
+.columnaPrincipalIzquierda {
+  display: flex;
+  flex-direction: column; /* Apila la sección superior y los separadores verticalmente */
+  align-self: right; /* Centra el contenido horizontalmente dentro de esta columna */
+  /*flex-shrink: 0; /* Evita que se encoja si hay poco espacio */
+}
+
+/* Sección Superior (6 mesas) - Sin cambios significativos, se mantiene como estaba */
+.seccionSuperiorCientifica {
+  display: flex;
+  gap: 15px; /* Espacio entre las dos columnas de mesas (1-3 y 4-6) */
+  margin-bottom: 25px; /* Espacio antes de los separadores centrales */
+   align-items: right;
+}
+
+/* Columna de mesas genérica para Sala Científica */
+.columnaMesasCientifica {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre las mesas dentro de cada columna */
+}
+
+/* Separadores Verticales Centrales (las rayas del medio) - Sin cambios significativos */
+.separadoresVerticalesCentrales {
+  display: flex;
+  gap: 10px; /* Espacio entre las rayas verticales */
+  margin-bottom: 0; /* No necesita margen inferior si el padre es un flex column */
+}
+
+/* Estilo para las rayas verticales específicas de Científica */
+.rayaVerticalCientifica {
+  width: 15px; /* Ancho de la raya */
+  height: 250px; /* Altura de la raya - ajusta para que coincida con tu dibujo */
+  background-color: #d9d9d9;
+}
+
+
+/* Contenedor para la columna principal derecha (11 mesas y separador zigzag) */
+.columnaPrincipalDerecha {
+  display: flex;
+  flex-direction: column; /* Apila el espacio superior y la sección inferior */
+  align-items: flex-end; /* Alinea el contenido a la izquierda */
+  flex-grow: 1; /* Permite que esta columna ocupe el espacio restante */
+}
+
+/* Espacio vacío para empujar la sección inferior de mesas hacia abajo */
+.espacioSuperiorDerecha {
+  width: 100%; /* Ocupa todo el ancho disponible */
+  /* background-color: rgba(255, 0, 0, 0.1); /* Para depuración, puedes quitarlo */
+}
+
+/* Sección Inferior (11 mesas y separador zigzag) - Sin cambios significativos en flex */
+.seccionInferiorCientifica {
+  display: flex;
+  align-items: flex-end; /* Alinea los grupos de mesas y el zigzag en la parte superior */
+  gap: 20px; /* Espacio entre las columnas de mesas y el zigzag */
+  margin-top: 170px;
+}
+
+.grupoColumnasMesasCientifica { /* Contiene las 3 columnas de mesas de la sección inferior */
+  display: flex;
+  gap: 15px; /* Espacio entre las columnas de mesas (7-10, 11-14, 15-17) */
+}
+
