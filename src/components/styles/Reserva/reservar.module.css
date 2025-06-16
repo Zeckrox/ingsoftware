@@ -740,6 +740,23 @@
   border: 1px solid #229954 !important;
 }
 
+/* Estilo para cubículos deshabilitados (Rojo) */
+.mesaDisabled {
+  background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  color: white !important; /* Texto blanco para contraste */
+  cursor: not-allowed;
+  opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
+  border: 1px solid #c0392b !important;
+}
+
+/* Puedes añadir un estilo para los cubículos habilitados si el admin los está habilitando */
+/* No es estrictamente necesario, pero podría ser útil si quieres un color diferente para "habilitar" */
+.mesaEnabledByAdmin {
+  background-color: #27ae60 !important; /* Verde, por ejemplo */
+  color: white !important;
+  border: 1px solid #229954 !important;
+}
+
 @media (max-width: 1100px) { 
   .tituloReserva {
     margin-top: 100px; 

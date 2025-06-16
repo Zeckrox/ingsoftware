@@ -7,9 +7,37 @@ import salaRMJ from './salaRamonJV.module.css';
 interface SalaRamonJVelasquezProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
+  userRole?: string; // Añadir el rol del usuario
+  disabledMesas: Set<number>; // Conjunto de mesas deshabilitadas
 }
 
-const SalaRamonJVelasquez: React.FC<SalaRamonJVelasquezProps> = ({ seleccionada, toggleSeleccion }) => {
+const SalaRamonJVelasquez: React.FC<SalaRamonJVelasquezProps> = ({ seleccionada, toggleSeleccion, userRole, disabledMesas }) => {
+
+  // Función auxiliar para renderizar un botón de mesa
+  const renderMesaButton = (numero: number, baseStyle: string) => {
+    const isDisabled = disabledMesas.has(numero);
+    const isSelected = seleccionada === numero;
+
+    let buttonClasses = `${baseStyle}`;
+
+    if (isDisabled) {
+      buttonClasses += ` ${styles.mesaDisabled}`;
+    } else if (isSelected && userRole !== 'admin') {
+      buttonClasses += ` ${styles.mesaSeleccionada}`;
+    }
+
+    return (
+      <button
+        key={numero}
+        className={buttonClasses}
+        onClick={() => toggleSeleccion(numero)}
+        disabled={userRole !== 'admin' && isDisabled}
+      >
+        {numero}
+      </button>
+    );
+  };
+
   return (
     <div className={styles.fondoDecorativo}>
       <div className={salaRMJ.mapaContenedor}>
@@ -21,20 +49,20 @@ const SalaRamonJVelasquez: React.FC<SalaRamonJVelasquezProps> = ({ seleccionada,
               {/* 2 Filas de 6 Mesas (12 mesas) */}
               <div className={salaRMJ.grupo12MesasRamon}>
                 <div className={salaRMJ.filaMesasRamon}>
-                  <button className={`${styles.mesa} ${seleccionada === 71 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(71)}>71</button>
-                  <button className={`${styles.mesa} ${seleccionada === 72 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(72)}>72</button>
-                  <button className={`${styles.mesa} ${seleccionada === 73 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(73)}>73</button>
-                  <button className={`${styles.mesa} ${seleccionada === 74 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(74)}>74</button>
-                  <button className={`${styles.mesa} ${seleccionada === 75 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(75)}>75</button>
-                  <button className={`${styles.mesa} ${seleccionada === 76 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(76)}>76</button>
+                  {renderMesaButton(71, styles.mesa)}
+                  {renderMesaButton(72, styles.mesa)}
+                  {renderMesaButton(73, styles.mesa)}
+                  {renderMesaButton(74, styles.mesa)}
+                  {renderMesaButton(75, styles.mesa)}
+                  {renderMesaButton(76, styles.mesa)}
                 </div>
                 <div className={salaRMJ.filaMesasRamon}>
-                  <button className={`${styles.mesa} ${seleccionada === 77 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(77)}>77</button>
-                  <button className={`${styles.mesa} ${seleccionada === 78 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(78)}>78</button>
-                  <button className={`${styles.mesa} ${seleccionada === 79 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(79)}>79</button>
-                  <button className={`${styles.mesa} ${seleccionada === 80 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(80)}>80</button>
-                  <button className={`${styles.mesa} ${seleccionada === 81 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(81)}>81</button>
-                  <button className={`${styles.mesa} ${seleccionada === 82 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(82)}>82</button>
+                  {renderMesaButton(77, styles.mesa)}
+                  {renderMesaButton(78, styles.mesa)}
+                  {renderMesaButton(79, styles.mesa)}
+                  {renderMesaButton(80, styles.mesa)}
+                  {renderMesaButton(81, styles.mesa)}
+                  {renderMesaButton(82, styles.mesa)}
                 </div>
               </div>
 
@@ -56,20 +84,19 @@ const SalaRamonJVelasquez: React.FC<SalaRamonJVelasquezProps> = ({ seleccionada,
 
               {/* 2 Mesas con separación de 2 mesas de por medio */}
               <div className={salaRMJ.grupoMesasInferioresRamon}>
-                <button className={`${styles.mesa} ${seleccionada === 83 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(83)}>83</button>
+                {renderMesaButton(83, styles.mesa)}
                 <div className={salaRMJ.espacioEntreMesasRamon}></div> {/* Espacio equivalente a dos mesas */}
-                <button className={`${styles.mesa} ${seleccionada === 84 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(84)}>84</button>
+                {renderMesaButton(84, styles.mesa)}
               </div>
             </div>
 
-
             {/* Sección Derecha - 3 mesas separadas */}
             <div className={salaRMJ.seccionDerechaRamon}>
-              <button className={`${styles.mesa} ${seleccionada === 85 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(85)}>85</button>
+              {renderMesaButton(85, styles.mesa)}
               <div className={salaRMJ.gap100px}></div>
-              <button className={`${styles.mesa} ${seleccionada === 86 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(86)}>86</button>
+              {renderMesaButton(86, styles.mesa)}
               <div className={salaRMJ.gap100px}></div>
-              <button className={`${styles.mesa} ${seleccionada === 87 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(87)}>87</button>
+              {renderMesaButton(87, styles.mesa)}
             </div>
 
           </div>
