@@ -2,7 +2,7 @@
 
 import styles from './SeccionUno.module.css';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useRouter } from "next/navigation";
 
@@ -22,6 +22,12 @@ export default function SeccionUno() {
     router.push('/calendarioc'); 
     closeModal();
   };
+
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        Modal.setAppElement(document.body);
+      }
+    }, []);
 
   return (
     <section className={styles.banner}>

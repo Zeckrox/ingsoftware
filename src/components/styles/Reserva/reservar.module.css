@@ -470,3 +470,272 @@
   font-size: 15px;
   font-weight: 300;
 }
+
+/* Estilos para el select Wrapper y el botón de admin */
+.selectWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espacio entre el select y el botón */
+}
+
+.detalleInput {
+  flex-grow: 1; /* Permite que el select ocupe el espacio restante */
+}
+
+.adminEditButton {
+  background-color: #007bff; /* Un color azul para el botón de editar */
+  color: white;
+  border: none;
+  border-radius: 50%; /* Para que sea redondo */
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Evita que el botón se encoja */
+}
+
+.adminEditButton:hover {
+  background-color: #0056b3;
+}
+
+
+/* Estilos para el Modal de Administración de Opciones */
+
+/* Estilos para el modal de administración de opciones */
+.manageOptionsModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%; /* Esto permite que sea responsive en pantallas pequeñas */
+  max-width: 400px; /* <--- ESTO ES LO CLAVE PARA EL TAMAÑO */
+  background: #f0efef;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2.5rem; /* Ajusta el padding si el contenido se ve muy apretado */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.optionsList {
+  margin-top: 1.5rem;
+  max-height: 200px; /* Limita la altura y permite scroll */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.optionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+.optionItem:last-child {
+  border-bottom: none;
+}
+
+.removeOptionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.removeOptionX {
+  color: red;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.removeOptionX:hover {
+  opacity: 0.7;
+}
+
+.addOptionSection {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.addOptionInput {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.addOptionButton {
+  background-color: #f60;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.addOptionButton:hover {
+  background-color: #f97316;
+}
+
+/* Estilos para el Modal de Deshabilitar Cubículo */
+.modalText {
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 1rem;
+}
+
+.confirmActionButton,
+.cancelActionButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirmActionButton {
+  background-color: #dc3545; /* Rojo para deshabilitar */
+  color: white;
+}
+
+.confirmActionButton:hover {
+  background-color: #c82333;
+}
+
+.cancelActionButton {
+  background-color: #6c757d; /* Gris para cancelar */
+  color: white;
+}
+
+.cancelActionButton:hover {
+  background-color: #5a6268;
+}
+
+/* Estilo para mesas/cubículos deshabilitados (Rojo) */
+.mesaDeshabilitada {
+  background-color: #ff0000 !important; /* Rojo brillante para deshabilitado */
+}
+
+.disableConfirmModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px; /* Tamaño pequeño */
+  background: #f0efef;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar contenido */
+  text-align: center; /* Centrar texto */
+}
+
+.disableModalTitle {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.disableModalText {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.disableModalText strong {
+  font-weight: 600;
+}
+
+.disableModalActions {
+  display: flex;
+  gap: 1rem; /* Espacio entre los botones */
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+/* Estilos generales para botones dentro de los modales de confirmación */
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.confirmDisableButton {
+  background-color:  #f97316; /* Rojo para deshabilitar */
+  color: white;
+}
+
+.confirmDisableButton:hover {
+  background-color:  #f97316;
+}
+
+.cancelButton {
+  background-color: #95a5a6; /* Gris para cancelar */
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #7f8c8d;
+}
+
+/* Estilo para cubículos deshabilitados (Rojo) */
+.cubiculoDisabled {
+  background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  color: white !important; /* Texto blanco para contraste */
+  cursor: not-allowed;
+  opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
+  border: 1px solid #c0392b !important;
+}
+
+/* Puedes añadir un estilo para los cubículos habilitados si el admin los está habilitando */
+/* No es estrictamente necesario, pero podría ser útil si quieres un color diferente para "habilitar" */
+.cubiculoEnabledByAdmin {
+  background-color: #27ae60 !important; /* Verde, por ejemplo */
+  color: white !important;
+  border: 1px solid #229954 !important;
+}

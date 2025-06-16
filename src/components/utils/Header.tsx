@@ -18,9 +18,6 @@ export default function Header() {
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
 
-  useEffect(() => {
-    router.refresh()
-  }, [pathname]);
 
   const handleCalendariomClick = () => {
     router.push('/calendariom'); 
@@ -32,8 +29,14 @@ export default function Header() {
     closeModal();
   };
 
-  if(pathname=="/login" || pathname=="/register")return;
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        Modal.setAppElement(document.body);
+      }
+    }, []);
 
+  if(pathname=="/login" || pathname=="/register")return;
+  
   return (
     <header className="header-container">
       <div className="logo-container">
