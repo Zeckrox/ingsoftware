@@ -5,6 +5,11 @@ import styles from '../../components/styles/Reserva/reservar.module.css';
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
 import SalaReferencia from "@/components/styles/Reserva/MapasMesas/salaReferencia";
+import SalaCientifica from "@/components/styles/Reserva/MapasMesas/salaCientifica";
+import SalaAbdala from "@/components/styles/Reserva/MapasMesas/salaAbdala";
+import SalaHumanistica from "@/components/styles/Reserva/MapasMesas/salaHumanistica";
+import SalaRamon from "@/components/styles/Reserva/MapasMesas/salaRamonJV";
+
 
 const startTimeOptions = [
   "08:00 a.m.", "08:30 a.m.", "09:00 a.m.", "09:30 a.m.",
@@ -32,9 +37,9 @@ const peopleOptions = [
 const allSalas = {
   pb: ["Sala Referencia"],
   p1: [
-    "Sala de Humanidades",
     "Sala Abdalá",
     "Sala Científica",
+    "Sala Humanística",
     "Sala Ramón J. Velasquez",
     ]
 };
@@ -198,22 +203,15 @@ function Inside(){
       switch (selectedSala) {
         case "Sala Referencia":
           return <SalaReferencia seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
-        case "Sala de Humanidades":
-          <h1>Sala Humanidades</h1>
-          return;
-          //return <SalaHumanidades seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        case "Sala Humanística":
+          return <SalaHumanistica seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
         case "Sala Abdalá":
-           <h1>Sala Abdalá</h1>
-          return;
-          //return <SalaAbdala seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+          return <SalaAbdala seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
         case "Sala Científica":
-           <h1>Sala Científica</h1>
-          return;
-          //return <SalaCientifica seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+          return <SalaCientifica seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
         case "Sala Ramón J. Velasquez":
            <h1>Sala Ramón J. Velasquez</h1>
-          return;
-          //return <SalaRamonJVelasquez seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+          return <SalaRamon seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
         default:
           return <p>Selecciona una sala para ver el mapa.</p>; // O un componente de mapa por defecto
       }
@@ -346,7 +344,6 @@ function Inside(){
 
     <div className={styles.columnaDerecha}>
             <h2 className={styles.tituloReserva}>Reservación de mesa</h2>
-        <div className={styles.fondoNaranjaAbajo}></div>
 
         <div className={styles.pisoSala}>
             <div className={styles.pisoSalaTexto}>

@@ -1,0 +1,99 @@
+.mapaContenedor {
+  background-color: #f2f2f2;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.15);
+  width: 400px; 
+  margin-top:50px;
+  margin-left: 90px;
+  position: relative;
+  align-items: center;
+}
+
+/* Contenedor principal de la Sala */
+.salaRamonJVelasquezContenedor {
+  display: flex;
+  align-items:center; /* Alinea los elementos desde arriba */
+  gap: 30px; /* Espacio entre las secciones principales */
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 10px;
+  /* Puedes ajustar el width del .mapaContenedor si esta sala es más ancha */
+}
+
+/* Sección Izquierda/Central (12 mesas, separadores, 2 mesas) */
+.seccionIzquierdaCentralRamon {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra el contenido (filas de mesas, separadores) */
+  gap: 20px; /* Espacio entre los grupos de elementos */
+}
+
+/* Grupo de 12 mesas (2 filas de 6) */
+.grupo12MesasRamon {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre las filas de mesas */
+}
+
+.filaMesasRamon {
+  display: flex;
+  gap: 10px; /* Espacio entre las mesas en cada fila */
+}
+
+/* Separadores Verticales debajo de las 12 mesas */
+.separadoresInferioresRamon {
+  display: flex;
+  gap: 10px; /* Espacio entre los separadores verticales */
+}
+
+.rayaVerticalRamon {
+  width: 15px; /* Ancho de la raya */
+  height: 180px; /* Altura de la raya - ajusta si es necesario */
+  background-color: #d9d9d9;
+}
+
+/* Grupo de 2 mesas con separación de 2 mesas */
+.grupoMesasInferioresRamon {
+  display: flex;
+  align-items: center; /* Alinea horizontalmente las mesas y el espacio */
+  gap: 10px; /* Gap entre mesas y espacio */
+}
+
+.espacioEntreMesasRamon {
+  width: calc(2 * 40px + 2 * 10px); /* Aproximadamente 2 mesas (40px) + 2 gaps (10px) */
+  height: 40px; /* Altura de una mesa para alineación */
+  /* background-color: rgba(255, 165, 0, 0.1); /* Para depuración */
+}
+
+
+/* Separadores Verticales Centrales (largos) */
+.separadoresLateralesRamon {
+  display: flex;
+  flex-direction: column; /* Apila las rayas verticalmente */
+  gap: 10px; /* Espacio entre las rayas largas */
+  margin-top: 50px; /* Ajusta para alinear con la parte media de las 12 mesas */
+  margin-right: 20px; /* Empuja las 3 mesas de la derecha un poco más */
+}
+
+.rayaVerticalRamonLarga {
+  width: 15px;
+  height: 180px; /* Altura de la raya larga - ajusta si es necesario */
+  background-color: #d9d9d9;
+}
+
+
+/* Sección Derecha - 3 mesas separadas por un gap de 100px */
+.seccionDerechaRamon {
+  display: flex;
+  flex-direction: column; /* Apila las mesas verticalmente */
+  align-items: flex-start; /* Alinea las mesas a la izquierda de su columna */
+  margin-top: 30px; /* Ajusta para la alineación vertical general */
+}
+
+.gap100px {
+  height: 100px; /* Espacio vertical de 100px */
+  width: 1px; /* solo para que sea visible si lo debuggeas */
+  /* background-color: rgba(0, 255, 0, 0.1); /* Para depuración */
+}
+
