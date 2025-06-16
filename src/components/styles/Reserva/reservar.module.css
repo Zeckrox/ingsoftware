@@ -739,3 +739,15 @@
   color: white !important;
   border: 1px solid #229954 !important;
 }
+
+@media (max-width: 1100px) { 
+  .tituloReserva {
+    margin-top: 100px; 
+  }
+}
+
+@media (max-width: 480px) { 
+  .tituloReserva {
+    margin-top: 100px; 
+  }
+}
