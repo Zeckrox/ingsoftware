@@ -128,12 +128,12 @@
   font-weight: 700;
   font-size: 40px;
   font-family: 'Poppins', sans-serif;
-   background-color: transparent; /* Hace el fondo transparente */
-  border: none;                  /* Elimina el borde */
-  cursor: pointer;               /* Indica que es clickeable */
-  padding: 0;                    /* Elimina el padding por defecto del botón */
-  margin: 0 auto;                /* Centra el elemento horizontalmente si tiene un ancho definido */
-  display: block;                /* Ocupa todo el ancho disponible para que 'margin: auto' funcione */
+   background-color: transparent;
+  border: none;                  
+  cursor: pointer;               
+  padding: 0;                    
+  margin: 0 auto;                
+  display: block;                
   width: fit-content; 
   margin-top: 80px;
 }
