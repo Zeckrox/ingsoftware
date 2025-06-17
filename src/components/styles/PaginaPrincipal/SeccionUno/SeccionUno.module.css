@@ -306,7 +306,34 @@
     padding: 2rem 1.5rem;
     border-radius: 12px;
   }
+
+  .imagenWrapper{
+    display: none;
+  }
   
+  .titulo {
+    font-size: 40px;
+    line-height: 0px;
+  }
+
+  .subtitulo{
+    font-size: 15px;
+  }
+
+  .pedroGrases{
+    font-size: 15px;
+  }
+
+  .contenido{
+    padding: 0;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .botonReservar{
+    margin: auto;
+  }
+
   .modalTitle {
     font-size: 1.7rem;
   }

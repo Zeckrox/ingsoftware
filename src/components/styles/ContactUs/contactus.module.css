@@ -32,13 +32,24 @@
   line-height: 1.6;
 }
 
+.wrapperFormulario {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  overflow-x: clip; /* ⬅️ Esto es lo que evita que se corte */
+  padding: 0 1rem;   /* da respiro a los costados */
+  box-sizing: border-box;
+}
+
+
 .fondoCuest {
   background-color: #f1f1f1;
   padding: 2rem;
   border-radius: 12px;
   max-width: 520px;
-  margin: 2rem auto 0 auto;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  width:100%;
+  box-sizing: border-box;
 }
 
 .separacionEntreInputs {
@@ -49,22 +60,24 @@
   font-size: 16px;
 }
 
-/* No se como nombrarlo */
 .inputGroup label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
 
-/* No se como nombrarlo */
 .inputWithIcon {
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .inputCorreo {
-  width: 460px;
+  width: 100%;
+  max-width: 100%; /* solo si deseas limitar en escritorio */
+  box-sizing: border-box;
   height: 50px;
-  padding: 0.75rem 2.8rem 0.75rem 1rem;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
   border: none;
   border-radius: 8px;
   font-size: 14px;
@@ -73,7 +86,9 @@
 }
 
 .inputMensaje {
-  width: 487px;
+  width: 100%;
+  max-width: 100%; /* opcional */
+  box-sizing: border-box;
   height: 300px;
   padding: 1rem;
   border: none;
@@ -93,6 +108,8 @@
   background-color: #f77c00;
   padding: 6px;
   border-radius: 6px;
+  z-index: 1;
+  max-width: 40px;
 }
 
 .botonEnviar {
@@ -115,4 +132,50 @@
 
 .botonEnviar:hover {
   background-color: #e06600;
+}
+
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+  .wrapperFormulario {
+    padding: 0 1rem;
+    overflow-x: clip;
+  }
+
+  .fondoCuest {
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .inputCorreo,
+  .inputMensaje {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.75rem;
+  }
+
+  .inputMensaje {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .iconoCorreo {
+    right: 6px;
+    width: 22px;
+    height: 22px;
+    padding: 4px;
+  }
+
+  .botonEnviar {
+    width: 100%;
+    max-width: 100%;
+  }
 }

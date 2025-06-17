@@ -1,0 +1,127 @@
+.mapaContenedorHumanistica {
+  background-color: #f2f2f2;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.15);
+  width: 500px; 
+  margin-top:50px;
+  margin-left: 90px;
+  position: relative;
+  align-items: center;
+}
+
+/* Contenedor principal de la Sala Humanística */
+.salaHumanisticaContenedor {
+  display: flex;
+  align-items: flex-start; /* Alinea los elementos desde arriba */
+  gap: 30px; /* Espacio entre las columnas principales */
+  padding: 20px;
+  margin-top: 15px;
+  border-radius: 10px;
+}
+
+/* Columna Izquierda Global (contiene las mesas 1,2 y el grupo de 5+2) */
+.columnaIzquierdaHumanistica {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Alinea sus contenidos a la izquierda */
+  gap: 20px; /* Espacio entre los grupos de mesas de la izquierda */
+}
+
+/* Grupo de 2 mesas en la parte superior izquierda (1 y 2) */
+.mesasTopLeftHumanistica {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre mesa 1 y 2 */
+}
+
+/* Grupo de 5 mesas + 2 mesas, en la parte inferior izquierda */
+.grupoMesasIzquierdoInferiorHumanistica {
+  display: flex;
+  gap: 15px; /* Espacio entre la columna de 5 y la columna de 2 */
+}
+
+/* Columna de 5 mesas (3-7) */
+.columnaMesasHumanistica5 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre las mesas */
+  margin-top: 80px;
+}
+
+/* Columna de 2 mesas (8-9) */
+.columnaMesasHumanistica2 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre las mesas */
+  margin-top: 230px;
+}
+
+/* Columna de 2 mesas (8-9) */
+.columnaMesasHumanistica3 {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Espacio entre las mesas */
+}
+
+
+
+/* Sección Central con Separadores y 12 Mesas */
+.seccionCentralHumanistica {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centra los separadores y las 12 mesas */
+  gap: 30px; /* Espacio entre los grupos */
+}
+
+/* Separadores horizontales superiores */
+.separadoresHorizontalesSuperioresHumanistica {
+  display: flex;
+  gap: 10px; /* Espacio entre las rayas horizontales */
+  margin-left: 100px;
+}
+
+.rayaHorizontalHumanistica {
+  width: 15px; /* Ancho de cada raya horizontal */
+  height: 80px; /* Altura de cada raya horizontal */
+  background-color: #d9d9d9;
+}
+
+/* Grupo de 12 mesas */
+.grupo12MesasHumanistica {
+  display: flex;
+  flex-direction: column; /* Apila las dos filas de 6 mesas */
+  gap: 10px; /* Espacio entre las filas */
+}
+
+.filaMesasHumanistica {
+  display: flex;
+  gap: 10px; /* Espacio entre las mesas en cada fila */
+}
+
+/* Separadores verticales inferiores */
+.separadoresVerticalesInferioresHumanistica {
+  display: flex;
+  gap: 10px; /* Espacio entre las rayas verticales */
+}
+
+.rayaVerticalHumanistica {
+  width: 15px; /* Ancho de la raya vertical */
+  height: 100px; /* Altura de la raya vertical - ajusta si es necesario */
+  background-color: #d9d9d9;
+}
+
+/* Sección Derecha - 2 mesas rectangulares */
+.seccionDerechaHumanistica {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; /* Alinea las mesas a la derecha de esta sección */
+}
+
+/* Espacio superior para alinear las 2 mesas de la derecha más abajo */
+.espacioSuperiorDerechaHumanistica {
+  width: 100%;
+  height: 150px; /* AJUSTA ESTA ALTURA para posicionar las mesas 22 y 23 */
+  /* background-color: rgba(0, 0, 255, 0.1); /* Para depuración */
+}
+

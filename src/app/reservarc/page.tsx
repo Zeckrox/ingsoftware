@@ -1,11 +1,16 @@
 'use client';
-import React,  { useEffect, useState, useCallback, Suspense  } from "react";
-import { useSearchParams, useRouter } from 'next/navigation'; 
+import React, { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams, useRouter } from 'next/navigation';
 import styles from '../../components/styles/Reserva/reservar.module.css';
+import SalaReferencia from "@/components/styles/Reserva/MapasCubiculos/salaReferencia";
+import Pasillo from "@/components/styles/Reserva/MapasCubiculos/pasillo";
+import SalaCientifica from "@/components/styles/Reserva/MapasCubiculos/salaCientifica";
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
+import { useUser } from "@/context/userContext";
 
-const startTimeOptions = [
+// Opciones iniciales que se cargarán en el estado (pueden venir de una API en un proyecto real)
+const initialStartTimeOptions = [
   "08:00 a.m.", "08:30 a.m.", "09:00 a.m.", "09:30 a.m.",
   "10:00 a.m.", "10:30 a.m.", "11:00 a.m.", "11:30 a.m.",
   "12:00 p.m.", "12:30 p.m.", "01:00 p.m.", "01:30 p.m.",
@@ -13,13 +18,13 @@ const startTimeOptions = [
   "04:00 p.m.", "04:30 p.m.", "05:00 p.m."
 ];
 
-const durationOptions = [
+const initialDurationOptions = [
   { label: "30 min", value: 30 },
   { label: "1 h", value: 60 },
   { label: "1 h 30 min", value: 90 },
 ];
 
-const peopleOptions = [
+const initialPeopleOptions = [ // Mover esto para que sea un estado editable
   { label: "2 personas", value: 2 },
   { label: "3 personas", value: 3 },
   { label: "4 personas", value: 4 },
@@ -29,448 +34,650 @@ const peopleOptions = [
 
 const allSalas = {
   pb: ["Sala Referencia"],
-  p1: [
-    "Sala Científica",
-    "Pasillo",
-    ]
+  p1: ["Pasillo", "Sala Científica"]
 };
 
-function Inside(){
-const router = useRouter(); 
-    const [seleccionada, setSeleccionada] = React.useState<number | null>(null);    
-    const [modalIsOpen, setModalIsOpen] = React.useState(false);
-    const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
-    const searchParams = useSearchParams();
-    // Estados para los valores de los InputFields
-    const [horaInicio, setHoraInicio] = useState<string>('');
-    const [duracion, setDuracion] = useState<number>(0); // Guardaremos la duración en minutos
-    const [horaFin, setHoraFin] = useState<string>('');
-    const [cantidadPersonas, setCantidadPersonas] = useState<number>(0);
+// Función de utilidad para convertir hora AM/PM a un formato comparable (minutos desde medianoche)
+const timeToMinutes = (timeString: string): number => {
+  const [time, period] = timeString.split(' ');
+  let [hours, minutes] = time.split(':').map(Number);
 
-    const [selectedPiso, setSelectedPiso] = useState<string>('pb'); 
-    const [availableSalas, setAvailableSalas] = useState<string[]>(allSalas.pb); 
-    const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia'); 
+  if (period === 'p.m.' && hours !== 12) {
+    hours += 12;
+  } else if (period === 'a.m.' && hours === 12) { // 12 AM (medianoche) es 0 horas
+    hours = 0;
+  }
+  return hours * 60 + minutes;
+};
 
-    // useEffect para leer la fecha de la URL cuando el componente se monta
+const Inside = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const { user, isLoadingUser } = useUser(); // Obtener información del usuario
+
+  const [seleccionada, setSeleccionada] = useState<number | null>(null);
+  const [confirmReservationModalIsOpen, setConfirmReservationModalIsOpen] = useState(false);
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
+  const [horaInicio, setHoraInicio] = useState<string>('');
+  const [duracion, setDuracion] = useState<number>(0);
+  const [horaFin, setHoraFin] = useState<string>('');
+  const [cantidadPersonas, setCantidadPersonas] = useState<number>(0);
+  const [selectedPiso, setSelectedPiso] = useState<string>('pb');
+  const [availableSalas, setAvailableSalas] = useState<string[]>(allSalas.pb);
+  const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia');
+
+  // Estados para la administración de Horarios y Duración
+  const [editableStartTimes, setEditableStartTimes] = useState<string[]>(initialStartTimeOptions);
+  const [editableDurationOptions, setEditableDurationOptions] = useState(initialDurationOptions);
+  // NUEVO ESTADO para las opciones de cantidad de personas
+  const [editablePeopleOptions, setEditablePeopleOptions] = useState(initialPeopleOptions);
+
+  const [manageOptionsModalIsOpen, setManageOptionsModalIsOpen] = useState(false);
+  // Actualizar el tipo de 'optionTypeToManage' para incluir 'people'
+  const [optionTypeToManage, setOptionTypeToManage] = useState<'start_time' | 'duration' | 'people' | null>(null);
+  const [newOptionValue, setNewOptionValue] = useState<string>('');
+
+  // Estados para la administración de Mesas/Cubículos
+  const [disabledCubiculos, setDisabledCubiculos] = useState<Set<number>>(new Set());
+  const [disableConfirmModalIsOpen, setDisableConfirmModalIsOpen] = useState(false);
+  const [cubiculoToToggle, setCubiculoToToggle] = useState<number | null>(null);
+
+  // Nuevo estado para el mensaje de error del administrador
+  const [adminErrorMessage, setAdminErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      Modal.setAppElement(document.body);
+    }
+  }, []);
+
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam) {
+      setSelectedCalendarDate(dateParam);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (user && user.role === 'admin') {
+      setSeleccionada(null);
+    }
+  }, [user]);
+
+   // Limpiar el mensaje de error cuando cambia el tipo de opción a administrar
     useEffect(() => {
-        const dateParam = searchParams.get('date');
-        if (dateParam) {
-        setSelectedCalendarDate(dateParam);
-        }
-    }, [searchParams]); // Dependencia en searchParams para re-ejecutar si los parámetros de la URL cambian
+      setAdminErrorMessage(null);
+    }, [optionTypeToManage]);
 
-    const capitalizeFirstLetter = (string: string) => {
+
+  const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
     return string.charAt(0).toUpperCase() + string.slice(1);
-    };
+  };
 
-    const formatDisplayDate = (dateString: string | null): string => {
+  const formatDisplayDate = (dateString: string | null): string => {
     if (!dateString) return "Fecha no seleccionada";
     try {
-        const date = new Date(dateString + 'T00:00:00'); // Añadir T00:00:00 para evitar problemas de zona horaria
-
-        const weekday = date.toLocaleDateString('es-ES', { weekday: 'long' });
-
-        const capitalizedWeekday = capitalizeFirstLetter(weekday);
-
-        const dayMonthYear = date.toLocaleDateString('es-ES', {
+      const date = new Date(dateString + 'T00:00:00');
+      const weekday = date.toLocaleDateString('es-ES', { weekday: 'long' });
+      const capitalizedWeekday = capitalizeFirstLetter(weekday);
+      const dayMonthYear = date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
-        });
-
-    return `${capitalizedWeekday}, ${dayMonthYear}`;
-
+      });
+      return `${capitalizedWeekday}, ${dayMonthYear}`;
     } catch (error) {
-        console.error("Error al formatear la fecha:", error);
-        return "Fecha inválida";
+      console.error("Error al formatear la fecha:", error);
+      return "Fecha inválida";
     }
-    };
+  };
 
-        // Función para calcular la hora de fin
-    const calculateHoraFin = useCallback(() => {
-        if (horaInicio && duracion > 0) {
-        // Parsear la hora de inicio (ej. "08:00 a.m." a un objeto Date)
-        const [time, period] = horaInicio.split(' ');
-        let [hours, minutes] = time.split(':').map(Number);
+  const calculateHoraFin = useCallback(() => {
+    if (horaInicio && duracion > 0) {
+      const [time, period] = horaInicio.split(' ');
+      let [hours, minutes] = time.split(':').map(Number);
 
-        if (period === 'p.m.' && hours !== 12) {
-            hours += 12;
-        } else if (period === 'a.m.' && hours === 12) { // Caso 12:xx a.m. (medianoche)
-            hours = 0;
+      if (period === 'p.m.' && hours !== 12) {
+        hours += 12;
+      } else if (period === 'a.m.' && hours === 12) {
+        hours = 0;
+      }
+
+      const startDate = new Date();
+      startDate.setHours(hours, minutes, 0, 0);
+      startDate.setMinutes(startDate.getMinutes() + duracion);
+
+      const endHours = startDate.getHours();
+      const endMinutes = startDate.getMinutes();
+      const ampm = endHours >= 12 ? 'p.m.' : 'a.m.';
+      const displayHours = endHours % 12 === 0 ? 12 : endHours % 12;
+      const displayMinutes = endMinutes < 10 ? `0${endMinutes}` : endMinutes;
+
+      setHoraFin(`${displayHours}:${displayMinutes} ${ampm}`);
+    } else {
+      setHoraFin('');
+    }
+  }, [horaInicio, duracion]);
+
+  useEffect(() => {
+    calculateHoraFin();
+  }, [horaInicio, duracion, calculateHoraFin]);
+
+
+  // --- Funciones de administración de Horarios, Duración y Personas ---
+
+  // Actualizar handleSelectChange para manejar el nuevo tipo 'people'
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>, type: 'start_time' | 'duration' | 'people') => {
+    const value = e.target.value;
+    setAdminErrorMessage(null);
+    if (value === "manage_options") {
+      setOptionTypeToManage(type);
+      setManageOptionsModalIsOpen(true);
+      setNewOptionValue('');
+    } else if (type === 'start_time') {
+      setHoraInicio(value);
+    } else if (type === 'duration') {
+      const selectedDuration = editableDurationOptions.find(opt => opt.label === value);
+      setDuracion(selectedDuration ? selectedDuration.value : 0);
+    } else if (type === 'people') { // Nuevo caso para la cantidad de personas
+      const selectedPeople = editablePeopleOptions.find(opt => opt.label === value);
+      setCantidadPersonas(selectedPeople ? selectedPeople.value : 0);
+    }
+  };
+
+  const closeModal = () => {
+    setConfirmReservationModalIsOpen(false);
+  };
+
+  const closeManageOptionsModal = () => {
+    setManageOptionsModalIsOpen(false);
+    setOptionTypeToManage(null);
+    setNewOptionValue('');
+    setAdminErrorMessage(null);
+  };
+
+  const addOption = () => {
+    if (newOptionValue.trim() === '') {
+      setAdminErrorMessage("El valor no puede estar vacío.");
+      return;
+    }
+    setAdminErrorMessage(null); // Limpiar error previo si existe
+
+    if (optionTypeToManage === 'start_time') {
+      if (!/^\d{2}:\d{2}\s(a\.m\.|p\.m\.)$/.test(newOptionValue.trim())) {
+        setAdminErrorMessage("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m. (ej: 09:00 a.m. o 03:30 p.m.)");
+        return;
+      }
+      setEditableStartTimes(prev => {
+        const newTimes = [...prev, newOptionValue.trim()];
+        return newTimes.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+      });
+    } else if (optionTypeToManage === 'duration') {
+      const matchHoursMinutes = newOptionValue.trim().match(/^(?:(\d+)\s*h)?\s*(?:(\d+)\s*min)?$/i);
+
+      let actualValue = 0;
+      let isValidFormat = false;
+
+      if (matchHoursMinutes) {
+        const hoursPart = matchHoursMinutes[1];
+        const minutesPart = matchHoursMinutes[2];
+
+        let totalMinutes = 0;
+        if (hoursPart) {
+          totalMinutes += parseInt(hoursPart) * 60;
+          isValidFormat = true;
+        }
+        if (minutesPart) {
+          totalMinutes += parseInt(minutesPart);
+          isValidFormat = true;
         }
 
-        const startDate = new Date();
-        startDate.setHours(hours, minutes, 0, 0); // Establecer la hora y minutos
-
-        // Añadir la duración
-        startDate.setMinutes(startDate.getMinutes() + duracion);
-
-        // Formatear la hora de fin de nuevo a "HH:MM a.m./p.m."
-        const endHours = startDate.getHours();
-        const endMinutes = startDate.getMinutes();
-
-        const ampm = endHours >= 12 ? 'p.m.' : 'a.m.';
-        const displayHours = endHours % 12 === 0 ? 12 : endHours % 12;
-        const displayMinutes = endMinutes < 10 ? `0${endMinutes}` : endMinutes;
-
-        setHoraFin(`${displayHours}:${displayMinutes} ${ampm}`);
+        if (isValidFormat && totalMinutes > 0) {
+          actualValue = totalMinutes;
         } else {
-        setHoraFin(''); // Limpiar si no hay hora de inicio o duración
+          isValidFormat = false;
         }
-    }, [horaInicio, duracion]);
+      }
 
-    // useEffect para recalcular la hora de fin cada vez que horaInicio o duracion cambien
-    useEffect(() => {
-        calculateHoraFin();
-    }, [horaInicio, duracion, calculateHoraFin]);
+      if (!isValidFormat || actualValue === 0) {
+        setAdminErrorMessage("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
+        return;
+      }
+
+      setEditableDurationOptions(prev => [...prev, { label: newOptionValue.trim(), value: actualValue }]
+        .sort((a, b) => a.value - b.value));
+    } else if (optionTypeToManage === 'people') {
+      const valueNum = parseInt(newOptionValue.trim());
+      if (isNaN(valueNum) || valueNum <= 0) {
+        setAdminErrorMessage("Por favor, introduce un número válido y positivo de personas.");
+        return;
+      }
+      setEditablePeopleOptions(prev => [...prev, { label: `${valueNum} personas`, value: valueNum }]
+        .sort((a, b) => a.value - b.value));
+    }
+    setNewOptionValue('');
+  };
 
 
+  const removeOption = (valueToRemove: string) => {
+    setAdminErrorMessage(null);
+    if (optionTypeToManage === 'start_time') {
+      setEditableStartTimes(prev => prev.filter(option => option !== valueToRemove));
+    } else if (optionTypeToManage === 'duration') {
+      setEditableDurationOptions(prev => prev.filter(option => option.label !== valueToRemove));
+    } else if (optionTypeToManage === 'people') { // Nuevo caso para eliminar cantidad de personas
+        setEditablePeopleOptions(prev => prev.filter(option => option.label !== valueToRemove));
+    }
+  };
 
-    
+  const closeDisableConfirmModal = () => {
+    setDisableConfirmModalIsOpen(false);
+    setCubiculoToToggle(null);
+    setAdminErrorMessage(null);
+  };
+
+  const handleConfirmDisableToggle = () => {
+    if (cubiculoToToggle === null) return;
+
+    setDisabledCubiculos(prev => {
+      const newDisabled = new Set(prev);
+      const action = newDisabled.has(cubiculoToToggle) ? 'HABILITADO' : 'DESHABILITADO';
+
+      if (newDisabled.has(cubiculoToToggle)) {
+        newDisabled.delete(cubiculoToToggle);
+      } else {
+        newDisabled.add(cubiculoToToggle);
+      }
+
+      if (seleccionada === cubiculoToToggle && newDisabled.has(cubiculoToToggle)) {
+          setSeleccionada(null);
+      }
+      return newDisabled;
+    });
+
+    closeDisableConfirmModal();
+  };
+
+
   const toggleSeleccion = (numero: number) => {
-    setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
+
+    setAdminErrorMessage(null);
+
+    if (user && user.role === 'admin') {
+      setCubiculoToToggle(numero);
+      setDisableConfirmModalIsOpen(true);
+    } else {
+      if (!disabledCubiculos.has(numero)) {
+        setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
+      } else {
+        setAdminErrorMessage(`El cubículo ${numero} está deshabilitada y no se puede seleccionar.`);
+      }
+    }
   };
 
-    const openModal = () => setModalIsOpen(true);
-    const closeModal = () => setModalIsOpen(false);
+  const openConfirmReservationModal = () => {
+    if (seleccionada === null) {
+       setAdminErrorMessage("Por favor, selecciona un cubículo.");
+      return;
+    }
+    if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
+       setAdminErrorMessage("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
+      return;
+    }
+    if (disabledCubiculos.has(seleccionada)) {
+        setAdminErrorMessage(`El cubículo ${seleccionada} está deshabilitado y no se puede reservar.`);
+        closeModal();
+        setSeleccionada(null);
+        return;
+    }
+    setAdminErrorMessage(null); // Limpiar errores si todo está bien
+    setConfirmReservationModalIsOpen(true);
+  };
 
-  // Asegúrate de pasar la fecha a tu modal si es necesario, o directamente al texto
+
   const displayFormattedDate = formatDisplayDate(selectedCalendarDate);
-  // Helper para obtener el valor del input field de hora de inicio
-  const getHoraInicioValue = () => {
-    // Si horaInicio está vacío, puedes retornar una cadena vacía o el placeholder
-    return horaInicio || '';
-  };
-
 
   const handlePisoChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPiso = e.target.value;
     setSelectedPiso(newPiso);
 
-    // Actualizar las salas disponibles según el piso seleccionado
     if (newPiso === 'pb') {
       setAvailableSalas(allSalas.pb);
-      setSelectedSala(allSalas.pb[0]); // Seleccionar automáticamente la primera sala (Sala Referencia)
+      setSelectedSala(allSalas.pb[0]);
     } else if (newPiso === 'p1') {
       setAvailableSalas(allSalas.p1);
-      // Opcional: si la sala actual no está en P1, resetear o elegir la primera de P1
       if (!allSalas.p1.includes(selectedSala)) {
-        setSelectedSala(allSalas.p1[0]); // Seleccionar la primera de P1 por defecto
+        setSelectedSala(allSalas.p1[0]);
       }
     }
   };
 
-  // Manejador para el cambio de sala
   const handleSalaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedSala(e.target.value);
   };
 
-
-  // Función para manejar la acción de "Confirmar Reserva" (que ahora navegará)
   const handleConfirmReservation = () => {
-    // 1. Validar que el cubículo esté seleccionada
-    if (seleccionada === null) {
-      alert("Por favor, selecciona un cubículo.");
-      return;
-    }
-    // 2. Crear los parámetros de la URL
     const queryParams = new URLSearchParams();
     queryParams.append('cubiculo', String(seleccionada));
     queryParams.append('sala', selectedSala);
-    queryParams.append('dia', selectedCalendarDate || ''); // Pasa la fecha en formato ISO
+    queryParams.append('dia', selectedCalendarDate || '');
     queryParams.append('horaInicio', horaInicio);
     queryParams.append('horaFin', horaFin);
     queryParams.append('cantidadPersonas', String(cantidadPersonas));
 
-
-    // 3. Navegar a la página de confirmación con los parámetros
     router.push(`/confirmation?${queryParams.toString()}`);
-    closeModal(); // Cierra el modal después de navegar
+    closeModal();
   };
 
+  const renderMapComponent = () => {
+    const commonProps = {
+      seleccionada: seleccionada,
+      toggleSeleccion: toggleSeleccion,
+      userRole: user?.role,
+      disabledCubiculos: disabledCubiculos,
+    };
+
+    switch (selectedSala) {
+      case "Sala Referencia":
+        return <SalaReferencia {...commonProps} />;
+      case "Pasillo":
+        return <Pasillo {...commonProps} />;
+      case "Sala Científica":
+        return <SalaCientifica {...commonProps} />;
+      default:
+        return <p>Selecciona una sala para ver el mapa.</p>;
+    }
+  };
+
+  if (isLoadingUser) {
+    return <div>Cargando información del usuario...</div>;
+  }
 
   return (
-
     <div className={styles.contenedorGeneral}>
-        <div className={styles.columnaIzquierda}>
-            <div className={styles.fondoNaranjaArriba}></div>
+      <div className={styles.columnaIzquierda}>
+        <div className={styles.fondoNaranjaArriba}></div>
+        <div className={styles.contenedorForm}>
+          <h2 className={styles.tituloForm}>Detalles</h2>
+          <div className={styles.subtituloForm}>
+            Cubículo {seleccionada !== null ? seleccionada : 'N/A'}
+            <br></br>
+            {displayFormattedDate}
+          </div>
 
-            <div className={styles.contenedorForm}>
-                <h2 className={styles.tituloForm}>Detalles</h2>
-
-                <div className={styles.subtituloForm}>
-                Cubículo {seleccionada !== null ? seleccionada : 'N/A'}
-                <br></br>
-                 {displayFormattedDate} 
-                </div>
-
-                <form className={styles.formPreguntas}>
-                <div className={styles.titulosPreguntas}>
-                    <label htmlFor="horaInicio">Hora de inicio:</label>
-                    <select
-                        id="horaInicio"
-                        className={styles.detalleInput} 
-                        value={horaInicio}
-                        onChange={(e) => setHoraInicio(e.target.value)}
-                    >
-                        <option value="">Selecciona la hora de inicio...</option>
-                        {startTimeOptions.map((option) => (
-                        <option key={option} value={option}>
-                            {option}
-                        </option>
-                        ))}
-                    </select>
-                    </div>
-
-                <div className={styles.titulosPreguntas}>
-                    <label htmlFor="duracion">Duración:</label>
-                    <select
-                        id="duracion"
-                        className={styles.detalleInput} 
-                        value={durationOptions.find(opt => opt.value === duracion)?.label || ''}
-                        onChange={(e) => {
-                        const selectedDuration = durationOptions.find(opt => opt.label === e.target.value);
-                        setDuracion(selectedDuration ? selectedDuration.value : 0);
-                        }}
-                    >
-                        <option value="">Selecciona la duración...</option>
-                        {durationOptions.map((option) => (
-                        <option key={option.value} value={option.label}>
-                            {option.label}
-                        </option>
-                        ))}
-                    </select>
-                    </div>
-
-                <div className={styles.titulosPreguntas}>
-                    <label htmlFor="horaFin">Hora de fin:</label>
-                    <input
-                        id="horaFin"
-                        type="text"
-                        className={styles.detalleInput} 
-                        placeholder="Hora de fin"
-                        value={horaFin}
-                        disabled={true}
-                    />
-                </div>
-
-                <div className={styles.titulosPreguntas}>
-                    <label htmlFor="cantidadPersonas">Cantidad de personas:</label>
-                    <select
-                        id="cantidadPersonas"
-                        className={styles.detalleInput} 
-                        value={cantidadPersonas ? `${cantidadPersonas} personas` : ''}
-                        onChange={(e) => {
-                        const selectedPeople = peopleOptions.find(opt => opt.label === e.target.value);
-                        setCantidadPersonas(selectedPeople ? selectedPeople.value : 0);
-                        }}
-                    >
-                        <option value="">Selecciona la cantidad de personas...</option>
-                        {peopleOptions.map((option) => (
-                        <option key={option.value} value={option.label}>
-                            {option.label}
-                        </option>
-                        ))}
-                    </select>
-                </div>
-
-                <button onClick={openModal}type="button" className={styles.botonCambios}>Reservar</button>
-                </form>
-
-                <div className={styles.infoHorarios}>
-                <p className={styles.infoHorariosTexto}>
-                Los espacios de estudio en la biblioteca están disponibles de lunes a viernes, de 8:00 a.m a 5:00 p.m
-                </p>
-                </div>
-            </div>
-        </div>
-
-    <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        className={styles.modal}
-        overlayClassName={styles.overlay}
-        >
-
-            <button className={styles.closeButton} onClick={closeModal}>×</button>
-             <div className={styles.contentContainer}>
-                {/* Sección izquierda (texto) */}
-                <div className={styles.textSection}>
-                    <h2 className={styles.modalTitle}>Cubículo {seleccionada !== null ? seleccionada : 'N/A'}</h2>
-                    <h2 className={styles.textoInfoPopReserva}>{selectedSala}</h2>
-                    <h2 className={styles.textoInfoPopReserva}>Día: {displayFormattedDate}</h2>
-                    <h2 className={styles.textoInfoPopReserva}>Horario: {horaInicio} - {horaFin}</h2>
-                    <h2 className={styles.textoInfoPopReserva}>Cantidad de personas: {cantidadPersonas || 'N/A'}</h2>
-
-                    <button className={styles.reserveButton} onClick={handleConfirmReservation}>Confirmar Reserva</button>
-                </div>
-
-                {/* Sección derecha (imagen) */}
-                <div className={styles.imageSection}>
-                    <img src="/cubiculo.jpg" alt="Cubículo" className={styles.image} />
-                </div>
-            </div>
-    </Modal>
-
-
-
-    <div className={styles.columnaDerecha}>
-            <h2 className={styles.tituloReserva}>Reservación de Cubículo</h2>
-        <div className={styles.fondoNaranjaAbajo}></div>
-
-        <div className={styles.pisoSala}>
-            <div className={styles.pisoSalaTexto}>
-                <label htmlFor="piso">Piso:</label>
-                <select
-                id="piso"
-                className={styles.opcionesPisoSala}
-                value={selectedPiso} // Controla el valor del select
-                onChange={handlePisoChange} // Maneja el cambio
-                >
-                <option value="pb">Pb</option>
-                <option value="p1">P1</option>
-                </select>
-            </div>
-
-            <div className={styles.pisoSalaTexto}>
-                <label htmlFor="sala">Sala:</label>
-                <select
-                id="sala"
-                className={styles.opcionesPisoSala}
-                value={selectedSala} // Controla el valor del select
-                onChange={handleSalaChange} // Maneja el cambio
-                >
-                {availableSalas.map((salaOption) => (
-                    <option key={salaOption} value={salaOption}>
-                    {salaOption}
-                    </option>
+          <form className={styles.formPreguntas}>
+            <div className={styles.titulosPreguntas}>
+              <label htmlFor="horaInicio">Hora de inicio:</label>
+              <select
+                id="horaInicio"
+                className={styles.detalleInput}
+                value={horaInicio}
+                onChange={(e) => handleSelectChange(e, 'start_time')}
+              >
+                <option value="">Selecciona la hora de inicio...</option>
+                {editableStartTimes.map((option) => (
+                  <option key={option} value={option}>{option}</option>
                 ))}
-                </select>
+                {user?.role === 'admin' && (
+                  <option value="manage_options" className={styles.manageOption}>Administrar horarios...</option>
+                )}
+              </select>
             </div>
-        </div>
-    
-            
-            
-            <div className={styles.fondoDecorativo}>
-          <div className={styles.mapaContenedor}>
-            <div className={styles.mapa}>
-              <div className={styles.seccionSuperiorMapa}>
-                <div className={styles.filaArriba}>
-                  <div className={styles.columnaMesas}>
-                    {/* CAMBIO: Lógica para aplicar la clase 'mesaSeleccionada' */}
-                    <button className={`${styles.mesa} ${seleccionada === 1 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(1)}>1</button>
-                    <button className={`${styles.mesa} ${seleccionada === 3 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(3)}>3</button>
-                    <button className={`${styles.mesa} ${seleccionada === 5 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(5)}>5</button>
-                  </div>
 
-                  <div className={styles.columnaMesas}>
-                    <button className={`${styles.mesa} ${seleccionada === 2 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(2)}>2</button>
-                    <button className={`${styles.mesa} ${seleccionada === 4 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(4)}>4</button>
-                    <button className={`${styles.mesa} ${seleccionada === 6 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(6)}>6</button>
-                  </div>
-
-                  <div className={styles.separacionesRayasVerticales}>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                  </div>
-
-                  <div className={styles.columnaMesas}>
-                    <button className={`${styles.mesa} ${seleccionada === 7 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(7)}>7</button>
-                    <div className={styles.espacio} />
-                    <button className={`${styles.redonda} ${seleccionada === 8 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(8)}>8</button>
-                  </div>
-
-                  <div className={styles.espacio} />
-
-                  <div className={styles.columnaMesas}>
-                    <button className={`${styles.redonda} ${seleccionada === 9 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(9)}>9</button>
-                    <div className={styles.espacio} />
-                    <button className={`${styles.mesa} ${seleccionada === 10 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(10)}>10</button>
-                  </div>
-
-                  <div className={styles.espacio} />
-
-                  <div className={styles.columnaMesas}>
-                    <button className={`${styles.mesa} ${seleccionada === 11 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(11)}>11</button>
-                    <div className={styles.espacio} />
-                    <button className={`${styles.redonda} ${seleccionada === 12 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(12)}>12</button>
-                  </div>
-
-                  <div className={styles.separacionesRayasVerticales}>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                    <div className={styles.rayaVertical}></div>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.seccionInferiorMapa}>
-                <div className={styles.espacioRayasHorizontales}>
-                  <div className={styles.rayaHorizontal}></div>
-                  <div className={styles.rayaHorizontal}></div>
-                  <div className={styles.rayaHorizontal}></div>
-                  <div className={styles.rayaHorizontal}></div>
-                </div>
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.mesa} ${seleccionada === 13 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(13)}>13</button>
-                  <button className={`${styles.mesa} ${seleccionada === 14 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(14)}>14</button>
-                </div>
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.mesa} ${seleccionada === 15 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(15)}>15</button>
-                  <button className={`${styles.mesa} ${seleccionada === 16 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(16)}>16</button>
-                </div>
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.mesa} ${seleccionada === 17 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(17)}>17</button>
-                  <button className={`${styles.mesa} ${seleccionada === 18 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(18)}>18</button>
-                </div>
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.mesa} ${seleccionada === 19 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(19)}>19</button>
-                  <button className={`${styles.mesa} ${seleccionada === 20 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(20)}>20</button>
-                </div>
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.mesa} ${seleccionada === 21 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(21)}>21</button>
-                  <button className={`${styles.mesa} ${seleccionada === 22 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(22)}>22</button>
-                </div>
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.mesa} ${seleccionada === 23 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(23)}>23</button>
-                  <button className={`${styles.mesa} ${seleccionada === 24 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(24)}>24</button>
-                </div>
-
-                <div className={styles.espacio} />
-
-                <div className={styles.columnaMesas}>
-                  <button className={`${styles.meson} ${seleccionada === 25 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(25)}>25</button>
-                </div>
-              </div>
+            <div className={styles.titulosPreguntas}>
+              <label htmlFor="duracion">Duración:</label>
+              <select
+                id="duracion"
+                className={styles.detalleInput}
+                value={editableDurationOptions.find(opt => opt.value === duracion)?.label || ''}
+                onChange={(e) => handleSelectChange(e, 'duration')}
+              >
+                <option value="">Selecciona la duración...</option>
+                {editableDurationOptions.map((option) => (
+                  <option key={option.value} value={option.label}>{option.label}</option>
+                ))}
+                {user?.role === 'admin' && (
+                  <option value="manage_options" className={styles.manageOption}>Administrar duraciones...</option>
+                )}
+              </select>
             </div>
+
+            <div className={styles.titulosPreguntas}>
+              <label htmlFor="horaFin">Hora de fin:</label>
+              <input
+                id="horaFin"
+                type="text"
+                className={styles.detalleInput}
+                placeholder="Hora de fin"
+                value={horaFin}
+                disabled={true}
+              />
+            </div>
+
+            <div className={styles.titulosPreguntas}>
+              <label htmlFor="cantidadPersonas">Cantidad de personas:</label>
+              <select
+                id="cantidadPersonas"
+                className={styles.detalleInput}
+                value={cantidadPersonas ? `${cantidadPersonas} personas` : ''}
+                onChange={(e) => handleSelectChange(e, 'people')} // CAMBIO: Usar handleSelectChange
+              >
+                <option value="">Selecciona la cantidad de personas...</option>
+                {editablePeopleOptions.map((option) => ( // CAMBIO: Usar editablePeopleOptions
+                  <option key={option.value} value={option.label}>{option.label}</option>
+                ))}
+                {user?.role === 'admin' && ( // CAMBIO: Opción de administrar para admin
+                  <option value="manage_options" className={styles.manageOption}>Administrar personas...</option>
+                )}
+              </select>
+            </div>
+            {/* Mostrar mensaje de error para el administrador */}
+            {adminErrorMessage && user?.role === 'admin' && (
+              <p className={styles.adminErrorMessage}>{adminErrorMessage}</p>
+            )}
+
+            {user?.role !== 'admin' && (
+              <button onClick={openConfirmReservationModal} type="button" className={styles.botonCambios}>Reservar</button>
+            )}
+          </form>
+
+          <div className={styles.infoHorarios}>
+            <p className={styles.infoHorariosTexto}>
+              Los espacios de estudio en la biblioteca están disponibles de lunes a viernes, de 8:00 a.m a 5:00 p.m
+            </p>
           </div>
         </div>
       </div>
+
+      {/* Modal de Confirmación de Reserva (existente) */}
+      <Modal
+        isOpen={confirmReservationModalIsOpen}
+        onRequestClose={closeModal}
+        className={styles.modal}
+        overlayClassName={styles.overlay}
+      >
+        <button className={styles.closeButton} onClick={closeModal}>×</button>
+        <div className={styles.contentContainer}>
+          <div className={styles.textSection}>
+            <h2 className={styles.modalTitle}>Cubículo {seleccionada !== null ? seleccionada : 'N/A'}</h2>
+            <h2 className={styles.textoInfoPopReserva}>{selectedSala}</h2>
+            <h2 className={styles.textoInfoPopReserva}>Día: {displayFormattedDate}</h2>
+            <h2 className={styles.textoInfoPopReserva}>Horario: {horaInicio} - {horaFin}</h2>
+            <h2 className={styles.textoInfoPopReserva}>Cantidad de personas: {cantidadPersonas || 'N/A'}</h2>
+            <button className={styles.reserveButton} onClick={handleConfirmReservation}>Confirmar Reserva</button>
+          </div>
+          <div className={styles.imageSection}>
+            <img src="/cubiculo.jpg" alt="Cubículo" className={styles.image} />
+          </div>
+        </div>
+      </Modal>
+
+      {/* Modal para Administrar Opciones de Horario/Duración/Personas */}
+      <Modal
+        isOpen={manageOptionsModalIsOpen}
+        onRequestClose={closeManageOptionsModal}
+        className={styles.manageOptionsModal}
+        overlayClassName={styles.overlay}
+      >
+        <button className={styles.closeButton} onClick={closeManageOptionsModal}>×</button>
+        <h2 className={styles.manageModalTitle}>
+          Administrar{' '}
+          {optionTypeToManage === 'start_time'
+            ? 'Horarios de Inicio'
+            : optionTypeToManage === 'duration'
+            ? 'Duraciones'
+            : 'Cantidad de Personas'} {/* CAMBIO: Título dinámico */}
+        </h2>
+        <div className={styles.optionsList}>
+          {optionTypeToManage === 'start_time' ? (
+            editableStartTimes.map(option => (
+              <div key={option} className={styles.optionItem}>
+                <span>{option}</span>
+                <button
+                  type="button"
+                  className={styles.removeOptionButton}
+                  onClick={() => removeOption(option)}
+                >
+                  <span className={styles.removeOptionX}>×</span>
+                </button>
+              </div>
+            ))
+          ) : optionTypeToManage === 'duration' ? (
+            editableDurationOptions.map(option => (
+              <div key={option.value} className={styles.optionItem}>
+                <span>{option.label}</span>
+                <button
+                  type="button"
+                  className={styles.removeOptionButton}
+                  onClick={() => removeOption(option.label)}
+                >
+                  <span className={styles.removeOptionX}>×</span>
+                </button>
+              </div>
+            ))
+          ) : ( // CAMBIO: Renderizar opciones de personas
+            editablePeopleOptions.map(option => (
+              <div key={option.value} className={styles.optionItem}>
+                <span>{option.label}</span>
+                <button
+                  type="button"
+                  className={styles.removeOptionButton}
+                  onClick={() => removeOption(option.label)}
+                >
+                  <span className={styles.removeOptionX}>×</span>
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+        <div className={styles.addOptionSection}>
+          <input
+            type="text"
+            className={styles.addOptionInput}
+            value={newOptionValue}
+            onChange={(e) => setNewOptionValue(e.target.value)}
+            placeholder={`Añadir ${optionTypeToManage === 'start_time' ? 'hora (ej: 09:00 a.m.)' : optionTypeToManage === 'duration' ? 'duración (ej: 1h 30min)' : 'personas (ej: 4)'}`} 
+          />
+          <button type="button" className={styles.addOptionButton} onClick={addOption}>
+            Agregar
+          </button>
+        </div>
+        <div>
+          {adminErrorMessage && (
+            <p className={styles.adminErrorMessage} style={{ textAlign: 'center', marginBottom: '10px' }}>{adminErrorMessage}</p>
+          )}
+        </div>
+      </Modal>
+
+      {/* Nuevo Modal de Confirmación para Deshabilitar/Habilitar Cubículo */}
+      <Modal
+        isOpen={disableConfirmModalIsOpen}
+        onRequestClose={closeDisableConfirmModal}
+        className={styles.disableConfirmModal}
+        overlayClassName={styles.overlay}
+      >
+        <button className={styles.closeButton} onClick={closeDisableConfirmModal}>×</button>
+        <h2 className={styles.disableModalTitle}>Confirmar Acción</h2>
+        {/* Mensaje de error dentro del modal de confirmación de deshabilitar/habilitar mesa */}
+        {adminErrorMessage && (
+          <p className={styles.adminErrorMessage} style={{ textAlign: 'center', marginBottom: '10px' }}>{adminErrorMessage}</p>
+        )}
+        <p className={styles.disableModalText}>
+          ¿Estás seguro de que quieres{' '}
+          <strong style={{color: disabledCubiculos.has(cubiculoToToggle || 0) ? '#1E8449' : '#e74c3c'}}>
+            {disabledCubiculos.has(cubiculoToToggle || 0) ? 'habilitar' : 'deshabilitar'}
+          </strong>{' '}
+          el cubículo <strong style={{color: disabledCubiculos.has(cubiculoToToggle || 0) ? '#1E8449' : '#e74c3c'}}>
+            {cubiculoToToggle}
+          </strong>?
+        </p>
+        <div className={styles.disableModalActions}>
+          <button
+            className={`${styles.button} ${styles.cancelButton}`}
+            onClick={closeDisableConfirmModal}
+          >
+            Cancelar
+          </button>
+          <button
+            className={`${styles.button} ${styles.confirmDisableButton}`}
+            onClick={handleConfirmDisableToggle}
+          >
+            Sí, {disabledCubiculos.has(cubiculoToToggle || 0) ? 'Habilitar' : 'Deshabilitar'}
+          </button>
+        </div>
+      </Modal>
+
+
+      <div className={styles.columnaDerecha}>
+        <h2 className={styles.tituloReserva}>Reservación de Cubículo</h2>
+
+        <div className={styles.pisoSala}>
+          <div className={styles.pisoSalaTexto}>
+            <label htmlFor="piso">Piso:</label>
+            <select
+              id="piso"
+              className={styles.opcionesPisoSala}
+              value={selectedPiso}
+              onChange={handlePisoChange}
+            >
+              <option value="pb">Pb</option>
+              <option value="p1">P1</option>
+            </select>
+          </div>
+
+          <div className={styles.pisoSalaTexto}>
+            <label htmlFor="sala">Sala:</label>
+            <select
+              id="sala"
+              className={styles.opcionesPisoSala}
+              value={selectedSala}
+              onChange={handleSalaChange}
+            >
+              {availableSalas.map((salaOption) => (
+                <option key={salaOption} value={salaOption}>{salaOption}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Renderizado condicional del componente de mapa */}
+        {renderMapComponent()}
+
+      </div>
     </div>
   );
-}
+};
 
 const Reservar = () => {
-    return(
-      <Suspense>
-        <Inside/>
-      </Suspense>
-    )
+    return( 
+    <Suspense>
+      <Inside/>
+    </Suspense>
+  );
 };
 
 export default Reservar;
-
 
 const poppins = Poppins({
   subsets: ['latin'],

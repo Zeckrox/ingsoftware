@@ -24,7 +24,7 @@ export default function MainLayout({
     <html lang="en" className={poppins.className}>
       <body style={{ margin: 0 }}>
         <QueryClientProvider client={queryClient}>
-          <UserProvider> {/* 👈 Envolver todo dentro del UserProvider */}
+          <UserProvider>
             <Header />
             <main>{children}</main>
             <Footer />

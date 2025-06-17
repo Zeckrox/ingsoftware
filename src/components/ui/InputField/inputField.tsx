@@ -14,6 +14,7 @@ interface InputFieldProps {
   options?: string[];
   value?: string;
   disabled?: boolean; // <-- ¡Añade esta prop!
+  onClick?: (e: React.MouseEvent<HTMLSelectElement>) => void;
   onChange?: (e: React.ChangeEvent<any>) => void;
 }
 
@@ -24,7 +25,9 @@ export default function InputField({
   showPasswordToggle,
   options,
   value,
+  onClick,
   onChange,
+  disabled,
 }: InputFieldProps) {
   const [showPassword, setShowPassword] = React.useState(false);
 
@@ -33,7 +36,7 @@ export default function InputField({
       <div className={styles.inputContainer}>
         <label className={styles.label}>{label}</label>
         <div className={styles.inputWrapper}>
-          <select className={styles.selectInput} value={value} onChange={onChange}>
+          <select className={styles.selectInput} value={value} onChange={onChange}  onClick={onClick} >
             <option value="">{placeholder}</option>
             {options.map((option) => (
               <option key={option} value={option}>

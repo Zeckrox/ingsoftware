@@ -14,11 +14,10 @@
 }
 
 .botonWrapper {
-  position: absolute;
-  top: 50%; /* Puedes ajustar este valor */
-  margin-left: 10rem; /* Ajusta según lo cerca que lo quieras del borde izquierdo */
-  transform: translateY(-50%); /* Centra verticalmente */
-  z-index: 2; /* Asegura que esté por encima de la imagen */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    top: 200px;
 }
 
 .botonAzul {
@@ -166,7 +165,7 @@
 /* ============ DIVIDERS ============ */
 .orangeBar {
   width: 400px;
-  height: 10px;
+  height: 100%;
   background: #f77e00;
   margin: auto;
 }

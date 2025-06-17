@@ -1,4 +1,4 @@
-'use client'; // Asegúrate de que sea un componente de cliente si usa hooks o interactividad
+'use client';
 
 import React from 'react';
 import styles from '../reservar.module.css'; // Asegúrate de que la ruta sea correcta
@@ -6,9 +6,37 @@ import styles from '../reservar.module.css'; // Asegúrate de que la ruta sea co
 interface SalaReferenciaProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
+  userRole?: string; // Añadir el rol del usuario
+  disabledMesas: Set<number>; // Conjunto de mesas deshabilitadas
 }
 
-const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion }) => {
+const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion, userRole, disabledMesas }) => {
+
+  // Función auxiliar para renderizar un botón de mesa
+  const renderMesaButton = (numero: number, baseStyle: string) => {
+    const isDisabled = disabledMesas.has(numero);
+    const isSelected = seleccionada === numero;
+
+    let buttonClasses = `${baseStyle}`; // Estilo base de la mesa (e.g., styles.mesa o styles.redonda)
+
+    if (isDisabled) {
+      buttonClasses += ` ${styles.mesaDisabled}`; // Clase para mesas deshabilitadas (rojo)
+    } else if (isSelected && userRole !== 'admin') {
+      buttonClasses += ` ${styles.mesaSeleccionada}`; // Clase para mesa seleccionada (naranja) solo si no es admin
+    }
+
+    return (
+      <button
+        key={numero}
+        className={buttonClasses}
+        onClick={() => toggleSeleccion(numero)}
+        disabled={userRole !== 'admin' && isDisabled}
+      >
+        {numero}
+      </button>
+    );
+  };
+
   return (
     <div className={styles.fondoDecorativo}>
       <div className={styles.mapaContenedor}>
@@ -16,15 +44,15 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
           <div className={styles.seccionSuperiorMapa}>
             <div className={styles.filaArriba}>
               <div className={styles.columnaMesas}>
-                <button className={`${styles.mesa} ${seleccionada === 1 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(1)}>1</button>
-                <button className={`${styles.mesa} ${seleccionada === 3 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(3)}>3</button>
-                <button className={`${styles.mesa} ${seleccionada === 5 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(5)}>5</button>
+                {renderMesaButton(1, styles.mesa)}
+                {renderMesaButton(3, styles.mesa)}
+                {renderMesaButton(5, styles.mesa)}
               </div>
 
               <div className={styles.columnaMesas}>
-                <button className={`${styles.mesa} ${seleccionada === 2 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(2)}>2</button>
-                <button className={`${styles.mesa} ${seleccionada === 4 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(4)}>4</button>
-                <button className={`${styles.mesa} ${seleccionada === 6 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(6)}>6</button>
+                {renderMesaButton(2, styles.mesa)}
+                {renderMesaButton(4, styles.mesa)}
+                {renderMesaButton(6, styles.mesa)}
               </div>
 
               <div className={styles.separacionesRayasVerticales}>
@@ -34,25 +62,25 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
               </div>
 
               <div className={styles.columnaMesas}>
-                <button className={`${styles.mesa} ${seleccionada === 7 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(7)}>7</button>
+                {renderMesaButton(7, styles.mesa)}
                 <div className={styles.espacio} />
-                <button className={`${styles.redonda} ${seleccionada === 8 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(8)}>8</button>
+                {renderMesaButton(8, styles.redonda)}
               </div>
 
               <div className={styles.espacio} />
 
               <div className={styles.columnaMesas}>
-                <button className={`${styles.redonda} ${seleccionada === 9 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(9)}>9</button>
+                {renderMesaButton(9, styles.redonda)}
                 <div className={styles.espacio} />
-                <button className={`${styles.mesa} ${seleccionada === 10 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(10)}>10</button>
+                {renderMesaButton(10, styles.mesa)}
               </div>
 
               <div className={styles.espacio} />
 
               <div className={styles.columnaMesas}>
-                <button className={`${styles.mesa} ${seleccionada === 11 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(11)}>11</button>
+                {renderMesaButton(11, styles.mesa)}
                 <div className={styles.espacio} />
-                <button className={`${styles.redonda} ${seleccionada === 12 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(12)}>12</button>
+                {renderMesaButton(12, styles.redonda)}
               </div>
 
               <div className={styles.separacionesRayasVerticales}>
@@ -75,39 +103,39 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
             </div>
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.mesa} ${seleccionada === 13 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(13)}>13</button>
-              <button className={`${styles.mesa} ${seleccionada === 14 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(14)}>14</button>
+              {renderMesaButton(13, styles.mesa)}
+              {renderMesaButton(14, styles.mesa)}
             </div>
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.mesa} ${seleccionada === 15 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(15)}>15</button>
-              <button className={`${styles.mesa} ${seleccionada === 16 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(16)}>16</button>
+              {renderMesaButton(15, styles.mesa)}
+              {renderMesaButton(16, styles.mesa)}
             </div>
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.mesa} ${seleccionada === 17 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(17)}>17</button>
-              <button className={`${styles.mesa} ${seleccionada === 18 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(18)}>18</button>
+              {renderMesaButton(17, styles.mesa)}
+              {renderMesaButton(18, styles.mesa)}
             </div>
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.mesa} ${seleccionada === 19 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(19)}>19</button>
-              <button className={`${styles.mesa} ${seleccionada === 20 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(20)}>20</button>
+              {renderMesaButton(19, styles.mesa)}
+              {renderMesaButton(20, styles.mesa)}
             </div>
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.mesa} ${seleccionada === 21 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(21)}>21</button>
-              <button className={`${styles.mesa} ${seleccionada === 22 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(22)}>22</button>
+              {renderMesaButton(21, styles.mesa)}
+              {renderMesaButton(22, styles.mesa)}
             </div>
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.mesa} ${seleccionada === 23 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(23)}>23</button>
-              <button className={`${styles.mesa} ${seleccionada === 24 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(24)}>24</button>
+              {renderMesaButton(23, styles.mesa)}
+              {renderMesaButton(24, styles.mesa)}
             </div>
 
             <div className={styles.espacio} />
 
             <div className={styles.columnaMesas}>
-              <button className={`${styles.meson} ${seleccionada === 25 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(25)}>25</button>
+              {renderMesaButton(25, styles.meson)}
             </div>
           </div>
         </div>

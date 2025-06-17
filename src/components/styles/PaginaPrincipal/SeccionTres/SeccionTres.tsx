@@ -1,6 +1,6 @@
 'use client'; // Esto es lo más importante que debes agregar
 import styles from './SeccionTres.module.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useRouter } from "next/navigation";
 
@@ -20,6 +20,12 @@ export default function SeccionTres() {
     router.push('/calendarioc'); 
     closeModal();
   };
+
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        Modal.setAppElement(document.body);
+      }
+    }, []);
 
   return (
     <section className={styles.fondoBibliotecaSillas}>

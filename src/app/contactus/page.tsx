@@ -36,35 +36,36 @@ export default function ContactUs() {
         biblioteca.unimet@correo.com, al número de teléfono 0212-BUNIMET o dejando un mensaje
       </p>
 
-        <form onSubmit={sendEmail} className={styles.fondoCuest}>
-          <div className={styles.separacionEntreInputs}>
-            <label htmlFor="email">Email</label>
-            <div className={styles.inputWithIcon}>
-              <input
-                type="email"
-                name="email" // ← necesario para EmailJS
-                id="email"
-                placeholder="info@unimet.edu.ve"
-                className={styles.inputCorreo}
-              />
-              <Mail size={30} className={styles.iconoCorreo} />
+        <div className={styles.wrapperFormulario}>
+          <form onSubmit={sendEmail} className={styles.fondoCuest}>
+            <div className={styles.separacionEntreInputs}>
+              <label htmlFor="email">Email</label>
+              <div className={styles.inputWithIcon}>
+                <input
+                  type="email"
+                  name="email" // ← necesario para EmailJS
+                  id="email"
+                  placeholder="info@unimet.edu.ve"
+                  className={styles.inputCorreo}
+                />
+                <Mail className={styles.iconoCorreo} />
+              </div>
             </div>
+
+          <div className={styles.inputGroup}>
+            <label htmlFor="message">Mensaje</label>
+            <textarea
+              id="message"
+              name="message" // ← necesario para EmailJS
+              placeholder="Ingrese el mensaje"
+              rows={6}
+              className={styles.inputMensaje}
+            />
           </div>
 
-        <div className={styles.inputGroup}>
-          <label htmlFor="message">Mensaje</label>
-          <textarea
-            id="message"
-            name="message" // ← necesario para EmailJS
-            placeholder="Ingrese el mensaje"
-            rows={6}
-            className={styles.inputMensaje}
-          />
-        </div>
-
-        <button type="submit" className={styles.botonEnviar}>Enviar</button>
-      </form>
-
+          <button type="submit" className={styles.botonEnviar}>Enviar</button>
+        </form>
+      </div>
     </div>
   );
 }
