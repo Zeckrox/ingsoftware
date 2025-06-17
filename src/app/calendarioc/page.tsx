@@ -17,7 +17,7 @@ interface DayCellProps {
   isPast?: boolean;
   dayType: DayType["type"];
   fullDate: string;
-  onTypeChange: (date: string, type: DayType["type"]) => void;
+  onTypeChange: (date: string, type: DayType["type"], fullDate: string) => void;
   onDayClick: (date: string) => void;
   userRole: "admin" | "student";
 }
@@ -89,7 +89,7 @@ const DayCell: React.FC<DayCellProps> = ({
           value={dayType === "none" as DayType["type"]? "" : dayType}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) => {
-            onTypeChange(fullDate, e.target.value as DayType["type"]);
+            onTypeChange(fullDate, e.target.value as DayType["type"], fullDate);
           }}
         />
       )}
@@ -182,8 +182,32 @@ const Calendar: React.FC = () => {
   async function getDisabledDays(){
     let url = `https://backendsoftware.vercel.app/disabled-days`
     const res = await fetch(url);
+    if (!res.ok) throw new Error('No se pudo obtener los dias');
+    let data = await res.json()
+    setDisabledDays(data);
+    for(let day of data){
+      setDayTypes((prev) => ({ ...prev, [day.date]: day.type }));
+    }
+  }
+
+  async function setDay(date: string, type: DayType["type"]){
+    let url = `https://backendsoftware.vercel.app/disabled-days/`
+    let method = "POST"
+    if (type == "Dia Habil"){
+      url = `https://backendsoftware.vercel.app/disabled-days/${date}`
+      method = "DELETE"
+    }
+    const res = await fetch(url, {  
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: date,
+          type: type
+        }),
+      });
     if (!res.ok) throw new Error('No se pudo obtener el usuario');
-    setDisabledDays(await res.json());
   }
 
   function checkInDisabledDays(date: string){
@@ -195,22 +219,12 @@ const Calendar: React.FC = () => {
     return false
   }
 
-  function getDisabledType(date: string){
-    for(let item of disabledDays){
-      if (item.date == date){
-        return item.type
-      }
-    }
-    return "none"
-  }
-
   useEffect(() => {
     getDisabledDays()
     }, []);
   
 
   useEffect(() => {
-    
     const newDayTypes: { [key: string]: DayType["type"] } = {};
     const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
 
@@ -242,7 +256,7 @@ const Calendar: React.FC = () => {
     setCurrentYear(newYear);
   };
 
-  const handleDayTypeChange = (date: string, type: DayType["type"]) => {
+  const handleDayTypeChange = (date: string, type: DayType["type"], fullDate: string) => {
     if (user.role === "admin") {
       const dayOfWeek = new Date(date).getDay();
       if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -251,6 +265,7 @@ const Calendar: React.FC = () => {
         return;
       }
       setDayTypes((prev) => ({ ...prev, [date]: type }));
+      setDay(fullDate, type)
     }
   };
 
@@ -287,7 +302,7 @@ const Calendar: React.FC = () => {
     today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
   return (
-    <div className={styles.calendarContainer}>
+    <div className={styles.calendarContainer} >
       <div className={styles.calendarWrapper}>
         <CalendarHeader
           selectedMonth={currentMonth}
@@ -324,7 +339,7 @@ const Calendar: React.FC = () => {
                 isToday={parseInt(day) === currentDate && isCurrentMonthView}
                 isCurrentMonth={true}
                 isPast={isPast}
-                dayType={ checkInDisabledDays(fullDate)? "Feriado" : dayTypes[fullDate] || "none"}
+                dayType={ dayTypes[fullDate] || "none"}
                 onTypeChange={handleDayTypeChange}
                 fullDate={fullDate}
                 userRole={user.role as "admin" | "student"}

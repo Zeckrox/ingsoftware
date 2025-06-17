@@ -59,7 +59,7 @@ const timeToMinutes = (timeString: string): number => {
   return hours * 60 + minutes;
 };
 
-function Reservar() {
+function Inside() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoadingUser } = useUser(); // Obtener información del usuario
@@ -707,6 +707,14 @@ function Reservar() {
     </div>
   );
 }
+
+const Reservar = () => {
+    return( 
+    <Suspense>
+      <Inside/>
+    </Suspense>
+  );
+};
 
 export default Reservar;
 

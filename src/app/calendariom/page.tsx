@@ -17,7 +17,7 @@ interface DayCellProps {
   isPast?: boolean;
   dayType: DayType["type"];
   fullDate: string;
-  onTypeChange: (date: string, type: DayType["type"]) => void;
+  onTypeChange: (date: string, type: DayType["type"], fullDate: string) => void;
   onDayClick: (date: string) => void;
   userRole: "admin" | "student";
 }
@@ -88,7 +88,7 @@ const DayCell: React.FC<DayCellProps> = ({
           value={dayType === "none"  as DayType["type"]? "" : dayType}
           onClick={(e) => e.stopPropagation()}
           onChange={(e) =>
-            onTypeChange(fullDate, e.target.value as DayType["type"])
+            onTypeChange(fullDate, e.target.value as DayType["type"], fullDate)
           }
         />
       )}
@@ -168,6 +168,7 @@ const Calendar: React.FC = () => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [ disabledDays, setDisabledDays ] = useState<any>([]);
   const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>(
     {}
   );
@@ -176,6 +177,41 @@ const Calendar: React.FC = () => {
   if (isLoadingUser || !user) {
     return <div>Cargando usuario...</div>;
   }
+
+   async function getDisabledDays(){
+    let url = `https://backendsoftware.vercel.app/disabled-days`
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('No se pudo obtener los dias');
+    let data = await res.json()
+    setDisabledDays(data);
+    for(let day of data){
+      setDayTypes((prev) => ({ ...prev, [day.date]: day.type }));
+    }
+  }
+
+  async function setDay(date: string, type: DayType["type"]){
+    let url = `https://backendsoftware.vercel.app/disabled-days/`
+    let method = "POST"
+    if (type == "Dia Habil"){
+      url = `https://backendsoftware.vercel.app/disabled-days/${date}`
+      method = "DELETE"
+    }
+    const res = await fetch(url, {  
+        method: method,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          date: date,
+          type: type
+        }),
+      });
+    if (!res.ok) throw new Error('No se pudo obtener el usuario');
+  }
+
+  useEffect(() => {
+    getDisabledDays()
+    }, []);
 
   useEffect(() => {
     const newDayTypes: { [key: string]: DayType["type"] } = {};
@@ -209,7 +245,7 @@ const Calendar: React.FC = () => {
     setCurrentYear(newYear);
   };
 
-  const handleDayTypeChange = (date: string, type: DayType["type"]) => {
+  const handleDayTypeChange = (date: string, type: DayType["type"], fullDate: string) => {
     if (user.role === "admin") {
       const dayOfWeek = new Date(date).getDay();
       if (dayOfWeek === 0 || dayOfWeek === 6) {
@@ -218,6 +254,7 @@ const Calendar: React.FC = () => {
         return;
       }
       setDayTypes((prev) => ({ ...prev, [date]: type }));
+      setDay(fullDate, type)
     }
   };
 
