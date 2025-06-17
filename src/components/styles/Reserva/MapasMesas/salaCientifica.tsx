@@ -1,15 +1,43 @@
-'use client'; // Asegúrate de que sea un componente de cliente si usa hooks o interactividad
+'use client';
 
 import React from 'react';
-import styles from '../reservar.module.css'; // Asegúrate de que la ruta sea correcta
+import styles from '../reservar.module.css';
 import salaCientifica from "./salaCientifica.module.css"
 
 interface SalaCientificaProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
+  userRole?: string; // Añadir el rol del usuario
+  disabledMesas: Set<number>; // Conjunto de mesas deshabilitadas
 }
 
-const SalaCientifica: React.FC<SalaCientificaProps> = ({ seleccionada, toggleSeleccion }) => {
+const SalaCientifica: React.FC<SalaCientificaProps> = ({ seleccionada, toggleSeleccion, userRole, disabledMesas }) => {
+
+  // Función auxiliar para renderizar un botón de mesa
+  const renderMesaButton = (numero: number, baseStyle: string) => {
+    const isDisabled = disabledMesas.has(numero);
+    const isSelected = seleccionada === numero;
+
+    let buttonClasses = `${baseStyle}`;
+
+    if (isDisabled) {
+      buttonClasses += ` ${styles.mesaDisabled}`;
+    } else if (isSelected && userRole !== 'admin') {
+      buttonClasses += ` ${styles.mesaSeleccionada}`;
+    }
+
+    return (
+      <button
+        key={numero}
+        className={buttonClasses}
+        onClick={() => toggleSeleccion(numero)}
+        disabled={userRole !== 'admin' && isDisabled}
+      >
+        {numero}
+      </button>
+    );
+  };
+
   return (
     <div className={styles.fondoDecorativo}>
       <div className={salaCientifica.mapaContenedorCientifica}>
@@ -17,58 +45,57 @@ const SalaCientifica: React.FC<SalaCientificaProps> = ({ seleccionada, toggleSel
           <div className={salaCientifica.salaCientificaContenedor}>
             {/* Columna Izquierda Principal (6 mesas y separadores) */}
             <div className={styles.columnaPrincipalIzquierda}>
-            {/* Sección Superior - 6 Mesas Rectangulares */}
-            <div className={salaCientifica.seccionSuperiorCientifica}>
-              {/* Columna de la izquierda (3 mesas) */}
-              <div className={salaCientifica.columnaMesasCientifica}>
-                <button className={`${styles.mesa} ${seleccionada === 34 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(34)}>34</button>
-                <button className={`${styles.mesa} ${seleccionada === 35 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(35)}>35</button>
-                <button className={`${styles.mesa} ${seleccionada === 36 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(36)}>36</button>
+              {/* Sección Superior - 6 Mesas Rectangulares */}
+              <div className={salaCientifica.seccionSuperiorCientifica}>
+                {/* Columna de la izquierda (3 mesas) */}
+                <div className={salaCientifica.columnaMesasCientifica}>
+                  {renderMesaButton(34, styles.mesa)}
+                  {renderMesaButton(35, styles.mesa)}
+                  {renderMesaButton(36, styles.mesa)}
+                </div>
+                {/* Columna de la derecha (3 mesas) */}
+                <div className={salaCientifica.columnaMesasCientifica}>
+                  {renderMesaButton(37, styles.mesa)}
+                  {renderMesaButton(38, styles.mesa)}
+                  {renderMesaButton(39, styles.mesa)}
+                </div>
               </div>
-              {/* Columna de la derecha (3 mesas) */}
-              <div className={salaCientifica.columnaMesasCientifica}>
-                <button className={`${styles.mesa} ${seleccionada === 37 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(37)}>37</button>
-                <button className={`${styles.mesa} ${seleccionada === 38 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(38)}>38</button>
-                <button className={`${styles.mesa} ${seleccionada === 39 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(39)}>39</button>
-              </div>
-            </div>
 
-            {/* Separadores Verticales Centrales */}
-            <div className={salaCientifica.separadoresVerticalesCentrales}>
-              <div className={salaCientifica.rayaVerticalCientifica}></div>
-              <div className={salaCientifica.rayaVerticalCientifica}></div>
-              <div className={salaCientifica.rayaVerticalCientifica}></div>
-              <div className={salaCientifica.rayaVerticalCientifica}></div>
-              <div className={salaCientifica.rayaVerticalCientifica}></div>
-              <div className={salaCientifica.rayaVerticalCientifica}></div>
+              {/* Separadores Verticales Centrales */}
+              <div className={salaCientifica.separadoresVerticalesCentrales}>
+                <div className={salaCientifica.rayaVerticalCientifica}></div>
+                <div className={salaCientifica.rayaVerticalCientifica}></div>
+                <div className={salaCientifica.rayaVerticalCientifica}></div>
+                <div className={salaCientifica.rayaVerticalCientifica}></div>
+                <div className={salaCientifica.rayaVerticalCientifica}></div>
+                <div className={salaCientifica.rayaVerticalCientifica}></div>
+              </div>
             </div>
-            </div>
-             <div className={styles.columnaPrincipalDerecha}>
-                {/* Espacio para alinear las mesas de la derecha más abajo */}
+            <div className={styles.columnaPrincipalDerecha}>
+              {/* Espacio para alinear las mesas de la derecha más abajo */}
               <div className={styles.espacioSuperiorDerecha}></div>
-            {/* Sección Inferior - 11 Mesas Rectangulares y Separador Zigzag */}
-            <div className={salaCientifica.seccionInferiorCientifica}>
-              {/* Grupo de columnas de mesas (7-17) */}
-              <div className={salaCientifica.grupoColumnasMesasCientifica}>
-                {/* Columna 1 (4 mesas) */}
-                <div className={salaCientifica.columnaMesasCientifica}>
-                  <button className={`${styles.mesa} ${seleccionada === 40 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(40)}>40</button>
-                  <button className={`${styles.mesa} ${seleccionada === 41 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(41)}>41</button>
-                  <button className={`${styles.mesa} ${seleccionada === 42 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(42)}>42</button>
-                  <button className={`${styles.mesa} ${seleccionada === 43 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(43)}>43</button>
-                  <button className={`${styles.mesa} ${seleccionada === 44 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(44)}>44</button>
-                 
-                </div>
-                {/* Columna 2 (4 mesas) */}
-                <div className={salaCientifica.columnaMesasCientifica}>
-                  <button className={`${styles.mesa} ${seleccionada === 45 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(45)}>45</button>
-                  <button className={`${styles.mesa} ${seleccionada === 46 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(46)}>46</button>
-                  <button className={`${styles.mesa} ${seleccionada === 47 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(47)}>47</button>
-                  <button className={`${styles.mesa} ${seleccionada === 48 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(48)}>48</button>
-                  <button className={`${styles.mesa} ${seleccionada === 49 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(49)}>49</button>
+              {/* Sección Inferior - 11 Mesas Rectangulares y Separador Zigzag */}
+              <div className={salaCientifica.seccionInferiorCientifica}>
+                {/* Grupo de columnas de mesas (7-17) */}
+                <div className={salaCientifica.grupoColumnasMesasCientifica}>
+                  {/* Columna 1 (5 mesas) */}
+                  <div className={salaCientifica.columnaMesasCientifica}>
+                    {renderMesaButton(40, styles.mesa)}
+                    {renderMesaButton(41, styles.mesa)}
+                    {renderMesaButton(42, styles.mesa)}
+                    {renderMesaButton(43, styles.mesa)}
+                    {renderMesaButton(44, styles.mesa)}
+                  </div>
+                  {/* Columna 2 (5 mesas) */}
+                  <div className={salaCientifica.columnaMesasCientifica}>
+                    {renderMesaButton(45, styles.mesa)}
+                    {renderMesaButton(46, styles.mesa)}
+                    {renderMesaButton(47, styles.mesa)}
+                    {renderMesaButton(48, styles.mesa)}
+                    {renderMesaButton(49, styles.mesa)}
+                  </div>
                 </div>
               </div>
-                </div>
             </div>
 
           </div>

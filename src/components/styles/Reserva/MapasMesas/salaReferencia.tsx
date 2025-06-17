@@ -44,7 +44,7 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
   {numero}
 </button>
   );
-
+    
   return (
     <div className={styles.fondoDecorativo}>
       <div className={styles.mapaContenedor}>
@@ -143,7 +143,7 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
             <div className={styles.espacio} />
 
             <div className={styles.columnaMesas}>
-              <Mesa numero={25} esMeson />
+                <Mesa numero={25} esMeson />
             </div>
           </div>
         </div>
