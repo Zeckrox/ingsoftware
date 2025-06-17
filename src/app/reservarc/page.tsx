@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import styles from '../../components/styles/Reserva/reservar.module.css';
 import SalaReferencia from "@/components/styles/Reserva/MapasCubiculos/salaReferencia";
@@ -50,7 +50,7 @@ const timeToMinutes = (timeString: string): number => {
   return hours * 60 + minutes;
 };
 
-const Reservar = () => {
+const Inside = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoadingUser } = useUser(); // Obtener información del usuario
@@ -666,6 +666,14 @@ const Reservar = () => {
 
       </div>
     </div>
+  );
+};
+
+const Reservar = () => {
+    return( 
+    <Suspense>
+      <Inside/>
+    </Suspense>
   );
 };
 
