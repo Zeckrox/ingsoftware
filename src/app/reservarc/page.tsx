@@ -8,6 +8,7 @@ import SalaCientifica from "@/components/styles/Reserva/MapasCubiculos/salaCient
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
 import { useUser } from "@/context/userContext";
+import { useMutation } from "@tanstack/react-query";
 
 // Opciones iniciales que se cargarán en el estado (pueden venir de una API en un proyecto real)
 const initialStartTimeOptions = [
@@ -81,6 +82,9 @@ const Reservar = () => {
   const [disabledCubiculos, setDisabledCubiculos] = useState<Set<number>>(new Set());
   const [disableConfirmModalIsOpen, setDisableConfirmModalIsOpen] = useState(false);
   const [cubiculoToToggle, setCubiculoToToggle] = useState<number | null>(null);
+
+  const [numerosOcupados, setNumerosOcupados] = useState<number[]>([]);
+  
 
 
   useEffect(() => {
@@ -156,6 +160,96 @@ const Reservar = () => {
     calculateHoraFin();
   }, [horaInicio, duracion, calculateHoraFin]);
 
+  //GET Y POST
+
+  //para tener la fecha de la url que esta como date:
+    const [date, setDate] = useState('');
+
+    useEffect(() => {
+      const paramss = new URLSearchParams(window.location.search);
+      const dateFromUrl = paramss.get('date');
+      if (dateFromUrl) setDate(dateFromUrl);
+    }, []);
+
+    useEffect(() => {
+      if (horaInicio && duracion > 0 && date) {
+        getAvailableSpots.mutate();
+      }
+    }, [horaInicio, duracion, date]);
+
+
+    //GET
+    const getAvailableSpots = useMutation({
+          mutationFn: async () => {
+            const res = await fetch('http://localhost:3000/reservations/availableSpots', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                date: date,   //sale del url     
+                type: 'cubicle',        
+                startTime: horaInicio,   //sale del form
+                duration: duracion  //sale del form
+              }),
+            });
+    
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+    
+            return res.json();
+          },
+          onSuccess: (data) => {
+            // alert('Consulta exitosa');
+            console.log('Espacios disponibles:', data);
+            const numeros = data.filter((reserva: any) => {
+              console.log(reserva.cubicleId)
+              return !!reserva.number})
+            console.log(numeros);
+            
+            setNumerosOcupados(numeros);
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
+  //POST
+    const createReserv = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('http://localhost:3000/reservations/createReservation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user._id, //sale del usercontext
+            number: seleccionada, //sale de aqui
+            type: 'cubicle', //CAMBIAR !! en cubiculo
+            date: date,
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+
+        return res.json();
+      },
+      onSuccess: () => {
+        alert('reserva exitosa');
+        closeModal();
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
 
   // --- Funciones de administración de Horarios, Duración y Personas ---
 
@@ -225,6 +319,10 @@ const Reservar = () => {
               isValidFormat = false;
           }
       }
+      
+    if (isLoadingUser || !user) {
+      return <div>Cargando...</div>;
+    }
 
       if (!isValidFormat || actualValue === 0) {
           alert("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
@@ -337,6 +435,12 @@ const Reservar = () => {
         return;
     }
 
+    if (!user) {
+      alert("Debes iniciar sesión.");
+      return;
+    }
+    createReserv.mutate();
+
     const queryParams = new URLSearchParams();
     queryParams.append('cubiculo', String(seleccionada));
     queryParams.append('sala', selectedSala);
@@ -349,17 +453,19 @@ const Reservar = () => {
     closeModal();
   };
 
+
   const renderMapComponent = () => {
     const commonProps = {
       seleccionada: seleccionada,
       toggleSeleccion: toggleSeleccion,
       userRole: user?.role,
       disabledCubiculos: disabledCubiculos,
+      ocupados: numerosOcupados
     };
-
+    
     switch (selectedSala) {
       case "Sala Referencia":
-        return <SalaReferencia {...commonProps} />;
+        return <SalaReferencia {...commonProps} ocupados={numerosOcupados} />;
       case "Pasillo":
         return <Pasillo {...commonProps} />;
       case "Sala Científica":
