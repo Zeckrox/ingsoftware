@@ -169,6 +169,7 @@ const Calendar: React.FC = () => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [ disabledDays, setDisabledDays ] = useState<any>([]);
   const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>(
     {}
   );
@@ -178,7 +179,38 @@ const Calendar: React.FC = () => {
     return <div>Cargando usuario...</div>;
   }
 
+  async function getDisabledDays(){
+    let url = `https://backendsoftware.vercel.app/disabled-days`
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('No se pudo obtener el usuario');
+    setDisabledDays(await res.json());
+  }
+
+  function checkInDisabledDays(date: string){
+    for(let item of disabledDays){
+      if (item.date == date){
+        return true
+      }
+    }
+    return false
+  }
+
+  function getDisabledType(date: string){
+    for(let item of disabledDays){
+      if (item.date == date){
+        return item.type
+      }
+    }
+    return "none"
+  }
+
   useEffect(() => {
+    getDisabledDays()
+    }, []);
+  
+
+  useEffect(() => {
+    
     const newDayTypes: { [key: string]: DayType["type"] } = {};
     const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
 
@@ -285,7 +317,6 @@ const Calendar: React.FC = () => {
               (currentYear === today.getFullYear() &&
                 currentMonth === today.getMonth() &&
                 parseInt(day) < today.getDate());
-
             return (
               <DayCell
                 key={`current-${day}`}
@@ -293,7 +324,7 @@ const Calendar: React.FC = () => {
                 isToday={parseInt(day) === currentDate && isCurrentMonthView}
                 isCurrentMonth={true}
                 isPast={isPast}
-                dayType={dayTypes[fullDate] || "none"}
+                dayType={ checkInDisabledDays(fullDate)? "Feriado" : dayTypes[fullDate] || "none"}
                 onTypeChange={handleDayTypeChange}
                 fullDate={fullDate}
                 userRole={user.role as "admin" | "student"}
