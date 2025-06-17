@@ -49,7 +49,6 @@ export default function InputField({
     );
   }
 
-  // For text, email, password, tel types
   return (
     <div className={styles.inputContainer}>
       <label className={styles.label}>{label}</label>
