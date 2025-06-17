@@ -59,7 +59,7 @@ const timeToMinutes = (timeString: string): number => {
   return hours * 60 + minutes;
 };
 
-function Inside() {
+function Reservar() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoadingUser } = useUser(); // Obtener información del usuario
@@ -90,6 +90,8 @@ function Inside() {
   const [disableConfirmModalIsOpen, setDisableConfirmModalIsOpen] = useState(false);
   const [mesaToToggle, setMesaToToggle] = useState<number | null>(null);
 
+  // Nuevo estado para el mensaje de error del administrador
+  const [adminErrorMessage, setAdminErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -111,6 +113,12 @@ function Inside() {
       setSeleccionada(null);
     }
   }, [user]);
+
+  // Limpiar el mensaje de error cuando cambia el tipo de opción a administrar
+  useEffect(() => {
+    setAdminErrorMessage(null);
+  }, [optionTypeToManage]);
+
 
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
@@ -170,6 +178,8 @@ function Inside() {
 
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>, type: 'start_time' | 'duration' | 'people') => {
     const value = e.target.value;
+    // Limpiar cualquier mensaje de error anterior al interactuar con el select
+    setAdminErrorMessage(null);
     if (value === "manage_options") {
       setOptionTypeToManage(type);
       setManageOptionsModalIsOpen(true);
@@ -193,14 +203,19 @@ function Inside() {
     setManageOptionsModalIsOpen(false);
     setOptionTypeToManage(null);
     setNewOptionValue('');
+    setAdminErrorMessage(null); // Limpiar mensaje de error al cerrar el modal
   };
 
   const addOption = () => {
-    if (newOptionValue.trim() === '') return;
+    if (newOptionValue.trim() === '') {
+      setAdminErrorMessage("El valor no puede estar vacío.");
+      return;
+    }
+    setAdminErrorMessage(null); // Limpiar error previo si existe
 
     if (optionTypeToManage === 'start_time') {
       if (!/^\d{2}:\d{2}\s(a\.m\.|p\.m\.)$/.test(newOptionValue.trim())) {
-        alert("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m.");
+        setAdminErrorMessage("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m. (ej: 09:00 a.m. o 03:30 p.m.)");
         return;
       }
       setEditableStartTimes(prev => {
@@ -235,7 +250,7 @@ function Inside() {
       }
 
       if (!isValidFormat || actualValue === 0) {
-        alert("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
+        setAdminErrorMessage("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
         return;
       }
 
@@ -244,7 +259,7 @@ function Inside() {
     } else if (optionTypeToManage === 'people') {
       const valueNum = parseInt(newOptionValue.trim());
       if (isNaN(valueNum) || valueNum <= 0) {
-        alert("Por favor, introduce un número válido de personas.");
+        setAdminErrorMessage("Por favor, introduce un número válido y positivo de personas.");
         return;
       }
       setEditablePeopleOptions(prev => [...prev, { label: `${valueNum} personas`, value: valueNum }]
@@ -254,6 +269,8 @@ function Inside() {
   };
 
   const removeOption = (valueToRemove: string) => {
+    // Limpiar mensaje de error al remover
+    setAdminErrorMessage(null);
     if (optionTypeToManage === 'start_time') {
       setEditableStartTimes(prev => prev.filter(option => option !== valueToRemove));
     } else if (optionTypeToManage === 'duration') {
@@ -267,6 +284,7 @@ function Inside() {
   const closeDisableConfirmModal = () => {
     setDisableConfirmModalIsOpen(false);
     setMesaToToggle(null);
+    setAdminErrorMessage(null); // Limpiar mensaje de error al cerrar el modal
   };
 
   const handleConfirmDisableToggle = () => {
@@ -282,7 +300,6 @@ function Inside() {
         newDisabled.add(mesaToToggle);
       }
 
-
       // Si la mesa que el admin está deshabilitando estaba seleccionada, la deseleccionamos
       if (seleccionada === mesaToToggle && newDisabled.has(mesaToToggle)) {
         setSeleccionada(null);
@@ -296,6 +313,9 @@ function Inside() {
 
   // Modificado para el rol de administrador
   const toggleSeleccion = (numero: number) => {
+    // Siempre limpiar el mensaje de error al intentar seleccionar/togglear una mesa
+    setAdminErrorMessage(null);
+
     if (user && user.role === 'admin') {
       setMesaToToggle(numero); // Guarda la mesa para el modal de confirmación
       setDisableConfirmModalIsOpen(true); // Abre el modal de confirmación
@@ -304,12 +324,30 @@ function Inside() {
       if (!disabledMesas.has(numero)) { // Solo permite seleccionar si no está deshabilitada
         setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
       } else {
-        alert(`La mesa ${numero} está deshabilitada y no se puede seleccionar.`);
+        // En lugar de alert, establecer un mensaje de error visible
+        setAdminErrorMessage(`La mesa ${numero} está deshabilitada y no se puede seleccionar.`);
       }
     }
   };
 
-  const openConfirmReservationModal = () => setConfirmReservationModalIsOpen(true);
+  const openConfirmReservationModal = () => {
+    // Validaciones antes de abrir el modal de confirmación de reserva
+    if (seleccionada === null) {
+      setAdminErrorMessage("Por favor, selecciona una mesa.");
+      return;
+    }
+    if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
+      setAdminErrorMessage("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
+      return;
+    }
+    if (disabledMesas.has(seleccionada)) { // Asegurarse de que no se puede reservar una mesa deshabilitada
+      setAdminErrorMessage(`La mesa ${seleccionada} está deshabilitada y no se puede reservar.`);
+      setSeleccionada(null); // Deseleccionar la mesa
+      return;
+    }
+    setAdminErrorMessage(null); // Limpiar errores si todo está bien
+    setConfirmReservationModalIsOpen(true);
+  };
 
 
   const displayFormattedDate = formatDisplayDate(selectedCalendarDate);
@@ -334,21 +372,8 @@ function Inside() {
   };
 
   const handleConfirmReservation = () => {
-    if (seleccionada === null) {
-      alert("Por favor, selecciona una mesa.");
-      return;
-    }
-    if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
-      alert("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
-      return;
-    }
-    if (disabledMesas.has(seleccionada)) { // Asegurarse de que no se puede reservar una mesa deshabilitada
-      alert(`La mesa ${seleccionada} está deshabilitada y no se puede reservar.`);
-      closeConfirmReservationModal(); // Cerrar el modal de reserva si la mesa está deshabilitada
-      setSeleccionada(null); // Deseleccionar la mesa
-      return;
-    }
-
+    // Las validaciones ya se hicieron en `openConfirmReservationModal`
+    // Aquí solo se procede si ya se abrió el modal, implicando que las validaciones pasaron.
     const queryParams = new URLSearchParams();
     queryParams.append('mesa', String(seleccionada));
     queryParams.append('sala', selectedSala);
@@ -477,8 +502,13 @@ function Inside() {
               </select>
             </div>
 
+            {/* Mostrar mensaje de error para el administrador */}
+            {adminErrorMessage && user?.role === 'admin' && (
+              <p className={styles.adminErrorMessage}>{adminErrorMessage}</p>
+            )}
+
             {/* Ocultar el botón de reservar si es administrador */}
-            {user?.role !== 'admin' && (
+            {user?.role !== 'admin' && ( // El botón de reservar solo se muestra para usuarios normales
               <button onClick={openConfirmReservationModal} type="button" className={styles.botonCambios}>Reservar</button>
             )}
           </form>
@@ -533,6 +563,7 @@ function Inside() {
               ? 'Duraciones'
               : 'Cantidad de Personas'}
         </h2>
+        
         <div className={styles.optionsList}>
           {optionTypeToManage === 'start_time' ? (
             editableStartTimes.map(option => (
@@ -580,12 +611,18 @@ function Inside() {
             type="text"
             className={styles.addOptionInput}
             value={newOptionValue}
-            onChange={(e) => setNewOptionValue(e.target.value)}
+            onChange={(e) => { setNewOptionValue(e.target.value); setAdminErrorMessage(null); }} // Limpiar error al escribir
             placeholder={`Añadir ${optionTypeToManage === 'start_time' ? 'hora (ej: 09:00 a.m.)' : optionTypeToManage === 'duration' ? 'duración (ej: 1h 30min)' : 'personas (ej: 4)'}`}
           />
           <button type="button" className={styles.addOptionButton} onClick={addOption}>
             Agregar
           </button>
+          </div>
+          {/* Mensaje de error dentro del modal de administración */}
+          <div>
+          {adminErrorMessage && (
+            <p className={styles.adminErrorMessage} style={{ textAlign: 'center', marginBottom: '10px' }}>{adminErrorMessage}</p>
+          )}
         </div>
       </Modal>
 
@@ -598,6 +635,10 @@ function Inside() {
       >
         <button className={styles.closeButton} onClick={closeDisableConfirmModal}>×</button>
         <h2 className={styles.disableModalTitle}>Confirmar Acción</h2>
+        {/* Mensaje de error dentro del modal de confirmación de deshabilitar/habilitar mesa */}
+        {adminErrorMessage && (
+          <p className={styles.adminErrorMessage} style={{ textAlign: 'center', marginBottom: '10px' }}>{adminErrorMessage}</p>
+        )}
         <p className={styles.disableModalText}>
           ¿Estás seguro de que quieres{' '}
           <strong style={{ color: disabledMesas.has(mesaToToggle || 0) ? '#1E8449' : '#e74c3c' }}>
@@ -666,14 +707,6 @@ function Inside() {
     </div>
   );
 }
-
-const Reservar = () => {
-  return (
-    <Suspense>
-      <Inside />
-    </Suspense>
-  )
-};
 
 export default Reservar;
 
