@@ -757,6 +757,19 @@
   border: 1px solid #229954 !important;
 }
 
+.adminErrorMessage {
+  color: #e74c3c; /* Rojo para errores, puedes ajustar el tono */
+  font-size: 0.9em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #e74c3c;
+  background-color: #fcecec; /* Fondo ligeramente rosado */
+  border-radius: 5px;
+  text-align: left; /* Alineación del texto */
+  font-weight: 500;
+}
+
 @media (max-width: 1100px) { 
   .tituloReserva {
     margin-top: 100px; 

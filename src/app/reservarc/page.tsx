@@ -82,6 +82,8 @@ const Reservar = () => {
   const [disableConfirmModalIsOpen, setDisableConfirmModalIsOpen] = useState(false);
   const [cubiculoToToggle, setCubiculoToToggle] = useState<number | null>(null);
 
+  // Nuevo estado para el mensaje de error del administrador
+  const [adminErrorMessage, setAdminErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -101,6 +103,12 @@ const Reservar = () => {
       setSeleccionada(null);
     }
   }, [user]);
+
+   // Limpiar el mensaje de error cuando cambia el tipo de opción a administrar
+    useEffect(() => {
+      setAdminErrorMessage(null);
+    }, [optionTypeToManage]);
+
 
   const capitalizeFirstLetter = (string: string) => {
     if (!string) return '';
@@ -162,6 +170,7 @@ const Reservar = () => {
   // Actualizar handleSelectChange para manejar el nuevo tipo 'people'
   const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>, type: 'start_time' | 'duration' | 'people') => {
     const value = e.target.value;
+    setAdminErrorMessage(null);
     if (value === "manage_options") {
       setOptionTypeToManage(type);
       setManageOptionsModalIsOpen(true);
@@ -185,14 +194,19 @@ const Reservar = () => {
     setManageOptionsModalIsOpen(false);
     setOptionTypeToManage(null);
     setNewOptionValue('');
+    setAdminErrorMessage(null);
   };
 
   const addOption = () => {
-    if (newOptionValue.trim() === '') return;
+    if (newOptionValue.trim() === '') {
+      setAdminErrorMessage("El valor no puede estar vacío.");
+      return;
+    }
+    setAdminErrorMessage(null); // Limpiar error previo si existe
 
     if (optionTypeToManage === 'start_time') {
       if (!/^\d{2}:\d{2}\s(a\.m\.|p\.m\.)$/.test(newOptionValue.trim())) {
-        alert("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m.");
+        setAdminErrorMessage("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m. (ej: 09:00 a.m. o 03:30 p.m.)");
         return;
       }
       setEditableStartTimes(prev => {
@@ -206,47 +220,48 @@ const Reservar = () => {
       let isValidFormat = false;
 
       if (matchHoursMinutes) {
-          const hoursPart = matchHoursMinutes[1];
-          const minutesPart = matchHoursMinutes[2];
+        const hoursPart = matchHoursMinutes[1];
+        const minutesPart = matchHoursMinutes[2];
 
-          let totalMinutes = 0;
-          if (hoursPart) {
-              totalMinutes += parseInt(hoursPart) * 60;
-              isValidFormat = true;
-          }
-          if (minutesPart) {
-              totalMinutes += parseInt(minutesPart);
-              isValidFormat = true;
-          }
+        let totalMinutes = 0;
+        if (hoursPart) {
+          totalMinutes += parseInt(hoursPart) * 60;
+          isValidFormat = true;
+        }
+        if (minutesPart) {
+          totalMinutes += parseInt(minutesPart);
+          isValidFormat = true;
+        }
 
-          if (isValidFormat && totalMinutes > 0) {
-              actualValue = totalMinutes;
-          } else {
-              isValidFormat = false;
-          }
+        if (isValidFormat && totalMinutes > 0) {
+          actualValue = totalMinutes;
+        } else {
+          isValidFormat = false;
+        }
       }
 
       if (!isValidFormat || actualValue === 0) {
-          alert("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
-          return;
+        setAdminErrorMessage("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
+        return;
       }
 
       setEditableDurationOptions(prev => [...prev, { label: newOptionValue.trim(), value: actualValue }]
         .sort((a, b) => a.value - b.value));
-    } else if (optionTypeToManage === 'people') { // Nuevo caso para añadir cantidad de personas
-        const valueNum = parseInt(newOptionValue.trim());
-        if (isNaN(valueNum) || valueNum <= 0) {
-            alert("Por favor, introduce un número válido de personas.");
-            return;
-        }
-        setEditablePeopleOptions(prev => [...prev, { label: `${valueNum} personas`, value: valueNum }]
-            .sort((a, b) => a.value - b.value));
+    } else if (optionTypeToManage === 'people') {
+      const valueNum = parseInt(newOptionValue.trim());
+      if (isNaN(valueNum) || valueNum <= 0) {
+        setAdminErrorMessage("Por favor, introduce un número válido y positivo de personas.");
+        return;
+      }
+      setEditablePeopleOptions(prev => [...prev, { label: `${valueNum} personas`, value: valueNum }]
+        .sort((a, b) => a.value - b.value));
     }
     setNewOptionValue('');
   };
 
 
   const removeOption = (valueToRemove: string) => {
+    setAdminErrorMessage(null);
     if (optionTypeToManage === 'start_time') {
       setEditableStartTimes(prev => prev.filter(option => option !== valueToRemove));
     } else if (optionTypeToManage === 'duration') {
@@ -259,6 +274,7 @@ const Reservar = () => {
   const closeDisableConfirmModal = () => {
     setDisableConfirmModalIsOpen(false);
     setCubiculoToToggle(null);
+    setAdminErrorMessage(null);
   };
 
   const handleConfirmDisableToggle = () => {
@@ -285,6 +301,9 @@ const Reservar = () => {
 
 
   const toggleSeleccion = (numero: number) => {
+
+    setAdminErrorMessage(null);
+
     if (user && user.role === 'admin') {
       setCubiculoToToggle(numero);
       setDisableConfirmModalIsOpen(true);
@@ -292,12 +311,29 @@ const Reservar = () => {
       if (!disabledCubiculos.has(numero)) {
         setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
       } else {
-        alert(`El cubículo ${numero} está deshabilitado y no se puede seleccionar.`);
+        setAdminErrorMessage(`El cubículo ${numero} está deshabilitada y no se puede seleccionar.`);
       }
     }
   };
 
-  const openConfirmReservationModal = () => setConfirmReservationModalIsOpen(true);
+  const openConfirmReservationModal = () => {
+    if (seleccionada === null) {
+       setAdminErrorMessage("Por favor, selecciona un cubículo.");
+      return;
+    }
+    if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
+       setAdminErrorMessage("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
+      return;
+    }
+    if (disabledCubiculos.has(seleccionada)) {
+        setAdminErrorMessage(`El cubículo ${seleccionada} está deshabilitado y no se puede reservar.`);
+        closeModal();
+        setSeleccionada(null);
+        return;
+    }
+    setAdminErrorMessage(null); // Limpiar errores si todo está bien
+    setConfirmReservationModalIsOpen(true);
+  };
 
 
   const displayFormattedDate = formatDisplayDate(selectedCalendarDate);
@@ -322,21 +358,6 @@ const Reservar = () => {
   };
 
   const handleConfirmReservation = () => {
-    if (seleccionada === null) {
-      alert("Por favor, selecciona un cubículo.");
-      return;
-    }
-    if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
-      alert("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
-      return;
-    }
-    if (disabledCubiculos.has(seleccionada)) {
-        alert(`El cubículo ${seleccionada} está deshabilitado y no se puede reservar.`);
-        closeModal();
-        setSeleccionada(null);
-        return;
-    }
-
     const queryParams = new URLSearchParams();
     queryParams.append('cubiculo', String(seleccionada));
     queryParams.append('sala', selectedSala);
@@ -451,6 +472,10 @@ const Reservar = () => {
                 )}
               </select>
             </div>
+            {/* Mostrar mensaje de error para el administrador */}
+            {adminErrorMessage && user?.role === 'admin' && (
+              <p className={styles.adminErrorMessage}>{adminErrorMessage}</p>
+            )}
 
             {user?.role !== 'admin' && (
               <button onClick={openConfirmReservationModal} type="button" className={styles.botonCambios}>Reservar</button>
@@ -558,6 +583,11 @@ const Reservar = () => {
             Agregar
           </button>
         </div>
+        <div>
+          {adminErrorMessage && (
+            <p className={styles.adminErrorMessage} style={{ textAlign: 'center', marginBottom: '10px' }}>{adminErrorMessage}</p>
+          )}
+        </div>
       </Modal>
 
       {/* Nuevo Modal de Confirmación para Deshabilitar/Habilitar Cubículo */}
@@ -569,6 +599,10 @@ const Reservar = () => {
       >
         <button className={styles.closeButton} onClick={closeDisableConfirmModal}>×</button>
         <h2 className={styles.disableModalTitle}>Confirmar Acción</h2>
+        {/* Mensaje de error dentro del modal de confirmación de deshabilitar/habilitar mesa */}
+        {adminErrorMessage && (
+          <p className={styles.adminErrorMessage} style={{ textAlign: 'center', marginBottom: '10px' }}>{adminErrorMessage}</p>
+        )}
         <p className={styles.disableModalText}>
           ¿Estás seguro de que quieres{' '}
           <strong style={{color: disabledCubiculos.has(cubiculoToToggle || 0) ? '#1E8449' : '#e74c3c'}}>
