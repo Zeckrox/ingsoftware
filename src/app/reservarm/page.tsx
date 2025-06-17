@@ -5,6 +5,8 @@ import styles from '../../components/styles/Reserva/reservar.module.css'; // Asu
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
 import SalaReferencia from "@/components/styles/Reserva/MapasMesas/salaReferencia";
+import { useMutation } from '@tanstack/react-query';
+import { useUser } from '@/context/userContext';
 import SalaCientifica from "@/components/styles/Reserva/MapasMesas/salaCientifica";
 import SalaAbdala from "@/components/styles/Reserva/MapasMesas/salaAbdala";
 import SalaHumanistica from "@/components/styles/Reserva/MapasMesas/salaHumanistica";
@@ -46,78 +48,119 @@ const allSalas = {
   ]
 };
 
-// Función de utilidad para convertir hora AM/PM a un formato comparable (minutos desde medianoche)
-const timeToMinutes = (timeString: string): number => {
-  const [time, period] = timeString.split(' ');
-  let [hours, minutes] = time.split(':').map(Number);
+function Inside(){
+   const router = useRouter(); 
+    const [seleccionada, setSeleccionada] = React.useState<number | null>(null);    
+    const [modalIsOpen, setModalIsOpen] = React.useState(false);
+    const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    // Estados para los valores de los InputFields
+    const [horaInicio, setHoraInicio] = useState<string>('');
+    const [duracion, setDuracion] = useState<number>(0); // Guardaremos la duración en minutos
+    const [horaFin, setHoraFin] = useState<string>('');
+    const [cantidadPersonas, setCantidadPersonas] = useState<number>(0);
 
-  if (period === 'p.m.' && hours !== 12) {
-    hours += 12;
-  } else if (period === 'a.m.' && hours === 12) { // 12 AM (medianoche) es 0 horas
-    hours = 0;
-  }
-  return hours * 60 + minutes;
-};
+    const [selectedPiso, setSelectedPiso] = useState<string>('pb'); 
+    const [availableSalas, setAvailableSalas] = useState<string[]>(allSalas.pb); 
+    const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia');
+    const [numerosOcupados, setNumerosOcupados] = useState<number[]>([]);
 
-function Inside() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { user, isLoadingUser } = useUser(); // Obtener información del usuario
 
-  const [seleccionada, setSeleccionada] = useState<number | null>(null);
-  const [confirmReservationModalIsOpen, setConfirmReservationModalIsOpen] = useState(false); // Cambiado a 'confirmReservationModalIsOpen' para no chocar con 'modalIsOpen' del Header
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
-  const [horaInicio, setHoraInicio] = useState<string>('');
-  const [duracion, setDuracion] = useState<number>(0);
-  const [horaFin, setHoraFin] = useState<string>('');
-  const [cantidadPersonas, setCantidadPersonas] = useState<number>(0);
+    //PUSE YO!!: para tener la fecha de la url que esta como date:
+    const [date, setDate] = useState('');
+    const { user, isLoadingUser } = useUser();
 
-  const [selectedPiso, setSelectedPiso] = useState<string>('pb');
-  const [availableSalas, setAvailableSalas] = useState<string[]>(allSalas.pb);
-  const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia');
+    //AMBOS PUSE YO!!
+    useEffect(() => {
+      const paramss = new URLSearchParams(window.location.search);
+      const dateFromUrl = paramss.get('date');
+      if (dateFromUrl) setDate(dateFromUrl);
+    }, []);
 
-  // Estados para la administración de Horarios, Duración y Personas
-  const [editableStartTimes, setEditableStartTimes] = useState<string[]>(initialStartTimeOptions);
-  const [editableDurationOptions, setEditableDurationOptions] = useState(initialDurationOptions);
-  const [editablePeopleOptions, setEditablePeopleOptions] = useState(initialPeopleOptions);
+    useEffect(() => {
+      if (horaInicio && duracion > 0 && date) {
+        getAvailableSpots.mutate();
+      }
+    }, [horaInicio, duracion, date]);
 
-  const [manageOptionsModalIsOpen, setManageOptionsModalIsOpen] = useState(false);
-  const [optionTypeToManage, setOptionTypeToManage] = useState<'start_time' | 'duration' | 'people' | null>(null);
-  const [newOptionValue, setNewOptionValue] = useState<string>('');
+    // AQUI get y post 
+    //GET
+    const getAvailableSpots = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('http://localhost:3000/reservations/availableSpots', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: date,   //sale del url     
+            type: 'table',        
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
 
-  // Estados para la administración de Mesas
-  const [disabledMesas, setDisabledMesas] = useState<Set<number>>(new Set());
-  const [disableConfirmModalIsOpen, setDisableConfirmModalIsOpen] = useState(false);
-  const [mesaToToggle, setMesaToToggle] = useState<number | null>(null);
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'error al obtener espacios');
+        }
 
-  // Nuevo estado para el mensaje de error del administrador
-  const [adminErrorMessage, setAdminErrorMessage] = useState<string | null>(null);
+        return res.json();
+      },
+      onSuccess: (data) => {
+        // alert('Consulta exitosa');
+        console.log('Espacios disponibles:', getAvailableSpots.data);
+        const numeros = data.map((reserva: any) => reserva.tableId.number);
+        setNumerosOcupados(numeros);
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      Modal.setAppElement(document.body);
-    }
-  }, []);
+    //POST
+    const createReserv = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('http://localhost:3000/reservations/createReservation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user._id, //sale del usercontext
+            number: seleccionada, //sale de aqui
+            type: 'table', //CAMBIAR !! en cubiculo
+            date: date,
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
 
-  useEffect(() => {
-    const dateParam = searchParams.get('date');
-    if (dateParam) {
-      setSelectedCalendarDate(dateParam);
-    }
-  }, [searchParams]);
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
 
-  useEffect(() => {
-    // Si el usuario es admin, deselecciona cualquier mesa.
-    // Esto evita que el admin vea una mesa seleccionada en el modo de administración.
-    if (user && user.role === 'admin') {
-      setSeleccionada(null);
-    }
-  }, [user]);
+        return res.json();
+      },
+      onSuccess: () => {
+        alert('reserva exitosa');
+        closeModal();
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
 
-  // Limpiar el mensaje de error cuando cambia el tipo de opción a administrar
-  useEffect(() => {
-    setAdminErrorMessage(null);
-  }, [optionTypeToManage]);
+
+
+    // useEffect para leer la fecha de la URL cuando el componente se monta
+    useEffect(() => {
+        const dateParam = searchParams.get('date');
+        if (dateParam) {
+        setSelectedCalendarDate(dateParam);
+        }
+    }, [searchParams]); // Dependencia en searchParams para re-ejecutar si los parámetros de la URL cambian
 
 
   const capitalizeFirstLetter = (string: string) => {
@@ -254,6 +297,13 @@ function Inside() {
         return;
       }
 
+    //PUSE YO!!!
+    if (isLoadingUser || !user) {
+      return <div>Cargando...</div>;
+    }
+    
+  const toggleSeleccion = (numero: number) => {
+    setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
       setEditableDurationOptions(prev => [...prev, { label: newOptionValue.trim(), value: actualValue }]
         .sort((a, b) => a.value - b.value));
     } else if (optionTypeToManage === 'people') {
@@ -372,8 +422,24 @@ function Inside() {
   };
 
   const handleConfirmReservation = () => {
-    // Las validaciones ya se hicieron en `openConfirmReservationModal`
-    // Aquí solo se procede si ya se abrió el modal, implicando que las validaciones pasaron.
+    // 1. Validar que la mesa esté seleccionada
+    if (seleccionada === null) {
+      alert("Por favor, selecciona una mesa.");
+      return;
+    }
+
+    // PUSE YO!!  
+
+    if (!user) {
+      alert("Debes iniciar sesión.");
+      return;
+    }
+
+    //PUSE YO:!!
+    createReserv.mutate();
+
+
+    // 2. Crear los parámetros de la URL
     const queryParams = new URLSearchParams();
     queryParams.append('mesa', String(seleccionada));
     queryParams.append('sala', selectedSala);
@@ -386,34 +452,24 @@ function Inside() {
     closeConfirmReservationModal();
   };
 
-  // Función para renderizar el componente de mapa correcto
-  const renderMapComponent = () => {
-    const commonProps = {
-      seleccionada: seleccionada,
-      toggleSeleccion: toggleSeleccion,
-      userRole: user?.role, // Pasar el rol del usuario
-      disabledMesas: disabledMesas, // Pasar las mesas deshabilitadas
+   // Función para renderizar el componente de mapa correcto
+    const renderMapComponent = () => {
+      switch (selectedSala) {
+        case "Sala Referencia":
+          return <SalaReferencia seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} ocupados={numerosOcupados}/>; //PUSE YO!! ocupados
+        case "Sala Humanística":
+          return <SalaHumanistica seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        case "Sala Abdalá":
+          return <SalaAbdala seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        case "Sala Científica":
+          return <SalaCientifica seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        case "Sala Ramón J. Velasquez":
+           <h1>Sala Ramón J. Velasquez</h1>
+          return <SalaRamon seleccionada={seleccionada} toggleSeleccion={toggleSeleccion} />;
+        default:
+          return <p>Selecciona una sala para ver el mapa.</p>; // O un componente de mapa por defecto
+      }
     };
-
-    switch (selectedSala) {
-      case "Sala Referencia":
-        return <SalaReferencia {...commonProps} />;
-      case "Sala Humanística":
-        return <SalaHumanistica {...commonProps} />;
-      case "Sala Abdalá":
-        return <SalaAbdala {...commonProps} />;
-      case "Sala Científica":
-        return <SalaCientifica {...commonProps} />;
-      case "Sala Ramón J. Velasquez":
-        return <SalaRamon {...commonProps} />;
-      default:
-        return <p>Selecciona una sala para ver el mapa.</p>;
-    }
-  };
-
-  if (isLoadingUser) {
-    return <div>Cargando información del usuario...</div>;
-  }
 
   return (
     <div className={styles.contenedorGeneral}>
@@ -439,7 +495,8 @@ function Inside() {
                 onChange={(e) => handleSelectChange(e, 'start_time')}
               >
                 <option value="">Selecciona la hora de inicio...</option>
-                {editableStartTimes.map((option) => (
+                {
+                  .map((option) => (
                   <option key={option} value={option}>
                     {option}
                   </option>
@@ -521,11 +578,10 @@ function Inside() {
         </div>
       </div>
 
-      {/* Modal de Confirmación de Reserva (existente) */}
-      {/* Renombrado 'modalIsOpen' a 'confirmReservationModalIsOpen' */}
-      <Modal
-        isOpen={confirmReservationModalIsOpen}
-        onRequestClose={closeConfirmReservationModal}
+    {/* AQUI MODAL PARA CONFIRMAR!!! */}
+    <Modal  
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
         className={styles.modal}
         overlayClassName={styles.overlay}
       >

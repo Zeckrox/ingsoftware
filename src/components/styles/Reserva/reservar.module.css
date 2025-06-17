@@ -216,8 +216,23 @@
 }
 
 .mesaSeleccionada {
-  background-color: #e41212 !important;
+  background-color: #125fe4 !important;
 }
+
+.mesaDisponible {
+  background-color: #4CAF50 !important; /* verde */
+  color: white;
+  border: 2px solid #388E3C;
+}
+
+.mesaNoDisponible {
+  background-color: #e41212 !important; 
+  color: white;
+  border: 2px solid #b71c1c;
+  cursor: not-allowed;
+}
+
+
 
 .filaArriba {
   display: flex;
@@ -740,6 +755,19 @@
   border: 1px solid #229954 !important;
 }
 
+.mesaOcupada {
+  background-color: #ff4d4f;
+  color: white;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.mesaSeleccionada {
+  background-color: #52c41a;
+  color: white;
+  font-weight: bold;
+}
 /* Estilo para cubículos deshabilitados (Rojo) */
 .mesaDisabled {
   background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
