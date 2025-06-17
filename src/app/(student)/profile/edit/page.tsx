@@ -127,7 +127,6 @@ export default function EditProfilePage() {
     }
 
     console.log(user._id)
-    // "http://localhost:3000/users/$`{user._id}`"
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;

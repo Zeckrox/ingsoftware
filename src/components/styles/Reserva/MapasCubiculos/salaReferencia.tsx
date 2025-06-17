@@ -8,6 +8,7 @@ interface SalaReferenciaProps {
   toggleSeleccion: (numero: number) => void;
   userRole?: string; 
   disabledCubiculos: Set<number>;
+  ocupados: { number: number }[]; // 👈 Tipado correcto para ocupados
 }
 
 const SalaReferencia: React.FC<SalaReferenciaProps> = ({
@@ -15,72 +16,48 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
   toggleSeleccion,
   userRole,
   disabledCubiculos,
+  ocupados
 }) => {
   const mesonesSalaReferencia = [1, 2, 3, 4, 5, 6]; 
+
+  const renderMesones = (mesones: number[]) => {
+    return (
+      <div className={styles.filaArriba}>
+        {mesones.map((numero) => {
+          const isOcupado = ocupados.some((ocupadoReserva) => ocupadoReserva.number === numero);
+          const isDisabled = disabledCubiculos.has(numero) || isOcupado;
+          const isSelected = seleccionada === numero;
+
+          let mesonClasses = `${styles.meson}`;
+
+          if (isDisabled) {
+            mesonClasses += ` ${styles.mesaOcupada}`;
+          } else if (isSelected && userRole !== 'admin') {
+            mesonClasses += ` ${styles.mesaSeleccionada}`;
+          }
+
+          return (
+            <button
+              key={numero}
+              className={mesonClasses}
+              onClick={() => toggleSeleccion(numero)}
+              disabled={isDisabled}
+              title={isOcupado ? 'Ocupado' : isDisabled ? 'No disponible' : 'Disponible'}
+            >
+              {numero}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.fondoDecorativo}>
       <div className={styles.mapaContenedorC}>
         <div className={styles.mapa}>
-          {/* Fila superior de mesones */}
-          <div className={styles.filaArriba}>
-            {mesonesSalaReferencia.slice(0, 3).map((numero) => { 
-              const isDisabled = disabledCubiculos.has(numero);
-              const isSelected = seleccionada === numero;
-
-              let mesonClasses = `${styles.meson}`;
-
-              if (isDisabled) {
-                mesonClasses += ` ${styles.cubiculoDisabled}`;
-              } else if (isSelected && userRole !== 'admin') {
-                mesonClasses += ` ${styles.mesaSeleccionada}`;
-              }
-
-              if (!isDisabled && userRole !== 'admin') {
-
-              }
-
-              return (
-                <button
-                  key={numero}
-                  className={mesonClasses}
-                  onClick={() => toggleSeleccion(numero)}
-                >
-                  {numero}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Fila inferior de mesones */}
-          <div className={styles.filaArriba}>
-            {mesonesSalaReferencia.slice(3, 6).map((numero) => { 
-              const isDisabled = disabledCubiculos.has(numero);
-              const isSelected = seleccionada === numero;
-
-              let mesonClasses = `${styles.meson}`;
-
-              if (isDisabled) {
-                mesonClasses += ` ${styles.cubiculoDisabled}`;
-              } else if (isSelected && userRole !== 'admin') {
-                mesonClasses += ` ${styles.mesaSeleccionada}`;
-              }
-
-              if (!isDisabled && userRole !== 'admin') {
-
-              }
-
-              return (
-                <button
-                  key={numero}
-                  className={mesonClasses}
-                  onClick={() => toggleSeleccion(numero)}
-                >
-                  {numero}
-                </button>
-              );
-            })}
-          </div>
+          {renderMesones(mesonesSalaReferencia.slice(0, 3))}
+          {renderMesones(mesonesSalaReferencia.slice(3, 6))}
         </div>
       </div>
     </div>
