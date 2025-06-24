@@ -514,7 +514,7 @@ const Inside = () => {
     
     switch (selectedSala) {
       case "Sala Referencia":
-        return <SalaReferencia {...commonProps} ocupados={numerosOcupados} />;
+        return <SalaReferencia {...commonProps}/>;
       case "Pasillo":
         return <Pasillo {...commonProps} />;
       case "Sala Científica":

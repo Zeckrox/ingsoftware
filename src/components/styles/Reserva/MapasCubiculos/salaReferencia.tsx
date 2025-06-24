@@ -40,7 +40,7 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
               onClick={() => toggleSeleccion(numero)}
               style={userRole == "admin" && isDisabled? {cursor: "pointer", pointerEvents: "auto"} : {}}
               disabled={userRole == "admin"? false: isDisabled}
-              title={isOcupado ? 'Ocupado' : isDisabled ? 'No disponible' : 'Disponible'}
+             title={ isDisabled ? 'No disponible' : 'Disponible'}
             >
               {numero}
             </button>
