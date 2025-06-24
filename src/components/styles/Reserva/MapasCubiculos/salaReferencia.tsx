@@ -1,58 +1,63 @@
 'use client';
 
 import React from 'react';
-import styles from '../reservar.module.css';
+import styles from '../reservar.module.css'; 
 
 interface SalaReferenciaProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
+  userRole?: string; 
+  disabledCubiculos: Set<number>;
 }
 
-const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion }) => {
+const SalaReferencia: React.FC<SalaReferenciaProps> = ({
+  seleccionada,
+  toggleSeleccion,
+  userRole,
+  disabledCubiculos,
+}) => {
+  const mesonesSalaReferencia = [1, 2, 3, 4, 5, 6]; 
+
+  const renderMesones = (mesones: number[]) => {
+    return (
+      <div className={styles.filaArriba}>
+        {mesones.map((numero) => {
+          const isDisabled = disabledCubiculos.has(numero);
+          const isSelected = seleccionada === numero;
+
+          let mesonClasses = `${styles.meson}`;
+
+          if (isDisabled) {
+            mesonClasses += ` ${styles.mesaOcupada}`;
+          } else if (isSelected && userRole !== 'admin') {
+            mesonClasses += ` ${styles.mesaSeleccionada}`;
+          }
+
+          return (
+            <button
+              key={numero}
+              className={mesonClasses}
+              onClick={() => toggleSeleccion(numero)}
+              disabled={isDisabled}
+              title={ isDisabled ? 'No disponible' : 'Disponible'}
+            >
+              {numero}
+            </button>
+          );
+        })}
+      </div>
+    );
+  };
+
   return (
     <div className={styles.fondoDecorativo}>
-      <div className={styles.mapaContenedor}>
+      <div className={styles.mapaContenedorC}>
         <div className={styles.mapa}>
-          {/* Fila superior con cubículos 3, 4, 5, 6 */}
-          <div className={styles.filaArriba}>
-            <button className={`${styles.mesa} ${seleccionada === 3 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(3)}>3</button>
-            <button className={`${styles.mesa} ${seleccionada === 4 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(4)}>4</button>
-            <div className={styles.separacionesRayasVerticales}>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-              </div>
-            <button className={`${styles.mesa} ${seleccionada === 5 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(5)}>5</button>
-            <button className={`${styles.mesa} ${seleccionada === 6 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(6)}>6</button>
-            <div className={styles.separacionesRayasVerticales}>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-                <div className={styles.rayaVertical}></div>
-              </div>
-          </div>
-          
-          {/* Fila media con cubículo 2 */}
-          <div className={styles.filaMedio}>
-            <button className={`${styles.mesa} ${seleccionada === 2 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(2)}>2</button>
-          </div>
-          <div className={styles.espacioRayasHorizontales}>
-              <div className={styles.rayaHorizontal}></div>
-              <div className={styles.rayaHorizontal}></div>
-              <div className={styles.rayaHorizontal}></div>
-              <div className={styles.rayaHorizontal}></div>
-            </div>
-
-          {/* Fila inferior con cubículo 1 */}
-          <div className={styles.filaAbajo}>
-            <button className={`${styles.mesa} ${seleccionada === 1 ? styles.mesaSeleccionada : ''}`} onClick={() => toggleSeleccion(1)}>1</button>
-          </div>
+          {renderMesones(mesonesSalaReferencia.slice(0, 3))}
+          {renderMesones(mesonesSalaReferencia.slice(3, 6))}
         </div>
       </div>
     </div>
-    
   );
 };
 

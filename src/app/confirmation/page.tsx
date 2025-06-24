@@ -1,34 +1,22 @@
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import styles from '../../components/styles/Confirmation/confirmation.module.css';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@/context/userContext'; 
 
-
-const ConfirmationPage = () => {
+function Inside(){
   const searchParams = useSearchParams();
   const { user, isLoadingUser, isAuthenticated } = useUser(); 
 
   // Estados para almacenar los datos recibidos de la URL
-  const [mesa, setMesa] = useState<string | null>(null);
-  const [cubiculo, setCubiculo] = useState<string | null>(null);
-  const [sala, setSala] = useState<string | null>(null);
-  const [dia, setDia] = useState<string | null>(null);
-  const [horaInicio, setHoraInicio] = useState<string | null>(null);
-  const [horaFin, setHoraFin] = useState<string | null>(null);
-  const [cantidadPersonas, setCantidadPersonas] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Lee los parámetros de la URL
-    setMesa(searchParams.get('mesa'));
-    setCubiculo(searchParams.get('cubiculo'))
-    setSala(searchParams.get('sala'));
-    setDia(searchParams.get('dia'));
-    setHoraInicio(searchParams.get('horaInicio'));
-    setHoraFin(searchParams.get('horaFin'));
-    setCantidadPersonas(searchParams.get('cantidadPersonas'));
-  }, [searchParams]); 
+  const [mesa, setMesa] = useState(searchParams.get('mesa'));
+  const [cubiculo, setCubiculo] = useState(searchParams.get('cubiculo'));
+  const [sala, setSala] = useState(searchParams.get('sala'));
+  const [dia, setDia] = useState(searchParams.get('dia'));
+  const [horaInicio, setHoraInicio] = useState(searchParams.get('horaInicio'));
+  const [horaFin, setHoraFin] = useState(searchParams.get('horaFin'));
+  const [cantidadPersonas, setCantidadPersonas] = useState(searchParams.get('cantidadPersonas'));
 
   // Función para formatear la fecha si la recibes en formato ISO
   const formatDisplayDate = (dateString: string | null): string => {
@@ -136,7 +124,7 @@ const ConfirmationPage = () => {
         </div>
 
         <div className={styles.confirmButtonContainer}>
-          <button className={styles.confirmButton}>Confirmar Reserva</button>
+          <button className={styles.confirmButton}>Aceptar</button>
         </div>
 
         <div className={styles.remindersSection}>
@@ -151,6 +139,14 @@ const ConfirmationPage = () => {
       </div>
     </div>
   );
+}
+
+const ConfirmationPage = () => {
+  return(
+    <Suspense>
+      <Inside/>
+    </Suspense>
+  )
 };
 
 export default ConfirmationPage;

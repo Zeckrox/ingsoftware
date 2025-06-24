@@ -187,7 +187,7 @@
   flex-direction: column;
   flex-wrap: wrap;
   gap: 12px;
-  margin-top: 24px;
+  align-items: center;
 }
 
 
@@ -216,8 +216,23 @@
 }
 
 .mesaSeleccionada {
-  background-color: #e41212 !important;
+  background-color: #125fe4 !important;
 }
+
+.mesaDisponible {
+  background-color: #43db64 !important; /* verde */
+  color: white;
+
+
+}
+
+.mesaNoDisponible {
+  background-color: #e41212 !important; 
+  color: white;
+  cursor: not-allowed;
+}
+
+
 
 .filaArriba {
   display: flex;
@@ -274,6 +289,7 @@
   margin-top: 24px;
 }
 
+
 .meson {
   width: 50px;
   height: 80px;
@@ -286,26 +302,30 @@
   transition: background-color 0.2s ease;
 }
 
+
 .mapaContenedor {
   background-color: #f2f2f2;
   border-radius: 24px;
   padding: 24px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.15);
   width: 620px;
   margin-left: 90px;
+  margin-top: 20px;
   position: relative;
 }
 
-.fondoNaranjaAbajo {
-  position: absolute;
-  top: 430px;
-  left: 920px;
-  width: 400px;
-  height: 310px;
-  background-color: #f97316;
-  border-radius: 40px;
-  z-index: 0;
+.mapaContenedorC {
+  background-color: #f2f2f2;
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 15px 15px 10px rgba(0, 0, 0, 0.15);
+  width: 240px;
+  position: relative;
+  align-items: center;
 }
+
+
+
 
 /* Estilos del Modal */
 /* ============ ANIMATIONS ============ */
@@ -404,7 +424,11 @@
   }
 }
 
+
+
 /* hello hello intentoooooooooo */
+
+
 .closeButton {
   position: absolute;
   top: 20px;
@@ -462,80 +486,326 @@
   font-weight: 300;
 }
 
-/* Contenedor Principal */
-.contenedorMapaMinimalista {
+/* Estilos para el select Wrapper y el botón de admin */
+.selectWrapper {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 20px;
-  background-color: #f5f5f5;
-  border-radius: 12px;
-  width: fit-content;
-  margin: 0 auto;
+  gap: 8px; /* Espacio entre el select y el botón */
 }
 
-/* Filas */
-.filaSuperiorMinimalista {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.detalleInput {
+  flex-grow: 1; /* Permite que el select ocupe el espacio restante */
 }
 
-.filaMediaMinimalista, .filaInferiorMinimalista {
-  display: flex;
-  justify-content: center;
-}
-
-/* Cubículos */
-.cubiculoMinimalista {
-  width: 60px;
-  height: 60px;
-  background-color: #04f10c;
+.adminEditButton {
+  background-color: #007bff; /* Un color azul para el botón de editar */
   color: white;
   border: none;
-  border-radius: 6px;
-  font-size: 18px;
-  font-weight: bold;
+  border-radius: 50%; /* Para que sea redondo */
+  width: 35px;
+  height: 35px;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0; /* Evita que el botón se encoja */
 }
 
-.cubiculoMinimalista:hover {
-  background-color: #45a049;
-  transform: scale(1.05);
+.adminEditButton:hover {
+  background-color: #0056b3;
 }
 
-.seleccionadoMinimalista {
-  background-color: #f44336 !important;
-  transform: scale(1.1);
-  box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+
+/* Estilos para el Modal de Administración de Opciones */
+
+/* Estilos para el modal de administración de opciones */
+.manageOptionsModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%; /* Esto permite que sea responsive en pantallas pequeñas */
+  max-width: 400px; /* <--- ESTO ES LO CLAVE PARA EL TAMAÑO */
+  background: #f0efef;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2.5rem; /* Ajusta el padding si el contenido se ve muy apretado */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Espaciado */
-.espacioHorizontal {
-  width: 30px;
+.optionsList {
+  margin-top: 1.5rem;
+  max-height: 200px; /* Limita la altura y permite scroll */
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #fff;
 }
 
-.espacioVertical {
-  height: 30px;
+.optionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  color: #333;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .cubiculoMinimalista {
-    width: 50px;
-    height: 50px;
-    font-size: 16px;
+.optionItem:last-child {
+  border-bottom: none;
+}
+
+.removeOptionButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 10px;
+}
+
+.removeOptionX {
+  color: red;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.removeOptionX:hover {
+  opacity: 0.7;
+}
+
+.addOptionSection {
+  display: flex;
+  gap: 10px;
+  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.addOptionInput {
+  flex-grow: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.addOptionButton {
+  background-color: #f60;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.addOptionButton:hover {
+  background-color: #f97316;
+}
+
+/* Estilos para el Modal de Deshabilitar Cubículo */
+.modalText {
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 1rem;
+}
+
+.confirmActionButton,
+.cancelActionButton {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.confirmActionButton {
+  background-color: #dc3545; /* Rojo para deshabilitar */
+  color: white;
+}
+
+.confirmActionButton:hover {
+  background-color: #c82333;
+}
+
+.cancelActionButton {
+  background-color: #6c757d; /* Gris para cancelar */
+  color: white;
+}
+
+.cancelActionButton:hover {
+  background-color: #5a6268;
+}
+
+/* Estilo para mesas/cubículos deshabilitados (Rojo) */
+.mesaDeshabilitada {
+  background-color: #ff0000 !important; /* Rojo brillante para deshabilitado */
+}
+
+.disableConfirmModal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 400px; /* Tamaño pequeño */
+  background: #f0efef;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar contenido */
+  text-align: center; /* Centrar texto */
+}
+
+.disableModalTitle {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.disableModalText {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+.disableModalText strong {
+  font-weight: 600;
+}
+
+.disableModalActions {
+  display: flex;
+  gap: 1rem; /* Espacio entre los botones */
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+/* Estilos generales para botones dentro de los modales de confirmación */
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  font-weight: 500;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.confirmDisableButton {
+  background-color:  #f97316; /* Rojo para deshabilitar */
+  color: white;
+}
+
+.confirmDisableButton:hover {
+  background-color:  #f97316;
+}
+
+.cancelButton {
+  background-color: #95a5a6; /* Gris para cancelar */
+  color: white;
+}
+
+.cancelButton:hover {
+  background-color: #7f8c8d;
+}
+
+/* Estilo para cubículos deshabilitados (Rojo) */
+.cubiculoDisabled {
+  background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  color: white !important; /* Texto blanco para contraste */
+  cursor: not-allowed;
+  opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
+  border: 1px solid #c0392b !important;
+}
+
+/* Puedes añadir un estilo para los cubículos habilitados si el admin los está habilitando */
+/* No es estrictamente necesario, pero podría ser útil si quieres un color diferente para "habilitar" */
+.cubiculoEnabledByAdmin {
+  background-color: #27ae60 !important; /* Verde, por ejemplo */
+  color: white !important;
+  border: 1px solid #229954 !important;
+}
+
+.mesaOcupada {
+  background-color: #ff4d4f;
+  color: white;
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.mesaSeleccionada {
+  background-color: #52c41a;
+  color: white;
+  font-weight: bold;
+}
+/* Estilo para cubículos deshabilitados (Rojo) */
+.mesaDisabled {
+  background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  color: white !important; /* Texto blanco para contraste */
+  cursor: not-allowed;
+  opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
+  border: 1px solid #c0392b !important;
+}
+
+/* Puedes añadir un estilo para los cubículos habilitados si el admin los está habilitando */
+/* No es estrictamente necesario, pero podría ser útil si quieres un color diferente para "habilitar" */
+.mesaEnabledByAdmin {
+  background-color: #27ae60 !important; /* Verde, por ejemplo */
+  color: white !important;
+  border: 1px solid #229954 !important;
+}
+
+.adminErrorMessage {
+  color: #e74c3c; /* Rojo para errores, puedes ajustar el tono */
+  font-size: 0.9em;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #e74c3c;
+  background-color: #fcecec; /* Fondo ligeramente rosado */
+  border-radius: 5px;
+  text-align: left; /* Alineación del texto */
+  font-weight: 500;
+}
+
+@media (max-width: 1100px) { 
+  .tituloReserva {
+    margin-top: 100px; 
   }
-  
-  .espacioHorizontal {
-    width: 20px;
-  }
-  
-  .espacioVertical {
-    height: 20px;
+}
+
+@media (max-width: 480px) { 
+  .tituloReserva {
+    margin-top: 100px; 
   }
 }

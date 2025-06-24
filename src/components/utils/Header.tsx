@@ -1,21 +1,23 @@
 'use client'; // Añade esto al inicio para usar hooks
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Header.css';
 import Image from 'next/image';
 import { usePathname,  useRouter } from 'next/navigation'
 import Link from 'next/link';
 import Modal from 'react-modal';
 import styles from './Modal.module.css';
+import { useUser } from '@/context/userContext';
 
 export default function Header() {
+  const { user } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname()
   const [modalIsOpen, setModalIsOpen] = useState(false);
-   const router = useRouter(); 
-
+  const router = useRouter(); 
   const openModal = () => setModalIsOpen(true);
   const closeModal = () => setModalIsOpen(false);
+
 
   const handleCalendariomClick = () => {
     router.push('/calendariom'); 
@@ -27,8 +29,14 @@ export default function Header() {
     closeModal();
   };
 
-  if(pathname=="/login" || pathname=="/register")return;
+  useEffect(() => {
+      if (typeof window !== 'undefined') {
+        Modal.setAppElement(document.body);
+      }
+    }, []);
 
+  if(pathname=="/login" || pathname=="/register")return;
+  
   return (
     <header className="header-container">
       <div className="logo-container">
@@ -43,21 +51,49 @@ export default function Header() {
       </div>
       
       <nav className={`nav-menu ${menuOpen ? 'active' : ''}`}>
-        
-        <Link href="/">
-        <button className="nav-button">INICIO</button>
-        </Link>
+        {user && user.role === 'admin' ? (
+          // Enlaces para administradores
+          <>
+            <Link href="/historialreservas"> {/* Asegúrate de que esta ruta exista */}
+              <button className="nav-button">HISTORIAL DE RESERVAS</button>
+            </Link>
 
-        <Link href="/aboutus">
-        <button className="nav-button">NOSOTROS</button>
-        </Link>
+            <button className="nav-button" onClick={openModal}>GESTIONAR DISPONIBILIDAD</button>
 
-        <button className="nav-button" onClick={openModal}>RESERVAR</button>
+            <Link href="/dashboard"> {/* Asegúrate de que esta ruta exista */}
+              <button className="nav-button">DASHBOARD RESERVAS</button>
+            </Link>
+          </>
+        ) : (
+          // Enlaces para estudiantes (y usuarios no logueados)
+          <>
+            <Link href="/">
+              <button className="nav-button">INICIO</button>
+            </Link>
 
+            <Link href="/aboutus">
+              <button className="nav-button">NOSOTROS</button>
+            </Link>
 
-        <Link href="/login">
-        <button className="nav-button login-button">INICIAR SESIÓN</button>
-        </Link>
+            <button className="nav-button" onClick={user ? openModal : () => router.push("/login")}>RESERVAR</button>
+          </>
+        )}
+
+        {!user && (
+          <Link href="/login">
+            <button className="nav-button login-button">INICIAR SESIÓN</button>
+          </Link>
+        )}
+        {user && (
+          <Link href="/profile">
+            <Image
+              src="/images/user.png"
+              alt="Icono de usuario"
+              width={35}
+              height={35}
+            />
+          </Link>
+        )}
       </nav>
       
       <button 
