@@ -783,7 +783,17 @@ const Inside = () => {
         </div>
 
         {/* Renderizado condicional del componente de mapa */}
-        {renderMapComponent()}
+        {user && user.role != 'admin' &&
+          <div onClick={()=> (!horaFin || !horaInicio || !duracion || !cantidadPersonas)? alert("Selecciona horarios y cantidad de personas primero!"): {}}>
+            <div style={!horaFin || !horaInicio || !duracion || !cantidadPersonas? { pointerEvents: "none",opacity: 0.5}: {}}>
+            {renderMapComponent()}
+            </div>
+          </div>
+        }
+        {user && user.role === 'admin' && <>
+            {renderMapComponent()}
+        </>
+        }
 
       </div>
     </div>
