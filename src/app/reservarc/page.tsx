@@ -84,7 +84,7 @@ const Inside = () => {
   const [cubiculoToToggle, setCubiculoToToggle] = useState<number | null>(null);
 
   const [numerosOcupados, setNumerosOcupados] = useState<{number: number}[]>([]);
-  
+  const [infoCubicles, setInfoCubicles] = useState<any[]>([]);
 
 
   useEffect(() => {
@@ -165,10 +165,39 @@ const Inside = () => {
   //para tener la fecha de la url que esta como date:
     const [date, setDate] = useState('');
 
+    //GET
+    const getSpotsInfo = useMutation({
+          mutationFn: async () => {
+            const res = await fetch('https://backendsoftware.vercel.app/cubicles', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return res.json();
+          },
+          onSuccess: (data) => {
+           setInfoCubicles(data)
+           const newDisabled = new Set(disabledCubiculos);
+           for (let x of data){
+            if (!x.isAvailable){newDisabled.add(x.number)}
+           }
+           setDisabledCubiculos(newDisabled)
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
     useEffect(() => {
       const paramss = new URLSearchParams(window.location.search);
       const dateFromUrl = paramss.get('date');
       if (dateFromUrl) setDate(dateFromUrl);
+      getSpotsInfo.mutate()
     }, []);
 
     useEffect(() => {
@@ -359,25 +388,40 @@ const Inside = () => {
     setCubiculoToToggle(null);
   };
 
-  const handleConfirmDisableToggle = () => {
-    if (cubiculoToToggle === null) return;
-
-    setDisabledCubiculos(prev => {
-      const newDisabled = new Set(prev);
-      const action = newDisabled.has(cubiculoToToggle) ? 'HABILITADO' : 'DESHABILITADO';
-
-      if (newDisabled.has(cubiculoToToggle)) {
-        newDisabled.delete(cubiculoToToggle);
-      } else {
-        newDisabled.add(cubiculoToToggle);
-      }
-
-      if (seleccionada === cubiculoToToggle && newDisabled.has(cubiculoToToggle)) {
-          setSeleccionada(null);
-      }
-      return newDisabled;
+  //PATCH
+    const patchCubicle = useMutation({
+      mutationFn: async (info: any) => {
+        const res = await fetch(`https://backendsoftware.vercel.app/cubicles/${info._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            isAvailable: !info.isAvailable
+          }),
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+        return res.json();
+      },
+      onSuccess: (data) => {
+        return data
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
     });
 
+  const handleConfirmDisableToggle = (id:number) => {
+    if (cubiculoToToggle === null) return;
+    let data = infoCubicles.find((x)=> x.number == id)
+    console.log(data)
+    patchCubicle.mutate(data)
+    const newDisabled = new Set(disabledCubiculos);
+    newDisabled.add(id)
+    setDisabledCubiculos(newDisabled)
     closeDisableConfirmModal();
   };
 
@@ -693,7 +737,7 @@ const Inside = () => {
           </button>
           <button
             className={`${styles.button} ${styles.confirmDisableButton}`}
-            onClick={handleConfirmDisableToggle}
+            onClick={()=>handleConfirmDisableToggle(cubiculoToToggle)}
           >
             Sí, {disabledCubiculos.has(cubiculoToToggle || 0) ? 'Habilitar' : 'Deshabilitar'}
           </button>
