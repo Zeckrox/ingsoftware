@@ -397,7 +397,7 @@ function Inside() {
 
     switch (selectedSala) {
       case "Sala Referencia":
-        return <SalaReferencia {...commonProps} ocupados={[]} />;
+        return <SalaReferencia {...commonProps}/>;
       case "Sala Humanística":
         return <SalaHumanistica {...commonProps} />;
       case "Sala Abdalá":

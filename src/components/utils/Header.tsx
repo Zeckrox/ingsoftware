@@ -10,7 +10,8 @@ import styles from './Modal.module.css';
 import { useUser } from '@/context/userContext';
 
 export default function Header() {
-  let user = useUser().user
+  const { user } = useUser();
+  const [userType, setUserType] = useState(user?.role);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname()
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -28,6 +29,24 @@ export default function Header() {
     router.push('/calendarioc'); 
     closeModal();
   };
+
+  async function getUserInfo(){
+    let token = localStorage.getItem("token")
+    if(!token) {
+      setUserType(undefined)
+    }else{
+      let url = `https://backendsoftware.vercel.app/users/findMyUser/${token}`
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('No se pudo obtener el usuario');
+      const data = await res.json();
+      setUserType(data.role)
+    }
+  }
+  
+  useEffect(() => {
+   getUserInfo()
+
+  }, [pathname]);
 
   useEffect(() => {
       if (typeof window !== 'undefined') {
@@ -51,31 +70,49 @@ export default function Header() {
       </div>
       
       <nav className={`nav-menu ${menuOpen ? 'active' : ''}`}>
-        
-        <Link href="/">
-        <button className="nav-button">INICIO</button>
-        </Link>
+        {userType === 'admin' ? (
+          // Enlaces para administradores
+          <>
+            <Link href="/historialreservas"> {/* Asegúrate de que esta ruta exista */}
+              <button className="nav-button">HISTORIAL DE RESERVAS</button>
+            </Link>
 
-        <Link href="/aboutus">
-        <button className="nav-button">NOSOTROS</button>
-        </Link>
+            <button className="nav-button" onClick={openModal}>GESTIONAR DISPONIBILIDAD</button>
 
-        <button className="nav-button" onClick={user? openModal: ()=>router.push("/login")}>RESERVAR</button>
+            <Link href="/dashboard"> {/* Asegúrate de que esta ruta exista */}
+              <button className="nav-button">DASHBOARD RESERVAS</button>
+            </Link>
+          </>
+        ) : (
+          // Enlaces para estudiantes (y usuarios no logueados)
+          <>
+            <Link href="/">
+              <button className="nav-button">INICIO</button>
+            </Link>
 
-        {!user && <Link href="/login">
-          <button className="nav-button login-button">INICIAR SESIÓN</button>
-        </Link>
-        }
-        {
-          user && <Link href="/profile">
-          <Image
-          src="/images/user.png" 
-          alt="Icono de usuario" 
-          width={35} 
-          height={35}/>
-        </Link>
+            <Link href="/aboutus">
+              <button className="nav-button">NOSOTROS</button>
+            </Link>
 
-        }
+            <button className="nav-button" onClick={userType ? openModal : () => router.push("/login")}>RESERVAR</button>
+          </>
+        )}
+
+        {!userType && (
+          <Link href="/login">
+            <button className="nav-button login-button">INICIAR SESIÓN</button>
+          </Link>
+        )}
+        {userType && (
+          <Link href="/profile">
+            <Image
+              src="/images/user.png"
+              alt="Icono de usuario"
+              width={35}
+              height={35}
+            />
+          </Link>
+        )}
       </nav>
       
       <button 

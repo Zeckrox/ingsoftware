@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useState, useCallback, Suspense } from "react";
+import React, { useEffect, useState, useCallback, Suspense, act } from "react";
 import { useSearchParams, useRouter } from 'next/navigation';
 import styles from '../../components/styles/Reserva/reservar.module.css';
 import SalaReferencia from "@/components/styles/Reserva/MapasCubiculos/salaReferencia";
@@ -8,7 +8,7 @@ import SalaCientifica from "@/components/styles/Reserva/MapasCubiculos/salaCient
 import { Poppins } from 'next/font/google';
 import Modal from 'react-modal';
 import { useUser } from "@/context/userContext";
-import { useMutation } from "@tanstack/react-query";
+import { dataTagErrorSymbol, useMutation } from "@tanstack/react-query";
 
 // Opciones iniciales que se cargarán en el estado (pueden venir de una API en un proyecto real)
 const initialStartTimeOptions = [
@@ -55,7 +55,6 @@ const Inside = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, isLoadingUser } = useUser(); // Obtener información del usuario
-
   const [seleccionada, setSeleccionada] = useState<number | null>(null);
   const [confirmReservationModalIsOpen, setConfirmReservationModalIsOpen] = useState(false);
   const [selectedCalendarDate, setSelectedCalendarDate] = useState<string | null>(null);
@@ -84,7 +83,7 @@ const Inside = () => {
   const [cubiculoToToggle, setCubiculoToToggle] = useState<number | null>(null);
 
   const [numerosOcupados, setNumerosOcupados] = useState<{number: number}[]>([]);
-  
+  const [infoCubicles, setInfoCubicles] = useState<any[]>([]);
 
 
   useEffect(() => {
@@ -165,10 +164,196 @@ const Inside = () => {
   //para tener la fecha de la url que esta como date:
     const [date, setDate] = useState('');
 
+    // GET
+    const getDisabledDurations = useMutation({
+          mutationFn: async () => {
+            const res = await fetch('https://backendsoftware.vercel.app/disabled-durations', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return res.json();
+          },
+          onSuccess: (data) => {
+            for (let item of data){
+              if(item.date == date) setEditableDurationOptions(prev => prev.filter(option => option.value !== item.duration))
+            }
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
+    // GET
+    const getDisabledHours = useMutation({
+          mutationFn: async () => {
+            const res = await fetch('https://backendsoftware.vercel.app/disabled-hours', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return res.json();
+          },
+          onSuccess: (data) => {
+            for (let item of data){
+              if(item.date == date) setEditableStartTimes(prev => prev.filter(option => option !== item.hour))
+            }
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
+    // POST
+    const postDisabledDurations = useMutation({
+          mutationFn: async (info: any) => {
+            const res = await fetch(`https://backendsoftware.vercel.app/disabled-durations/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+                body: JSON.stringify({
+                  date: info.date,
+                  duration: info.duration
+                }),
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return info
+          },
+          onSuccess: (info) => {
+            setEditableDurationOptions(prev => prev.filter(option => option.value !== info.duration))
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
+    // POST
+    const postDisabledHours = useMutation({
+          mutationFn: async (info: any) => {
+            const res = await fetch(`https://backendsoftware.vercel.app/disabled-hours/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+                body: JSON.stringify({
+                  date: info.date,
+                  hour: info.hour
+                }),
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return info;
+          },
+          onSuccess: (info) => {
+            setEditableStartTimes(prev => prev.filter(option => option !== info.hour))
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
+// DELETE
+    const deleteDisabledDurations = useMutation({
+          mutationFn: async (info: any) => {
+            const res = await fetch(`https://backendsoftware.vercel.app/disabled-durations/${info.date}/${info.duration}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return info
+          },
+          onSuccess: (info) => {
+            setEditableDurationOptions(prev => [...prev, { label: info.label, value: info.duration }]
+            .sort((a, b) => a.value - b.value));
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);    
+          },
+        });
+
+    // DELETE
+    const deleteDisabledHours = useMutation({
+          mutationFn: async (info: any) => {
+            const res = await fetch(`https://backendsoftware.vercel.app/disabled-hours/${info.date}/${info.hour}`, {
+              method: 'DELETE',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return info;
+          },
+          onSuccess: (info) => {
+            setEditableStartTimes(prev => {
+              const newTimes = [...prev, info.hour];
+              return newTimes.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+            });
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
+
+    //GET
+    const getSpotsInfo = useMutation({
+          mutationFn: async () => {
+            const res = await fetch('https://backendsoftware.vercel.app/cubicles', {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+            if (!res.ok) {
+              const errorData = await res.json();
+              throw new Error(errorData.message || 'error al obtener espacios');
+            }
+            return res.json();
+          },
+          onSuccess: (data) => {
+           setInfoCubicles(data)
+           const newDisabled = new Set(disabledCubiculos);
+           for (let x of data){
+            if (!x.isAvailable){newDisabled.add(x.number)}
+           }
+           setDisabledCubiculos(newDisabled)
+          },
+          onError: (error: any) => {
+            console.error('error en la consulta:', error);
+          },
+        });
+
     useEffect(() => {
       const paramss = new URLSearchParams(window.location.search);
       const dateFromUrl = paramss.get('date');
       if (dateFromUrl) setDate(dateFromUrl);
+      getSpotsInfo.mutate()
+      getDisabledHours.mutate()
+      getDisabledDurations.mutate()
     }, []);
 
     useEffect(() => {
@@ -289,13 +474,11 @@ const Inside = () => {
         alert("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m.");
         return;
       }
-      setEditableStartTimes(prev => {
-        const newTimes = [...prev, newOptionValue.trim()];
-        return newTimes.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
-      });
+      console.log("WHAAT")
+      deleteDisabledHours.mutate({date: date, hour: newOptionValue.trim()})
+
     } else if (optionTypeToManage === 'duration') {
       const matchHoursMinutes = newOptionValue.trim().match(/^(?:(\d+)\s*h)?\s*(?:(\d+)\s*min)?$/i);
-
       let actualValue = 0;
       let isValidFormat = false;
 
@@ -319,26 +502,14 @@ const Inside = () => {
               isValidFormat = false;
           }
       }
-      
     if (isLoadingUser || !user) {
       return <div>Cargando...</div>;
     }
-
-      if (!isValidFormat || actualValue === 0) {
-          alert("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
-          return;
-      }
-
-      setEditableDurationOptions(prev => [...prev, { label: newOptionValue.trim(), value: actualValue }]
-        .sort((a, b) => a.value - b.value));
-    } else if (optionTypeToManage === 'people') { // Nuevo caso para añadir cantidad de personas
-        const valueNum = parseInt(newOptionValue.trim());
-        if (isNaN(valueNum) || valueNum <= 0) {
-            alert("Por favor, introduce un número válido de personas.");
-            return;
-        }
-        setEditablePeopleOptions(prev => [...prev, { label: `${valueNum} personas`, value: valueNum }]
-            .sort((a, b) => a.value - b.value));
+    if (!isValidFormat || actualValue === 0) {
+        alert("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
+        return;
+    }
+    deleteDisabledDurations.mutate({date:date, duration: actualValue, label: newOptionValue.trim() })
     }
     setNewOptionValue('');
   };
@@ -346,9 +517,9 @@ const Inside = () => {
 
   const removeOption = (valueToRemove: string) => {
     if (optionTypeToManage === 'start_time') {
-      setEditableStartTimes(prev => prev.filter(option => option !== valueToRemove));
+      postDisabledHours.mutate({date: date, hour: valueToRemove})
     } else if (optionTypeToManage === 'duration') {
-      setEditableDurationOptions(prev => prev.filter(option => option.label !== valueToRemove));
+      postDisabledDurations.mutate({date, duration: parseInt(valueToRemove)})
     } else if (optionTypeToManage === 'people') { // Nuevo caso para eliminar cantidad de personas
         setEditablePeopleOptions(prev => prev.filter(option => option.label !== valueToRemove));
     }
@@ -359,25 +530,45 @@ const Inside = () => {
     setCubiculoToToggle(null);
   };
 
-  const handleConfirmDisableToggle = () => {
-    if (cubiculoToToggle === null) return;
-
-    setDisabledCubiculos(prev => {
-      const newDisabled = new Set(prev);
-      const action = newDisabled.has(cubiculoToToggle) ? 'HABILITADO' : 'DESHABILITADO';
-
-      if (newDisabled.has(cubiculoToToggle)) {
-        newDisabled.delete(cubiculoToToggle);
-      } else {
-        newDisabled.add(cubiculoToToggle);
-      }
-
-      if (seleccionada === cubiculoToToggle && newDisabled.has(cubiculoToToggle)) {
-          setSeleccionada(null);
-      }
-      return newDisabled;
+  //PATCH
+    const patchCubicle = useMutation({
+      mutationFn: async (info: any) => {
+        const res = await fetch(`https://backendsoftware.vercel.app/cubicles/${info._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            isAvailable: !info.isAvailable
+          }),
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+        await getSpotsInfo.mutate()
+        return res.json();
+      },
+      onSuccess: (data) => {
+        console.log(data)
+        return data
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
     });
 
+  function handleConfirmDisableToggle(id:any) {
+    if (cubiculoToToggle === null) return;
+    let data = infoCubicles.find((x)=> x.number == id)
+    patchCubicle.mutate(data)
+    const newDisabled = new Set(disabledCubiculos);
+    if (data.isAvailable){
+      newDisabled.add(id)
+    }else{
+      newDisabled.delete(id)
+    }
+    setDisabledCubiculos(newDisabled)
     closeDisableConfirmModal();
   };
 
@@ -465,7 +656,7 @@ const Inside = () => {
     
     switch (selectedSala) {
       case "Sala Referencia":
-        return <SalaReferencia {...commonProps} ocupados={numerosOcupados} />;
+        return <SalaReferencia {...commonProps}/>;
       case "Pasillo":
         return <Pasillo {...commonProps} />;
       case "Sala Científica":
@@ -552,9 +743,7 @@ const Inside = () => {
                 {editablePeopleOptions.map((option) => ( // CAMBIO: Usar editablePeopleOptions
                   <option key={option.value} value={option.label}>{option.label}</option>
                 ))}
-                {user?.role === 'admin' && ( // CAMBIO: Opción de administrar para admin
-                  <option value="manage_options" className={styles.manageOption}>Administrar personas...</option>
-                )}
+
               </select>
             </div>
 
@@ -631,7 +820,7 @@ const Inside = () => {
                 <button
                   type="button"
                   className={styles.removeOptionButton}
-                  onClick={() => removeOption(option.label)}
+                  onClick={() => removeOption(`${option.value}`)}
                 >
                   <span className={styles.removeOptionX}>×</span>
                 </button>
@@ -693,7 +882,7 @@ const Inside = () => {
           </button>
           <button
             className={`${styles.button} ${styles.confirmDisableButton}`}
-            onClick={handleConfirmDisableToggle}
+            onClick={()=>handleConfirmDisableToggle(cubiculoToToggle)}
           >
             Sí, {disabledCubiculos.has(cubiculoToToggle || 0) ? 'Habilitar' : 'Deshabilitar'}
           </button>
@@ -734,7 +923,17 @@ const Inside = () => {
         </div>
 
         {/* Renderizado condicional del componente de mapa */}
-        {renderMapComponent()}
+        {user && user.role != 'admin' &&
+          <div onClick={()=> (!horaFin || !horaInicio || !duracion || !cantidadPersonas)? alert("Selecciona horarios y cantidad de personas primero!"): {}}>
+            <div style={!horaFin || !horaInicio || !duracion || !cantidadPersonas? { pointerEvents: "none",opacity: 0.5}: {}}>
+            {renderMapComponent()}
+            </div>
+          </div>
+        }
+        {user && user.role === 'admin' && <>
+            {renderMapComponent()}
+        </>
+        }
 
       </div>
     </div>

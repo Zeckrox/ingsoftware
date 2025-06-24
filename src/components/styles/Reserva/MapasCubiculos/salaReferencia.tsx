@@ -8,7 +8,6 @@ interface SalaReferenciaProps {
   toggleSeleccion: (numero: number) => void;
   userRole?: string; 
   disabledCubiculos: Set<number>;
-  ocupados: { number: number }[]; // 👈 Tipado correcto para ocupados
 }
 
 const SalaReferencia: React.FC<SalaReferenciaProps> = ({
@@ -16,7 +15,6 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
   toggleSeleccion,
   userRole,
   disabledCubiculos,
-  ocupados
 }) => {
   const mesonesSalaReferencia = [1, 2, 3, 4, 5, 6]; 
 
@@ -24,8 +22,7 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
     return (
       <div className={styles.filaArriba}>
         {mesones.map((numero) => {
-          const isOcupado = ocupados.some((ocupadoReserva) => ocupadoReserva.number === numero);
-          const isDisabled = disabledCubiculos.has(numero) || isOcupado;
+          const isDisabled = disabledCubiculos.has(numero);
           const isSelected = seleccionada === numero;
 
           let mesonClasses = `${styles.meson}`;
@@ -41,8 +38,9 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
               key={numero}
               className={mesonClasses}
               onClick={() => toggleSeleccion(numero)}
-              disabled={isDisabled}
-              title={isOcupado ? 'Ocupado' : isDisabled ? 'No disponible' : 'Disponible'}
+              style={userRole == "admin" && isDisabled? {cursor: "pointer", pointerEvents: "auto"} : {}}
+              disabled={userRole == "admin"? false: isDisabled}
+             title={ isDisabled ? 'No disponible' : 'Disponible'}
             >
               {numero}
             </button>
