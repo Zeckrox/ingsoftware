@@ -404,9 +404,11 @@ const Inside = () => {
           const errorText = await res.text();
           throw new Error(`Error: ${res.status} - ${errorText}`);
         }
+        await getSpotsInfo.mutate()
         return res.json();
       },
       onSuccess: (data) => {
+        console.log(data)
         return data
       },
       onError: (error: any) => {
@@ -414,13 +416,16 @@ const Inside = () => {
       },
     });
 
-  const handleConfirmDisableToggle = (id:number) => {
+  function handleConfirmDisableToggle(id:any) {
     if (cubiculoToToggle === null) return;
     let data = infoCubicles.find((x)=> x.number == id)
-    console.log(data)
     patchCubicle.mutate(data)
     const newDisabled = new Set(disabledCubiculos);
-    newDisabled.add(id)
+    if (data.isAvailable){
+      newDisabled.add(id)
+    }else{
+      newDisabled.delete(id)
+    }
     setDisabledCubiculos(newDisabled)
     closeDisableConfirmModal();
   };
