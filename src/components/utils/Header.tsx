@@ -11,6 +11,7 @@ import { useUser } from '@/context/userContext';
 
 export default function Header() {
   const { user } = useUser();
+  const [userType, setUserType] = useState(user?.role);
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname()
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -28,6 +29,24 @@ export default function Header() {
     router.push('/calendarioc'); 
     closeModal();
   };
+
+  async function getUserInfo(){
+    let token = localStorage.getItem("token")
+    if(!token) {
+      setUserType(undefined)
+    }else{
+      let url = `https://backendsoftware.vercel.app/users/findMyUser/${token}`
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('No se pudo obtener el usuario');
+      const data = await res.json();
+      setUserType(data.role)
+    }
+  }
+  
+  useEffect(() => {
+   getUserInfo()
+
+  }, [localStorage.getItem("token")]);
 
   useEffect(() => {
       if (typeof window !== 'undefined') {
@@ -51,7 +70,7 @@ export default function Header() {
       </div>
       
       <nav className={`nav-menu ${menuOpen ? 'active' : ''}`}>
-        {user && user.role === 'admin' ? (
+        {userType === 'admin' ? (
           // Enlaces para administradores
           <>
             <Link href="/historialreservas"> {/* Asegúrate de que esta ruta exista */}
@@ -75,16 +94,16 @@ export default function Header() {
               <button className="nav-button">NOSOTROS</button>
             </Link>
 
-            <button className="nav-button" onClick={user ? openModal : () => router.push("/login")}>RESERVAR</button>
+            <button className="nav-button" onClick={userType ? openModal : () => router.push("/login")}>RESERVAR</button>
           </>
         )}
 
-        {!user && (
+        {!userType && (
           <Link href="/login">
             <button className="nav-button login-button">INICIAR SESIÓN</button>
           </Link>
         )}
-        {user && (
+        {userType && (
           <Link href="/profile">
             <Image
               src="/images/user.png"
