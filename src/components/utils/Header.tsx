@@ -46,7 +46,7 @@ export default function Header() {
   useEffect(() => {
    getUserInfo()
 
-  }, [localStorage.getItem("token")]);
+  }, [pathname]);
 
   useEffect(() => {
       if (typeof window !== 'undefined') {
