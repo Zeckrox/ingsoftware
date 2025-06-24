@@ -6,10 +6,11 @@ import styles from '../reservar.module.css';
 interface SalaReferenciaProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
-  ocupados: number[];
+  disabledMesas:Set<number>;
+  userRole?: string; 
 }
 
-const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion, ocupados }) => {
+const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion, disabledMesas, userRole }) => {
   const obtenerClaseMesa = (numero: number, esRedonda = false, esMeson = false) => {
     let clase = esMeson
       ? styles.meson
@@ -17,11 +18,15 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
       ? styles.redonda
       : styles.mesa;
 
-    if (seleccionada === numero) clase += ` ${styles.mesaSeleccionada}`;
-    if (ocupados.includes(numero)) {
+    if (disabledMesas.has(numero)) {
       clase += ` ${styles.mesaNoDisponible}`; // rojo
     } else {
       clase += ` ${styles.mesaDisponible}`; // verde
+    }
+
+    // La lógica de "seleccionada" solo aplica para usuarios normales, no para el admin
+    if (seleccionada === numero && userRole !== 'admin') {
+      clase += ` ${styles.mesaSeleccionada}`;
     }
 
     return clase;
@@ -37,12 +42,14 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
     esMeson?: boolean;
   }) => (
     <button
-  className={obtenerClaseMesa(numero, esRedonda, esMeson)}
-  onClick={() => !ocupados.includes(numero) && toggleSeleccion(numero)}
-  disabled={ocupados.includes(numero)}
-  title={ocupados.includes(numero) ? 'No disponible' : ''}>
-  {numero}
-</button>
+      className={obtenerClaseMesa(numero, esRedonda, esMeson)}
+      // Deshabilitar el botón si la mesa está en disabledMesas y no estamos en modo admin
+      onClick={() => !disabledMesas.has(numero) && toggleSeleccion(numero)}
+      disabled={disabledMesas.has(numero) && userRole !== 'admin'}
+      title={disabledMesas.has(numero) ? 'No disponible' : ''}
+    >
+      {numero}
+    </button>
   );
     
   return (
