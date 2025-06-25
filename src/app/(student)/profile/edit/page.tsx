@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import styles from "../../../../components/styles/Profile/editForm.module.css";
 import { useUser } from '@/context/userContext';
 import { useMutation } from '@tanstack/react-query';
+
 type ProfileData = {
   nombre: string;
   apellido: string;
@@ -16,6 +17,16 @@ type ProfileData = {
 export default function EditProfilePage() {
   const router = useRouter();
   const { user, isLoadingUser } = useUser();
+
+  
+  if (!user || !user.role) {
+    // router.push("/login"); // Podrías redirigir al login si no hay usuario
+    return <div>Usuario no autenticado o rol no definido.</div>;
+  }
+
+  const isStudent = user.role === 'student';
+
+
   const updateUser = useMutation({
     mutationFn: async () => {
 
@@ -188,6 +199,8 @@ export default function EditProfilePage() {
         {/* Fila 2: Carrera + Teléfono */}
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
+            {isStudent && (
+            <>
             <label htmlFor="carrera">Carrera</label>
             <select
               id="carrera"
@@ -200,6 +213,8 @@ export default function EditProfilePage() {
                 <option key={carrera} value={carrera}>{carrera}</option>
               ))}
             </select>
+            </>
+            )}
           </div>
 
           <div className={styles.formGroup}>

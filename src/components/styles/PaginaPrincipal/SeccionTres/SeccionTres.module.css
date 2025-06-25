@@ -165,10 +165,11 @@
 /* ============ DIVIDERS ============ */
 .orangeBar {
   width: 400px;
-  height: 100%;
+  height: 10px;
   background: #f77e00;
   margin: auto;
 }
+
 
 /* ============ RESPONSIVE ============ */
 @media (max-width: 768px) {

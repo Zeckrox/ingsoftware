@@ -3,8 +3,10 @@ import styles from './SeccionTres.module.css';
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useRouter } from "next/navigation";
+import { useUser } from '@/context/userContext';
 
 export default function SeccionTres() {
+  const { user } = useUser();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const router = useRouter(); 
 
@@ -30,7 +32,7 @@ export default function SeccionTres() {
   return (
     <section className={styles.fondoBibliotecaSillas}>
     <div className={styles.botonWrapper}>
-    <button className={styles.botonAzul} onClick={openModal}>
+    <button className={styles.botonAzul} onClick={user ? openModal : () => router.push("/login")}>
     <span className={styles.iconoBoton}>📋</span>
     Ver espacios disponibles
     </button>
