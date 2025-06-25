@@ -1,0 +1,329 @@
+.aboutSection {
+  padding: 60px 0;
+  background-color: white;
+}
+
+
+.containerTitulo {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: center;}
+
+
+.titulo {
+  font-size: 45px;
+  font-weight: 700;
+  color: #f77e08;
+  margin-bottom: 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+
+
+
+
+
+
+.filtroContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 2rem auto;
+  max-width: 90%;
+  gap: 1rem;
+}
+
+.filtroGrupo {
+  display: flex;
+  flex-direction: column;
+}
+
+.filtroGrupo label {
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.filtroGrupo select {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.filtroGrupo span {
+  font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  color: #000;
+  font-weight: bold;
+}
+
+
+
+
+.buscador {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.iconoLupa {
+  position: absolute;
+  left: 15px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.buscador input {
+  padding: 0.5rem 1rem 0.5rem 2.2rem; /* espacio para el ícono */
+  border: none;
+  border-radius: 8px;
+  background-color: #f1f1f1;
+  font-size: 1rem;
+  min-width: 240px;
+  color: #000;
+  font-family: 'Poppins', sans-serif;
+}
+
+
+
+
+
+.tablaContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;  
+  margin: 2rem auto;
+  overflow-x: auto;
+}
+
+.tablaReservas {
+  width: 1400px;
+  table-layout: fixed;
+  border-collapse: collapse;
+  background-color: #e6e6e6;
+}
+
+.tablaReservas th,
+.tablaReservas td {
+  padding: 4px;
+  text-align: center;
+  border: 1px solid #ffffff;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12px;
+  height: 46px;
+}
+
+.tablaReservas th {
+  background-color: #e6e6e6;
+  color: #333;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.btnInfo {
+  background-color: #ff8000;
+  color: white;
+  padding: 6px 10px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+}
+
+.btnCancelar {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Estilos del Modal */
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -45%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ============ MODAL STRUCTURE ============ */
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 450px;
+  background: #D9D9D9;
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  padding: 2.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  outline: none;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+}
+
+.modalContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ============ MODAL COMPONENTS ============ */
+.modalTitle {
+  width: 100%;
+  margin: 0;
+  padding: 0.5rem;
+  color: white;
+  font-size: 20px;
+  font-weight: normal;
+  background-color: #e46e00;
+  border-radius: 12px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.whiteSquare {
+  margin-top: 15px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.whiteSquareInfo{
+  background-color: white;
+  height: fit-content;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.optionsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+
+
+.optionsContainer span {
+  justify-content: center;
+  color: #000;
+  margin: 10 20px;
+  text-align: center;
+}
+
+
+
+.btnCancelarReservaModal {
+  background-color: #ff4d4d;
+  color: white;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  margin-top: 5px;
+}
+
+
+
+
+/* ============ BUTTONS ============ */
+.closeButton {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  width: 35px;
+  height: 35px;
+  background: #e46e00;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.optionButton {
+  width: 100%;
+  padding: 1.5rem;
+  background: transparent;
+  color: rgb(0, 0, 0);
+  border: none;
+  font-size: 1.5rem;
+  font-weight: 545;
+  letter-spacing: 0.5px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  outline: none;
+}
+
+.optionButton:hover {
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.optionButton:active {
+  transform: translateY(0);
+}
+
+/* ============ DIVIDERS ============ */
+.orangeBar {
+  width: 400px;
+  height: 10px;
+  background: #f77e00;
+  margin: auto;
+}
+
+
+
+
+
+
