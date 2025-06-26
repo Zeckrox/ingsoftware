@@ -260,6 +260,31 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
+.adminSection {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  text-align: center; /* Centrar el botón */
+}
+.adminActionButton {
+  background-color: #FF7E00;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  margin-bottom: 1rem; /* Espacio antes del formulario */
+  text-align: center;
+}
+
+.adminActionButton:hover {
+  opacity: 0.9;
+  
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .detailsGrid {
@@ -288,4 +313,130 @@
   .actionButton, .cancelButton {
     width: 100%;
   }
+}
+
+/* Estilos para los modales */
+/* Estilos para los modales */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.peopleModal, .cancelModal {
+  background-color: white;
+  padding: 3rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.modalTitle {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.peopleCounter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 2rem;
+}
+
+.counterButton {
+  background-color: #FF6B00;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 2rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.counterButton:hover:not(:disabled) {
+  background-color: #E05E00;
+}
+
+.counterButton:disabled {
+  background-color: #e0e0e0;
+  cursor: not-allowed;
+}
+
+.peopleCount {
+  font-size: 2.5rem;
+  min-width: 60px;
+  text-align: center;
+  font-weight: bold;
+  color: #333;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.confirmButton, .cancelModalButton, 
+.noButton, .yesButton {
+  padding: 0.8rem 2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  transition: all 0.2s;
+}
+
+.confirmButton {
+  background-color: #FF6B00;
+  color: white;
+}
+
+.confirmButton:hover {
+  background-color: #E05E00;
+}
+
+.cancelModalButton {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.cancelModalButton:hover {
+  background-color: #d0d0d0;
+}
+
+.noButton {
+  background-color: #ff4444;
+  color: white;
+}
+
+.noButton:hover {
+  background-color: #ee3333;
+}
+
+.yesButton {
+  background-color: #e0e0e0;
+  color: #555;
+}
+
+.yesButton:hover {
+  background-color: #d0d0d0;
 }
