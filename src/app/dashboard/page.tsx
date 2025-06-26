@@ -101,7 +101,8 @@ function DashboardContent() {
       seleccionada: seleccionada, 
       toggleSeleccion: dummyToggleSeleccion, 
       userRole: 'admin', 
-      spaceType: selectedSpaceType, 
+      spaceType: selectedSpaceType,
+      ocupados: [] // Modificar mas adelante
     };
 
     if (selectedSpaceType === 'mesa') {
@@ -183,8 +184,9 @@ function DashboardContent() {
             className={styles.adminSelect}
             value={selectedSala}
             onChange={handleSalaChange}
+            disabled={!availableSalas?.length}
           >
-            {availableSalas.map((salaOption) => (
+            {availableSalas?.map((salaOption) => (
               <option key={salaOption} value={salaOption}>
                 {salaOption}
               </option>
