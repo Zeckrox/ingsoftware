@@ -1,0 +1,49 @@
+.graphsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.graphRow {
+  display: flex;
+  gap: 20px;
+}
+
+.graphCard {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  flex: 1;
+}
+
+.bigNumber {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #2563eb;
+  text-align: center;
+  margin: 10px 0;
+}
+
+.graphSubtitle {
+  text-align: center;
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-top: 8px;
+}
+
+.pieChart, .barChart {
+  position: relative;
+  height: 250px;
+}
+
+.barChart {
+  height: 300px;
+}
+
+@media (max-width: 768px) {
+  .graphRow {
+    flex-direction: column;
+  }
+}
