@@ -93,6 +93,8 @@ function Inside() {
 
   // Nuevo estado para el mensaje de error del administrador
   const [adminErrorMessage, setAdminErrorMessage] = useState<string | null>(null);
+  const [infoMesas, setInfoMesas] = useState<any[]>([]);
+  
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -123,6 +125,234 @@ function Inside() {
 
    //PUSE YO!!: para tener la fecha de la url que esta como date:
     const [date, setDate] = useState('');
+
+    // DESHABILITAR/HABILITAR
+
+      //PATCH
+    const patchMesa = useMutation({
+      mutationFn: async (info: any) => {
+        console.log("hi")
+        console.log(info)
+        const res = await fetch(`https://backendsoftware.vercel.app/tables/${info._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            isAvailable: !info.isAvailable
+          }),
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+        await getSpotsInfo.mutate()
+        return await res.json();
+      },
+      onSuccess: (data) => {
+        console.log(data)
+        return data
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
+        // GET
+        const getDisabledDurations = useMutation({
+              mutationFn: async () => {
+                const res = await fetch('https://backendsoftware.vercel.app/disabled-durations', {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  }
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return res.json();
+              },
+              onSuccess: (data) => {
+                for (let item of data){
+                  if(item.date == date) setEditableDurationOptions(prev => prev.filter(option => option.value !== item.duration))
+                }
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+    
+        // GET
+        const getDisabledHours = useMutation({
+              mutationFn: async () => {
+                const res = await fetch('https://backendsoftware.vercel.app/disabled-hours', {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  }
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return res.json();
+              },
+              onSuccess: (data) => {
+                for (let item of data){
+                  if(item.date == date) setEditableStartTimes(prev => prev.filter(option => option !== item.hour))
+                }
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+    
+        // POST
+        const postDisabledDurations = useMutation({
+              mutationFn: async (info: any) => {
+                const res = await fetch(`https://backendsoftware.vercel.app/disabled-durations/`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                    body: JSON.stringify({
+                      date: info.date,
+                      duration: info.duration
+                    }),
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return info
+              },
+              onSuccess: (info) => {
+                setEditableDurationOptions(prev => prev.filter(option => option.value !== info.duration))
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+    
+        // POST
+        const postDisabledHours = useMutation({
+              mutationFn: async (info: any) => {
+                const res = await fetch(`https://backendsoftware.vercel.app/disabled-hours/`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                    body: JSON.stringify({
+                      date: info.date,
+                      hour: info.hour
+                    }),
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return info;
+              },
+              onSuccess: (info) => {
+                setEditableStartTimes(prev => prev.filter(option => option !== info.hour))
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+    
+    // DELETE
+        const deleteDisabledDurations = useMutation({
+              mutationFn: async (info: any) => {
+                const res = await fetch(`https://backendsoftware.vercel.app/disabled-durations/${info.date}/${info.duration}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  }
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return info
+              },
+              onSuccess: (info) => {
+                setEditableDurationOptions(prev => [...prev, { label: info.label, value: info.duration }]
+                .sort((a, b) => a.value - b.value));
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);    
+              },
+            });
+    
+        // DELETE
+        const deleteDisabledHours = useMutation({
+              mutationFn: async (info: any) => {
+                const res = await fetch(`https://backendsoftware.vercel.app/disabled-hours/${info.date}/${info.hour}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  }
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return info;
+              },
+              onSuccess: (info) => {
+                setEditableStartTimes(prev => {
+                  const newTimes = [...prev, info.hour];
+                  return newTimes.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
+                });
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+    
+    
+        //GET
+        const getSpotsInfo = useMutation({
+              mutationFn: async () => {
+                const res = await fetch('https://backendsoftware.vercel.app/tables', {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  }
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return res.json();
+              },
+              onSuccess: (data) => {
+               setInfoMesas(data)
+               const newDisabled = new Set(disabledMesas);
+               for (let x of data){
+                if (!x.isAvailable){newDisabled.add(x.number)}
+               }
+               setDisabledMesas(newDisabled)
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+    
+        useEffect(() => {
+          const paramss = new URLSearchParams(window.location.search);
+          const dateFromUrl = paramss.get('date');
+          if (dateFromUrl) setDate(dateFromUrl);
+          getSpotsInfo.mutate()
+          getDisabledHours.mutate()
+          getDisabledDurations.mutate()
+        }, []);
+    
+
+    //END OF DESHABILITAR/HABILITAR
+
 
     //AMBOS PUSE YO!!
     useEffect(() => {
@@ -316,10 +546,8 @@ function Inside() {
         setAdminErrorMessage("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m. (ej: 09:00 a.m. o 03:30 p.m.)");
         return;
       }
-      setEditableStartTimes(prev => {
-        const newTimes = [...prev, newOptionValue.trim()];
-        return newTimes.sort((a, b) => timeToMinutes(a) - timeToMinutes(b));
-      });
+      deleteDisabledHours.mutate({date: date, hour: newOptionValue.trim()})
+
     } else if (optionTypeToManage === 'duration') {
       const matchHoursMinutes = newOptionValue.trim().match(/^(?:(\d+)\s*h)?\s*(?:(\d+)\s*min)?$/i);
 
@@ -351,31 +579,17 @@ function Inside() {
         setAdminErrorMessage("Formato de duración inválido. Usa 'X min', 'Y h', o 'Y h Z min' (ej: 1h 30min, 90min, 2h).");
         return;
       }
-
-      setEditableDurationOptions(prev => [...prev, { label: newOptionValue.trim(), value: actualValue }]
-        .sort((a, b) => a.value - b.value));
-    } else if (optionTypeToManage === 'people') {
-      const valueNum = parseInt(newOptionValue.trim());
-      if (isNaN(valueNum) || valueNum <= 0) {
-        setAdminErrorMessage("Por favor, introduce un número válido y positivo de personas.");
-        return;
-      }
-      setEditablePeopleOptions(prev => [...prev, { label: `${valueNum} personas`, value: valueNum }]
-        .sort((a, b) => a.value - b.value));
+     deleteDisabledDurations.mutate({date:date, duration: actualValue, label: newOptionValue.trim() })
     }
     setNewOptionValue('');
   };
 
   const removeOption = (valueToRemove: string) => {
-    // Limpiar mensaje de error al remover
-    setAdminErrorMessage(null);
     if (optionTypeToManage === 'start_time') {
-      setEditableStartTimes(prev => prev.filter(option => option !== valueToRemove));
+      postDisabledHours.mutate({date: date, hour: valueToRemove})
     } else if (optionTypeToManage === 'duration') {
-      setEditableDurationOptions(prev => prev.filter(option => option.label !== valueToRemove));
-    } else if (optionTypeToManage === 'people') {
-      setEditablePeopleOptions(prev => prev.filter(option => option.label !== valueToRemove));
-    }
+      postDisabledDurations.mutate({date, duration: parseInt(valueToRemove)})
+    } 
   };
 
   // --- Funciones para Deshabilitar/Habilitar Mesas ---
@@ -385,19 +599,18 @@ function Inside() {
     setAdminErrorMessage(null); // Limpiar mensaje de error al cerrar el modal
   };
 
-  const handleConfirmDisableToggle = () => {
+  const handleConfirmDisableToggle = (id:any) => {
     if (mesaToToggle === null) return;
-
+    let data = infoMesas.find((x)=> x.number == id)
+    patchMesa.mutate(data)
     setDisabledMesas(prev => {
       const newDisabled = new Set(prev);
       const action = newDisabled.has(mesaToToggle) ? 'HABILITADA' : 'DESHABILITADA';
-
       if (newDisabled.has(mesaToToggle)) {
         newDisabled.delete(mesaToToggle);
       } else {
         newDisabled.add(mesaToToggle);
       }
-
       // Si la mesa que el admin está deshabilitando estaba seleccionada, la deseleccionamos
       if (seleccionada === mesaToToggle && newDisabled.has(mesaToToggle)) {
         setSeleccionada(null);
@@ -594,9 +807,6 @@ function Inside() {
                     {option.label}
                   </option>
                 ))}
-                {user?.role === 'admin' && (
-                  <option value="manage_options" className={styles.manageOption}>Administrar personas...</option>
-                )}
               </select>
             </div>
 
@@ -683,7 +893,7 @@ function Inside() {
                 <button
                   type="button"
                   className={styles.removeOptionButton}
-                  onClick={() => removeOption(option.label)}
+                  onClick={() => removeOption(`${option.value}`)}
                 >
                   <span className={styles.removeOptionX}>×</span>
                 </button>
@@ -755,7 +965,7 @@ function Inside() {
           </button>
           <button
             className={`${styles.button} ${styles.confirmDisableButton}`}
-            onClick={handleConfirmDisableToggle}
+            onClick={()=> handleConfirmDisableToggle(mesaToToggle)}
           >
             Sí, {disabledMesas.has(mesaToToggle || 0) ? 'Habilitar' : 'Deshabilitar'}
           </button>

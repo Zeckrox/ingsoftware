@@ -46,7 +46,7 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
     <button
       className={obtenerClaseMesa(numero, esRedonda, esMeson)}
       // Deshabilitar el botón si la mesa está en disabledMesas y no estamos en modo admin
-      onClick={() => !disabledMesas.has(numero) && toggleSeleccion(numero)}
+      onClick={() => (!disabledMesas.has(numero) || userRole == 'admin') && toggleSeleccion(numero)}
       disabled={(disabledMesas.has(numero) || ocupados.includes(numero)) && userRole !== 'admin'}
       title={(disabledMesas.has(numero) || ocupados.includes(numero)) ? 'No disponible' : ''}
     >
