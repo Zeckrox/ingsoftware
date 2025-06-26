@@ -12,38 +12,82 @@
 
 .graphCard {
   background: white;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.graphTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #1e40af; /* Azul oscuro para títulos */
+  margin-bottom: 16px;
+  text-align: center;
 }
 
 .bigNumber {
-  font-size: 2.5rem;
-  font-weight: bold;
-  color: #2563eb;
+  font-size: 3rem;
+  font-weight: 700;
+  color: #000000;
   text-align: center;
   margin: 10px 0;
+  line-height: 1;
 }
 
 .graphSubtitle {
   text-align: center;
-  color: #64748b;
+  color: #3b82f6; /* Azul secundario */
   font-size: 0.875rem;
   margin-top: 8px;
 }
 
-.pieChart, .barChart {
+.pieChartWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 10px 0;
+}
+
+.pieChart {
   position: relative;
-  height: 250px;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.barChartContainer {
+  position: relative;
+  width: 100%;
+  padding: 0 10px;
 }
 
 .barChart {
-  height: 300px;
+  position: relative;
+  height: 250px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 @media (max-width: 768px) {
   .graphRow {
     flex-direction: column;
+  }
+  
+  .pieChart {
+    max-width: 250px;
+    height: 220px;
+  }
+  
+  .bigNumber {
+    font-size: 2.5rem;
+  }
+  
+  .barChart {
+    height: 220px;
   }
 }
