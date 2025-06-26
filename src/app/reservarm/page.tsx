@@ -10,7 +10,7 @@ import SalaAbdala from "@/components/styles/Reserva/MapasMesas/salaAbdala";
 import SalaHumanistica from "@/components/styles/Reserva/MapasMesas/salaHumanistica";
 import SalaRamon from "@/components/styles/Reserva/MapasMesas/salaRamonJV";
 import { useUser } from "@/context/userContext"; // Importar useUser
-
+import { useMutation } from "@tanstack/react-query";
 // Las opciones iniciales ahora serán los valores por defecto para los estados
 const initialStartTimeOptions = [
   "08:00 a.m.", "08:30 a.m.", "09:00 a.m.", "09:30 a.m.",
@@ -84,6 +84,7 @@ function Inside() {
   const [manageOptionsModalIsOpen, setManageOptionsModalIsOpen] = useState(false);
   const [optionTypeToManage, setOptionTypeToManage] = useState<'start_time' | 'duration' | 'people' | null>(null);
   const [newOptionValue, setNewOptionValue] = useState<string>('');
+  const [numerosOcupados, setNumerosOcupados] = useState<number[]>([]);
 
   // Estados para la administración de Mesas
   const [disabledMesas, setDisabledMesas] = useState<Set<number>>(new Set());
@@ -118,6 +119,103 @@ function Inside() {
   useEffect(() => {
     setAdminErrorMessage(null);
   }, [optionTypeToManage]);
+
+
+   //PUSE YO!!: para tener la fecha de la url que esta como date:
+    const [date, setDate] = useState('');
+
+    //AMBOS PUSE YO!!
+    useEffect(() => {
+      const paramss = new URLSearchParams(window.location.search);
+      const dateFromUrl = paramss.get('date');
+      if (dateFromUrl) setDate(dateFromUrl);
+    }, []);
+
+    useEffect(() => {
+      if (horaInicio && duracion > 0 && date) {
+        getAvailableSpots.mutate();
+      }
+    }, [horaInicio, duracion, date]);
+
+    // AQUI get y post 
+    //GET
+    const getAvailableSpots = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('https://backendsoftware.vercel.app/reservations/availableSpots', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: date,   //sale del url     
+            type: 'table',        
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'error al obtener espacios');
+        }
+
+        return res.json();
+      },
+      onSuccess: (data) => {
+        // alert('Consulta exitosa');
+        console.log('Espacios disponibles:', getAvailableSpots.data);
+        const numeros = data.map((reserva: any) => reserva.number);
+        console.log(numeros)
+        setNumerosOcupados(numeros);
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
+    //POST
+    const createReserv = useMutation({
+      mutationFn: async () => {
+        const res = await fetch('https://backendsoftware.vercel.app/reservations/createReservation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userId: user?._id, //sale del usercontext
+            number: seleccionada, //sale de aqui
+            type: 'table', //CAMBIAR !! en cubiculo
+            date: date,
+            startTime: horaInicio,   //sale del form
+            duration: duracion  //sale del form
+          }),
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+
+        return res.json();
+      },
+      onSuccess: () => {
+        const queryParams = new URLSearchParams();
+        alert('reserva exitosa');
+        router.push(`/confirmation?${queryParams.toString()}`);
+        closeConfirmReservationModal();
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
+    // useEffect para leer la fecha de la URL cuando el componente se monta
+    useEffect(() => {
+        const dateParam = searchParams.get('date');
+        if (dateParam) {
+        setSelectedCalendarDate(dateParam);
+        }
+    }, [searchParams]); // Dependencia en searchParams para re-ejecutar si los parámetros de la URL cambian
 
 
   const capitalizeFirstLetter = (string: string) => {
@@ -381,9 +479,8 @@ function Inside() {
     queryParams.append('horaInicio', horaInicio);
     queryParams.append('horaFin', horaFin);
     queryParams.append('cantidadPersonas', String(cantidadPersonas));
-
-    router.push(`/confirmation?${queryParams.toString()}`);
-    closeConfirmReservationModal();
+    
+    createReserv.mutate();
   };
 
   // Función para renderizar el componente de mapa correcto
@@ -393,6 +490,7 @@ function Inside() {
       toggleSeleccion: toggleSeleccion,
       userRole: user?.role, // Pasar el rol del usuario
       disabledMesas: disabledMesas, // Pasar las mesas deshabilitadas
+      ocupados: numerosOcupados
     };
 
     switch (selectedSala) {
@@ -700,7 +798,17 @@ function Inside() {
         </div>
 
         {/* Renderizado condicional del componente de mapa */}
-        {renderMapComponent()}
+        {user && user.role != 'admin' &&
+          <div onClick={()=> (!horaFin || !horaInicio || !duracion || !cantidadPersonas)? alert("Selecciona horarios y cantidad de personas primero!"): {}}>
+            <div style={!horaFin || !horaInicio || !duracion || !cantidadPersonas? { pointerEvents: "none",opacity: 0.5}: {}}>
+            {renderMapComponent()}
+            </div>
+          </div>
+        }
+        {user && user.role === 'admin' && <>
+            {renderMapComponent()}
+        </>
+        }
 
 
       </div>

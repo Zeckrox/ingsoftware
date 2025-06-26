@@ -8,6 +8,7 @@ interface SalaReferenciaProps {
   toggleSeleccion: (numero: number) => void;
   userRole?: string; 
   disabledCubiculos: Set<number>;
+  ocupados: { number: number }[];
 }
 
 const SalaReferencia: React.FC<SalaReferenciaProps> = ({
@@ -15,6 +16,7 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
   toggleSeleccion,
   userRole,
   disabledCubiculos,
+  ocupados
 }) => {
   const mesonesSalaReferencia = [1, 2, 3, 4, 5, 6]; 
 
@@ -22,7 +24,8 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
     return (
       <div className={styles.filaArriba}>
         {mesones.map((numero) => {
-          const isDisabled = disabledCubiculos.has(numero);
+          const isOcupado = ocupados.some((ocupadoReserva: any) => ocupadoReserva.number === numero);
+          const isDisabled = disabledCubiculos.has(numero) || isOcupado;
           const isSelected = seleccionada === numero;
 
           let mesonClasses = `${styles.meson}`;

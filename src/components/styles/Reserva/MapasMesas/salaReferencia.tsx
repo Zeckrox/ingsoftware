@@ -7,19 +7,21 @@ interface SalaReferenciaProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
   disabledMesas:Set<number>;
-  userRole?: string; 
+  userRole?: string;
+  ocupados: any;
 }
 
-const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion, disabledMesas, userRole }) => {
+const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSeleccion, disabledMesas, userRole, ocupados }) => {
   const obtenerClaseMesa = (numero: number, esRedonda = false, esMeson = false) => {
     let clase = esMeson
       ? styles.meson
       : esRedonda
       ? styles.redonda
       : styles.mesa;
-
-    if (disabledMesas.has(numero)) {
+    if (disabledMesas.has(numero) || ocupados.includes(numero)) {
       clase += ` ${styles.mesaNoDisponible}`; // rojo
+    }else if (seleccionada == numero && userRole !== 'admin') {
+      clase += ` ${styles.mesaSeleccionada}`;
     } else {
       clase += ` ${styles.mesaDisponible}`; // verde
     }
@@ -45,8 +47,8 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
       className={obtenerClaseMesa(numero, esRedonda, esMeson)}
       // Deshabilitar el botón si la mesa está en disabledMesas y no estamos en modo admin
       onClick={() => !disabledMesas.has(numero) && toggleSeleccion(numero)}
-      disabled={disabledMesas.has(numero) && userRole !== 'admin'}
-      title={disabledMesas.has(numero) ? 'No disponible' : ''}
+      disabled={(disabledMesas.has(numero) || ocupados.includes(numero)) && userRole !== 'admin'}
+      title={(disabledMesas.has(numero) || ocupados.includes(numero)) ? 'No disponible' : ''}
     >
       {numero}
     </button>

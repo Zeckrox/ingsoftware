@@ -8,6 +8,7 @@ interface SalaCientificaProps {
   toggleSeleccion: (numero: number) => void;
   userRole?: string; 
   disabledCubiculos: Set<number>; 
+  ocupados: { number: number }[];
 }
 
 const SalaCientifica: React.FC<SalaCientificaProps> = ({
@@ -15,6 +16,7 @@ const SalaCientifica: React.FC<SalaCientificaProps> = ({
   toggleSeleccion,
   userRole,
   disabledCubiculos,
+  ocupados
 }) => {
 
   const mesonesSalaCientifica = [11, 12, 13, 14, 15, 16];
@@ -26,7 +28,8 @@ const SalaCientifica: React.FC<SalaCientificaProps> = ({
           {/* Fila superior de mesones */}
           <div className={styles.filaArriba}>
             {mesonesSalaCientifica.slice(0, 3).map((numero) => { 
-              const isDisabled = disabledCubiculos.has(numero);
+              const isOcupado = ocupados.some((ocupadoReserva: any) => ocupadoReserva.number === numero);
+              const isDisabled = disabledCubiculos.has(numero) || isOcupado;
               const isSelected = seleccionada === numero;
 
               let mesonClasses = `${styles.meson}`;
@@ -55,8 +58,10 @@ const SalaCientifica: React.FC<SalaCientificaProps> = ({
           </div>
 
           <div className={styles.filaArriba}>
-            {mesonesSalaCientifica.slice(3, 6).map((numero) => { 
-              const isDisabled = disabledCubiculos.has(numero);
+            {mesonesSalaCientifica.slice(3, 6).map((numero) => {
+              const isOcupado = ocupados.some((ocupadoReserva: any) => ocupadoReserva.number === numero);
+
+              const isDisabled = disabledCubiculos.has(numero) || isOcupado;
               const isSelected = seleccionada === numero;
 
               let mesonClasses = `${styles.meson}`;

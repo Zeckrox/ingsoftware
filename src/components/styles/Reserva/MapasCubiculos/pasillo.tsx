@@ -7,7 +7,8 @@ interface PasilloProps {
   seleccionada: number | null;
   toggleSeleccion: (numero: number) => void;
   userRole?: string; 
-  disabledCubiculos: Set<number>; 
+  disabledCubiculos: Set<number>;
+  ocupados: { number: number }[];
 }
 
 const Pasillo: React.FC<PasilloProps> = ({
@@ -15,6 +16,7 @@ const Pasillo: React.FC<PasilloProps> = ({
   toggleSeleccion,
   userRole,
   disabledCubiculos,
+  ocupados
 }) => {
 
   const mesones = [7, 8, 9, 10]; 
@@ -25,7 +27,8 @@ const Pasillo: React.FC<PasilloProps> = ({
         <div className={styles.mapa}>
           <div className={styles.filaArriba}>
             {mesones.map((numero) => {
-              const isDisabled = disabledCubiculos.has(numero);
+              const isOcupado = ocupados.some((ocupadoReserva: any) => ocupadoReserva.number === numero);
+              const isDisabled = disabledCubiculos.has(numero) || isOcupado;
               const isSelected = seleccionada === numero;
 
               let mesonClasses = `${styles.meson}`; 
