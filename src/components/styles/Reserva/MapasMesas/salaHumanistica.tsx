@@ -9,13 +9,14 @@ interface SalaHumanisticaProps {
   toggleSeleccion: (numero: number) => void;
   userRole?: string; // Añadir el rol del usuario
   disabledMesas: Set<number>; // Conjunto de mesas deshabilitadas
+  ocupados: any;
 }
 
-const SalaHumanistica: React.FC<SalaHumanisticaProps> = ({ seleccionada, toggleSeleccion, userRole, disabledMesas }) => {
+const SalaHumanistica: React.FC<SalaHumanisticaProps> = ({ seleccionada, toggleSeleccion, userRole, disabledMesas, ocupados }) => {
 
   // Función auxiliar para renderizar un botón de mesa
   const renderMesaButton = (numero: number, baseStyle: string) => {
-    const isDisabled = disabledMesas.has(numero);
+    const isDisabled = disabledMesas.has(numero) || ocupados.includes(numero);
     const isSelected = seleccionada === numero;
 
     let buttonClasses = `${baseStyle}`;

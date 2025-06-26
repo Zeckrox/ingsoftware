@@ -260,6 +260,31 @@
   box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
+.adminSection {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  text-align: center; /* Centrar el botón */
+}
+.adminActionButton {
+  background-color: #FF7E00;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  margin-bottom: 1rem; /* Espacio antes del formulario */
+  text-align: center;
+}
+
+.adminActionButton:hover {
+  opacity: 0.9;
+  
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .detailsGrid {

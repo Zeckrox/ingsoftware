@@ -5,8 +5,10 @@ import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import Modal from 'react-modal';
 import { useRouter } from "next/navigation";
+import { useUser } from '@/context/userContext';
 
 export default function SeccionUno() {
+  const { user } = useUser();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const router = useRouter(); 
 
@@ -43,7 +45,7 @@ export default function SeccionUno() {
             <p className={styles.pedroGrases}>Biblioteca Pedro Grases</p>
             <br></br>
 
-            <button className={styles.botonReservar} onClick={openModal}>
+            <button className={styles.botonReservar} onClick={user ? openModal : () => router.push("/login")}>
               Reservar
             </button>
             <br></br>

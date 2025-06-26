@@ -164,6 +164,34 @@ const Inside = () => {
   //para tener la fecha de la url que esta como date:
     const [date, setDate] = useState('');
 
+      //PATCH
+    const patchCubicle = useMutation({
+      mutationFn: async (info: any) => {
+        const res = await fetch(`https://backendsoftware.vercel.app/cubicles/${info._id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            isAvailable: !info.isAvailable
+          }),
+        });
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Error: ${res.status} - ${errorText}`);
+        }
+        await getSpotsInfo.mutate()
+        return res.json();
+      },
+      onSuccess: (data) => {
+        console.log(data)
+        return data
+      },
+      onError: (error: any) => {
+        console.error('error en la consulta:', error);
+      },
+    });
+
     // GET
     const getDisabledDurations = useMutation({
           mutationFn: async () => {
@@ -474,7 +502,6 @@ const Inside = () => {
         alert("Formato de hora inválido. Usa HH:MM a.m. o HH:MM p.m.");
         return;
       }
-      console.log("WHAAT")
       deleteDisabledHours.mutate({date: date, hour: newOptionValue.trim()})
 
     } else if (optionTypeToManage === 'duration') {
@@ -520,43 +547,13 @@ const Inside = () => {
       postDisabledHours.mutate({date: date, hour: valueToRemove})
     } else if (optionTypeToManage === 'duration') {
       postDisabledDurations.mutate({date, duration: parseInt(valueToRemove)})
-    } else if (optionTypeToManage === 'people') { // Nuevo caso para eliminar cantidad de personas
-        setEditablePeopleOptions(prev => prev.filter(option => option.label !== valueToRemove));
-    }
+    } 
   };
 
   const closeDisableConfirmModal = () => {
     setDisableConfirmModalIsOpen(false);
     setCubiculoToToggle(null);
   };
-
-  //PATCH
-    const patchCubicle = useMutation({
-      mutationFn: async (info: any) => {
-        const res = await fetch(`https://backendsoftware.vercel.app/cubicles/${info._id}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            isAvailable: !info.isAvailable
-          }),
-        });
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`Error: ${res.status} - ${errorText}`);
-        }
-        await getSpotsInfo.mutate()
-        return res.json();
-      },
-      onSuccess: (data) => {
-        console.log(data)
-        return data
-      },
-      onError: (error: any) => {
-        console.error('error en la consulta:', error);
-      },
-    });
 
   function handleConfirmDisableToggle(id:any) {
     if (cubiculoToToggle === null) return;

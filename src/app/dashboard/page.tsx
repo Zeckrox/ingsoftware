@@ -102,7 +102,8 @@ function DashboardContent() {
       seleccionada: seleccionada, 
       toggleSeleccion: dummyToggleSeleccion, 
       userRole: 'admin', 
-      spaceType: selectedSpaceType, 
+      spaceType: selectedSpaceType,
+      ocupados: [] // Modificar mas adelante
     };
 
     if (selectedSpaceType === 'mesa') {
