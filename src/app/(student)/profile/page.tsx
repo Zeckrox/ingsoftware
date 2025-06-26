@@ -8,25 +8,84 @@ import styles from '../../../components/styles/Profile/profile.module.css'; // A
 import RegisterForm from '../../../components/auth/registerFormAdmin'; // Importa el RegisterForm
 import { useUser } from '@/context/userContext'; // Asegúrate de que userContext provee el role del usuario
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isLoadingUser } = useUser();
   const [showRegisterAdminForm, setShowRegisterAdminForm] = useState(false); // Estado para controlar la visibilidad del formulario de admin
 
-  if (isLoadingUser) {
+
+  const { data: reservas = [], isLoading, isError } = useQuery({
+    queryKey: ['reservas', user?._id], 
+    queryFn: async () => {
+      const res = await fetch(`http://localhost:3000/reservations/reservas-user/${user._id}`);
+      if (!res.ok) throw new Error('error al cargar reserv');
+      return res.json();
+    },
+    enabled: !!user, 
+  });
+
+    if (isLoadingUser) {
     return <div>Cargando...</div>;
   }
 
-  if (!user || !user.role) {
-    // router.push("/login"); // Podrías redirigir al login si no hay usuario
-    return <div>Usuario no autenticado o rol no definido.</div>;
+  if (!user) {
+    // router.push("/login"); // se puede redirect al login si no hay user act
+    return <div>Usuario no autenticado</div>;
   }
+
+  
+  if (isLoadingUser || isLoading || !user) {
+    return <div>Cargando...</div>;
+  }
+
+  if (isError) {
+    return <div>Error al cargar tus reservas</div>;
+  }
+
+  // para separar reservas activas y el histirial de las pasadas comparando fechas
+  const ahora = new Date();
+  const reservasActivas = reservas.filter((reserva: any) => new Date(reserva.date) >= ahora);
+  const reservasPasadas = reservas.filter((reserva: any) => new Date(reserva.date) < ahora);
+
 
   function handleLogOut() {
     localStorage.removeItem("token");
     router.push("/");
   }
+
+  // mejor hacer una card para acortar codigo (pagina lentaaa)
+  const renderReservaCard = (reserva: any) => {
+    const fecha = new Date(reserva.date).toLocaleDateString();
+    const horaInicio = reserva.timeblocks?.[0] || 10;
+    // hacer logica bien de horaaaa!!! y abajo cambiar
+    const horaFin = reserva.timeblocks?.[reserva.timeblocks.length - 1] + 1 || 12;
+
+    return (
+      <div key={reserva._id} className={styles.reservationCard}>
+        <div className={styles.reservationImageContainer}>
+          <Image 
+            src="/images/Mesas.jpg" 
+            alt="Reserva"
+            fill
+            className={styles.reservationImage}
+          />
+          <div className={styles.mesaBadge}>
+            {reserva.tableId ? `Mesa ${reserva.number}` : `Cubículo ${reserva.number}`}
+          </div>
+        </div>
+        <div className={styles.reservationDetails}>
+          <p><strong>Fecha:</strong> {fecha}</p>
+          {/* AQUI CAMBIAR HORAAAAAA */}
+          <p><strong>Horario:</strong> {horaInicio}:00 - {horaFin}:00</p> 
+          <p><strong>Sala:</strong> {reserva.room}</p>
+          <p><strong>Personas:</strong> {reserva.floorNumber}</p>
+        </div>
+      </div>
+    );
+  };
+
 
   const isAdmin = user.role === 'admin';
   const isStudent = user.role === 'student';
@@ -50,7 +109,7 @@ export default function ProfilePage() {
         </Link>
       </div>
 
-      {/* Información del usuario */}
+      {/* informacion del usuario */}
       <div className={styles.userInfoSection}>
         <h2 className={styles.userName}>{`${user.firstName} ${user.lastName}`}</h2>
         <p className={styles.userEmail}>{user.email}</p>
@@ -74,10 +133,18 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Reservas Activas - Solo para estudiantes */}
+      {/* Reservas activas (studiantes */}
       {isStudent && (
         <>
-          <h3 className={styles.sectionTitle}>Reservas Activas</h3>
+        <h3 className={styles.sectionTitle}>Reservas activas</h3>
+        {reservasActivas.length === 0 ? (
+          <p className={styles.noReservations}>No tienes reservas activas actualmente</p>
+        ) : (
+          <div className={styles.reservationSection}>
+            {reservasActivas.map((reserva: any) => renderReservaCard(reserva))}
+          </div>
+        )}
+          {/* <h3 className={styles.sectionTitle}>Reservas Activas</h3>
           <div className={styles.reservationSection}>
             <div className={styles.reservationCard}>
               <div className={styles.reservationImageContainer}>
@@ -100,10 +167,18 @@ export default function ProfilePage() {
               <button className={styles.actionButton}>Modificar cant. personas</button>
               <button className={styles.cancelButton}>Cancelar reserva</button>
             </div>
-          </div>
+          </div> */}
 
-          {/* Historial - Solo para estudiantes */}
+          {/* Historial (estudiantes)) */}
           <h3 className={styles.sectionTitle}>Historial</h3>
+          {reservasPasadas.length === 0 ? (
+            <p className={styles.noReservations}>No tienes reservas pasadas. Empieza a reservar con nosotros</p>
+          ) : (
+            <div className={styles.reservationSection}>
+              {reservasPasadas.map((reserva: any) => renderReservaCard(reserva))}
+            </div>
+          )}
+          {/* <h3 className={styles.sectionTitle}>Historial</h3>
           <div className={styles.reservationSection}>
             <div className={styles.reservationCard}>
               <div className={styles.reservationImageContainer}>
@@ -122,7 +197,7 @@ export default function ProfilePage() {
                 <p><strong>Personas:</strong> 4</p>
               </div>
             </div>
-          </div>
+          </div> */}
         </>
       )}
 
