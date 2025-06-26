@@ -7,24 +7,32 @@ import styles from '@/components/styles/Dashboard/dashboardGraphs.module.css';
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
 export default function DashboardGraphs() {
+  // Paleta de colores azules
+  const bluePrimary = '#03045E';       // Azul principal
+  const blueSecondary = '#3b82f6';     // Azul secundario
+  const blueLight = '#ECFCFF';         // Azul claro
+  const blueDark = '#1e40af';          // Azul oscuro
+
   const weeklyData = {
-    labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     datasets: [{
       label: 'Reservas',
-      data: [12, 19, 15, 20, 14, 8, 5],
-      backgroundColor: 'rgba(54, 162, 235, 0.5)',
-      borderColor: 'rgba(54, 162, 235, 1)',
+      data: [15, 12, 18, 20, 16, 8, 5],
+      backgroundColor: bluePrimary,
+      borderColor: blueDark,
       borderWidth: 1,
+      borderRadius: 4,
+      barPercentage: 0.6
     }]
   };
 
   const spaceTypeData = {
-    labels: ['Cúbiculos', 'Mesas'],
+    labels: ['Cubículos', 'Mesas'],
     datasets: [{
-      data: [30, 70],
-      backgroundColor: ['rgba(255, 99, 132, 0.5)', 'rgba(75, 192, 192, 0.5)'],
-      borderColor: ['rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)'],
-      borderWidth: 1,
+      data: [35, 65],
+      backgroundColor: [bluePrimary, blueLight],
+      borderColor: '#ffffff',
+      borderWidth: 2
     }]
   };
 
@@ -32,29 +40,80 @@ export default function DashboardGraphs() {
     <div className={styles.graphsContainer}>
       <div className={styles.graphRow}>
         <div className={styles.graphCard}>
-          <h3>Reservas activas hoy</h3>
-          <div className={styles.bigNumber}>20</div>
+          <h3 className={styles.graphTitle}>Reservas activas hoy</h3>
+          <div className={styles.bigNumber} style={{ color: bluePrimary }}>20</div>
           <p className={styles.graphSubtitle}>Reservas hoy</p>
         </div>
         
         <div className={styles.graphCard}>
-          <h3>Distribución por tipo</h3>
-          <div className={styles.pieChart}>
-            <Pie data={spaceTypeData} options={{
-              plugins: { legend: { position: 'bottom' } }
-            }} />
+          <h3 className={styles.graphTitle}>Distribución de reservas por tipo de espacio</h3>
+          <div className={styles.pieChartWrapper}>
+            <div className={styles.pieChart}>
+              <Pie 
+                data={spaceTypeData} 
+                options={{
+                  plugins: { 
+                    legend: { 
+                      position: 'bottom',
+                      labels: {
+                        usePointStyle: true,
+                        padding: 20,
+                        font: {
+                          size: 12
+                        }
+                      }
+                    }
+                  }
+                }} 
+              />
+            </div>
           </div>
-          <p className={styles.graphSubtitle}>Tipo de espacio</p>
         </div>
       </div>
 
       <div className={styles.graphCard}>
-        <h3>Reservas por día</h3>
-        <div className={styles.barChart}>
-          <Bar data={weeklyData} options={{
-            scales: { y: { beginAtZero: true, max: 20 } },
-            plugins: { legend: { display: false } }
-          }} />
+        <h3 className={styles.graphTitle}>Reservas por día semana</h3>
+        <div className={styles.barChartContainer}>
+          <div className={styles.barChart}>
+            <Bar 
+              data={weeklyData} 
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: { 
+                  y: { 
+                    beginAtZero: true,
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      stepSize: 5,
+                      padding: 10
+                    }
+                  },
+                  x: {
+                    grid: {
+                      display: false
+                    },
+                    ticks: {
+                      padding: 10
+                    }
+                  }
+                },
+                plugins: { 
+                  legend: { 
+                    display: false 
+                  } 
+                },
+                layout: {
+                  padding: {
+                    top: 20,
+                    bottom: 20
+                  }
+                }
+              }} 
+            />
+          </div>
         </div>
       </div>
     </div>
