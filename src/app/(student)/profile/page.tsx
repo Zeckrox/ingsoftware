@@ -5,17 +5,39 @@ import Link from 'next/link';
 import styles from '../../../components/styles/Profile/profile.module.css';
 import { useUser } from '@/context/userContext';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ProfilePage() {
-  const router = useRouter()
+  const router = useRouter();
   const { user, isLoadingUser } = useUser();
+  const [showModifyModal, setShowModifyModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [peopleCount, setPeopleCount] = useState(4); // Valor inicial de 4 personas
+
   if (isLoadingUser || !user) {
     return <div>Cargando...</div>;
   }
 
-  function handleLogOut(){
-    localStorage.removeItem("token")
-    router.push("/")
+  function handleLogOut() {
+    localStorage.removeItem("token");
+    router.push("/");
+  }
+
+  function handleModifyPeople(increment) {
+    const newCount = peopleCount + increment;
+    if (newCount >= 1 && newCount <= 6) {
+      setPeopleCount(newCount);
+    }
+  }
+
+  function confirmModify() {
+    // Aquí iría la lógica para guardar el cambio en el backend
+    setShowModifyModal(false);
+  }
+
+  function confirmCancel() {
+    // Aquí iría la lógica para cancelar la reserva en el backend
+    setShowCancelModal(false);
   }
 
   return (
@@ -55,14 +77,6 @@ export default function ProfilePage() {
             <h3 className={styles.detailLabel}>Carrera</h3>
             <p className={styles.detailValue}>{user.career}</p>
           </div>
-          {/* <div className={styles.detailItem}>
-            <h3 className={styles.detailLabel}>Teléfono</h3>
-            <p className={styles.detailValue}>{profileData.telefono}</p>
-          </div> */}
-          {/* <div className={styles.detailItem}>
-            <h3 className={styles.detailLabel}>Género</h3>
-            <p className={styles.detailValue}>{profileData.genero}</p>
-          </div> */}
         </div>
       </div>
 
@@ -83,13 +97,23 @@ export default function ProfilePage() {
             <p><strong>Fecha:</strong> 19/05/2025</p>
             <p><strong>Horario:</strong> 10:00 am - 12:00 m</p>
             <p><strong>Sala:</strong> Referencia</p>
-            <p><strong>Personas:</strong> 4</p>
+            <p><strong>Personas:</strong> {peopleCount}</p>
           </div>
         </div>
         {/* Botones en Reservas Activas */}
         <div className={styles.reservationActions}>
-          <button className={styles.actionButton}>Modificar cant. personas</button>
-          <button className={styles.cancelButton}>Cancelar reserva</button>
+          <button 
+            className={styles.actionButton} 
+            onClick={() => setShowModifyModal(true)}
+          >
+            Modificar cant. personas
+          </button>
+          <button 
+            className={styles.cancelButton} 
+            onClick={() => setShowCancelModal(true)}
+          >
+            Cancelar reserva
+          </button>
         </div>
       </div>
 
@@ -114,6 +138,69 @@ export default function ProfilePage() {
           </div>
         </div>
       </div>
+
+      {/* Modal para modificar cantidad de personas */}
+      {showModifyModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.peopleModal}>
+            <h2 className={styles.modalTitle}>Modificar cantidad de personas</h2>
+            <div className={styles.peopleCounter}>
+              <button 
+                className={styles.counterButton} 
+                onClick={() => handleModifyPeople(-1)}
+                disabled={peopleCount <= 1}
+              >
+                -
+              </button>
+              <span className={styles.peopleCount}>{peopleCount}</span>
+              <button 
+                className={styles.counterButton} 
+                onClick={() => handleModifyPeople(1)}
+                disabled={peopleCount >= 6}
+              >
+                +
+              </button>
+            </div>
+            <div className={styles.modalButtons}>
+              <button 
+                className={styles.confirmButton}
+                onClick={confirmModify}
+              >
+                Confirmar
+              </button>
+              <button 
+                className={styles.cancelModalButton}
+                onClick={() => setShowModifyModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal para cancelar reserva */}
+      {showCancelModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.cancelModal}>
+            <h2 className={styles.modalTitle}>¿Seguro que quieres cancelar la reserva?</h2>
+            <div className={styles.modalButtons}>
+              <button 
+                className={styles.noButton}
+                onClick={() => setShowCancelModal(false)}
+              >
+                No
+              </button>
+              <button 
+                className={styles.yesButton}
+                onClick={confirmCancel}
+              >
+                Sí, estoy seguro
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
