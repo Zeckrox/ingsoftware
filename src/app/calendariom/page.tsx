@@ -168,68 +168,40 @@ const Calendar: React.FC = () => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [ disabledDays, setDisabledDays ] = useState<any>([]);
-  const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>(
-    {}
-  );
+  const [disabledDays, setDisabledDays] = useState<any>([]);
+  const [dayTypes, setDayTypes] = useState<{ [key: string]: DayType["type"] }>({});
   const { user, isLoadingUser } = useUser();
 
-  if (isLoadingUser || !user) {
-    return <div>Cargando usuario...</div>;
-  }
-
-   async function getDisabledDays(){
-    let url = `https://backendsoftware.vercel.app/disabled-days`
+  async function getDisabledDays() {
+    let url = `https://backendsoftware.vercel.app/disabled-days`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error('No se pudo obtener los dias');
-    let data = await res.json()
+    if (!res.ok) throw new Error("No se pudo obtener los dias");
+    let data = await res.json();
     setDisabledDays(data);
-    for(let day of data){
+    for (let day of data) {
       setDayTypes((prev) => ({ ...prev, [day.date]: day.type }));
     }
   }
 
-  async function setDay(date: string, type: DayType["type"]){
-    let url = `https://backendsoftware.vercel.app/disabled-days/`
-    let method = "POST"
-    if (type == "Dia Habil"){
-      url = `https://backendsoftware.vercel.app/disabled-days/${date}`
-      method = "DELETE"
+  async function setDay(date: string, type: DayType["type"]) {
+    let url = `https://backendsoftware.vercel.app/disabled-days/`;
+    let method = "POST";
+    if (type === "Dia Habil") {
+      url = `https://backendsoftware.vercel.app/disabled-days/${date}`;
+      method = "DELETE";
     }
-    const res = await fetch(url, {  
-        method: method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          date: date,
-          type: type
-        }),
-      });
-    if (!res.ok) throw new Error('No se pudo obtener el usuario');
+    const res = await fetch(url, {
+      method: method,
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        date: date,
+        type: type,
+      }),
+    });
+    if (!res.ok) throw new Error("No se pudo modificar el día");
   }
-
-  useEffect(() => {
-    getDisabledDays()
-    }, []);
-
-  useEffect(() => {
-    const newDayTypes: { [key: string]: DayType["type"] } = {};
-    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
-
-    for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
-      const d = new Date(currentYear, currentMonth, i);
-      const fullDate = d.toISOString().split("T")[0];
-      if (d.getDay() === 0 || d.getDay() === 6) {
-        newDayTypes[fullDate] = "Fin de semana";
-      } else if (!dayTypes[fullDate]) {
-        newDayTypes[fullDate] = "Dia Habil";  // <-- cambio aquí
-      } else {
-        newDayTypes[fullDate] = dayTypes[fullDate];
-      }
-    }
-    setDayTypes((prev) => ({ ...prev, ...newDayTypes }));
-  }, [currentMonth, currentYear]);
 
   const handleMonthChange = (increment: number) => {
     let newMonth = currentMonth + increment;
@@ -245,8 +217,12 @@ const Calendar: React.FC = () => {
     setCurrentYear(newYear);
   };
 
-  const handleDayTypeChange = (date: string, type: DayType["type"], fullDate: string) => {
-    if (user.role === "admin") {
+  const handleDayTypeChange = (
+    date: string,
+    type: DayType["type"],
+    fullDate: string
+  ) => {
+    if (user?.role === "admin") {
       const dayOfWeek = new Date(date).getDay();
       if (dayOfWeek === 0 || dayOfWeek === 6) {
         setDayTypes((prev) => ({ ...prev, [date]: "Fin de semana" }));
@@ -254,7 +230,7 @@ const Calendar: React.FC = () => {
         return;
       }
       setDayTypes((prev) => ({ ...prev, [date]: type }));
-      setDay(fullDate, type)
+      setDay(fullDate, type);
     }
   };
 
@@ -272,6 +248,7 @@ const Calendar: React.FC = () => {
     { length: firstDayWeekday - 1 },
     (_, i) => i
   );
+
   const currentMonthDays = Array.from(
     { length: numDaysInMonth },
     (_, i) => (i + 1).toString()
@@ -281,6 +258,7 @@ const Calendar: React.FC = () => {
     prevMonthPlaceholders.length + currentMonthDays.length;
   const remainingCells =
     totalDaysDisplayed % 7 === 0 ? 0 : 7 - (totalDaysDisplayed % 7);
+
   const nextMonthPlaceholders = Array.from(
     { length: remainingCells },
     (_, i) => i
@@ -289,6 +267,36 @@ const Calendar: React.FC = () => {
   const currentDate = today.getDate();
   const isCurrentMonthView =
     today.getMonth() === currentMonth && today.getFullYear() === currentYear;
+
+  useEffect(() => {
+    if (!isLoadingUser && user) {
+      getDisabledDays();
+    }
+  }, [isLoadingUser, user]);
+
+  useEffect(() => {
+    if (!isLoadingUser && user) {
+      const newDayTypes: { [key: string]: DayType["type"] } = {};
+      const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+
+      for (let i = 1; i <= lastDayOfMonth.getDate(); i++) {
+        const d = new Date(currentYear, currentMonth, i);
+        const fullDate = d.toISOString().split("T")[0];
+        if (d.getDay() === 0 || d.getDay() === 6) {
+          newDayTypes[fullDate] = "Fin de semana";
+        } else if (!dayTypes[fullDate]) {
+          newDayTypes[fullDate] = "Dia Habil";
+        } else {
+          newDayTypes[fullDate] = dayTypes[fullDate];
+        }
+      }
+      setDayTypes((prev) => ({ ...prev, ...newDayTypes }));
+    }
+  }, [currentMonth, currentYear, isLoadingUser, user]);
+
+  if (isLoadingUser || !user) {
+    return <div>Cargando usuario...</div>;
+  }
 
   return (
     <div className={styles.calendarContainer}>
@@ -321,7 +329,7 @@ const Calendar: React.FC = () => {
               (currentYear === today.getFullYear() &&
                 currentMonth === today.getMonth() &&
                 parseInt(day) < today.getDate());
-
+            console.log(user.role)
             return (
               <DayCell
                 key={`current-${day}`}

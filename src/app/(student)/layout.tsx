@@ -10,5 +10,5 @@ export default function MainLayout({
 
   
   return (
-    <UserProvider>{children}</UserProvider>  );
+    <div>{children}</div>  );
 }

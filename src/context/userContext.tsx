@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 interface User {
   _id: string;
@@ -23,6 +23,8 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
+    const queryClient = useQueryClient();
+
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
@@ -31,19 +33,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const login = (newToken: string) => {
-    localStorage.setItem('token', newToken);
-    setToken(newToken);
-  };
+ 
 
   const logout = () => {
     localStorage.removeItem('token');
     setToken(null);
+    queryClient.removeQueries({queryKey: ['user']});
   };
 
-  const { data: user, isLoading: isLoadingUser } = useQuery({
+  const { data: user, isLoading: isLoadingUser, refetch } = useQuery({
     queryKey: ['user', token],
     queryFn: async () => {
+      console.log('pene', token)
       if (!token) return null;
       let url = `https://backendsoftware.vercel.app/users/findMyUser/${token}`
       const res = await fetch(url);
@@ -61,6 +62,10 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     enabled: !!token, // solo corre si hay token
     retry: false,
   });
+   const login = (newToken: string) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+  refetch();  };
 
   return (
     <UserContext.Provider value={{ token, user: user as User, login, logout, isAuthenticated: !!token, isLoadingUser }}>
