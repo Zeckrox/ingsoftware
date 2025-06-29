@@ -4,10 +4,14 @@ import { useRouter } from "next/navigation";
 import styles from "./loginform.module.css";
 import InputField from "../../components/ui/InputField/inputField";
 import { useMutation } from "@tanstack/react-query"; 
+import { useUser } from "@/context/userContext";
+
 
 
 export default function LoginForm() {
   const router = useRouter(); 
+
+    const { login } = useUser();
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -33,7 +37,8 @@ export default function LoginForm() {
     onSuccess: (data) => {
       console.log("Token recibido:", data.access_token); //token recibido
       localStorage.setItem("token", data.access_token);  //se guarda token en local storage
-      router.push("/profile"); //ARREGLAR QUE SE REDIRIGA A MAINPAGE
+      login(data.access_token)
+      router.push("/"); //ARREGLAR QUE SE REDIRIGA A MAINPAGE
     },
     onError: (error) => {
       console.error("Fallo el login:", error);

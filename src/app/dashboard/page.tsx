@@ -3,6 +3,7 @@
 import React, { useEffect, useState, Suspense } from "react";
 import styles from '../../components/styles/Dashboard/dashboard.module.css'; 
 import Modal from 'react-modal'; 
+import DashboardGraphs from "./graphs/DashboardGraphs";
 
 // Importa tus componentes de mapa para MESAS
 import SalaReferenciaMesas from "@/components/styles/Reserva/MapasMesas/salaReferencia";
@@ -15,7 +16,6 @@ import SalaRamonMesas from "@/components/styles/Reserva/MapasMesas/salaRamonJV";
 import SalaReferenciaCubiculos from "@/components/styles/Reserva/MapasCubiculos/salaReferencia";
 import PasilloCubiculos from "@/components/styles/Reserva/MapasCubiculos/pasillo"; 
 import SalaCientificaCubiculos from "@/components/styles/Reserva/MapasCubiculos/salaCientifica"; 
-
 
 const allSalasMesas = {
   pb: ["Sala Referencia"], 
@@ -46,7 +46,6 @@ function DashboardContent() {
   const [selectedSpaceType, setSelectedSpaceType] = useState<string>('mesa'); 
 
   const [seleccionada, setSeleccionada] = useState<number | null>(null);
-
   const [occupiedSpaces, setOccupiedSpaces] = useState<Set<number>>(new Set()); 
   const [disabledSpaces, setDisabledSpaces] = useState<Set<number>>(new Set()); 
 
@@ -185,8 +184,9 @@ function DashboardContent() {
             className={styles.adminSelect}
             value={selectedSala}
             onChange={handleSalaChange}
+            disabled={!availableSalas?.length}
           >
-            {availableSalas.map((salaOption) => (
+            {availableSalas?.map((salaOption) => (
               <option key={salaOption} value={salaOption}>
                 {salaOption}
               </option>
@@ -202,7 +202,7 @@ function DashboardContent() {
 
       <h2 className={styles.sectionTitle}>Estadísticas de reservas</h2>
       <div className={styles.statsContainer}>
-        <p>Aquí irían gráficos o datos de estadísticas de reservas.</p>
+        <DashboardGraphs />
         <button className={styles.updateDataButton}>Actualizar data</button>
       </div>
     </div>
