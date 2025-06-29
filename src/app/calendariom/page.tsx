@@ -224,7 +224,7 @@ const Calendar: React.FC = () => {
   ) => {
     if (user?.role === "admin") {
       const dayOfWeek = new Date(date).getDay();
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
+      if (dayOfWeek === 5 || dayOfWeek === 6) {
         setDayTypes((prev) => ({ ...prev, [date]: "Fin de semana" }));
         alert("Los fines de semana están siempre cerrados.");
         return;
