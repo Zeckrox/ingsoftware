@@ -1,19 +1,20 @@
-// app/profile/page.tsx o .jsx
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react'; // Necesitarás useState para controlar la visibilidad del formulario
-import styles from '../../../components/styles/Profile/profile.module.css'; // Asumiendo que esta es la ruta a tu CSS del perfil
-import RegisterForm from '../../../components/auth/registerFormAdmin'; // Importa el RegisterForm
-import { useUser } from '@/context/userContext'; // Asegúrate de que userContext provee el role del usuario
+import styles from '../../../components/styles/Profile/profile.module.css';
+import { useUser } from '@/context/userContext';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isLoadingUser } = useUser();
-  const [showRegisterAdminForm, setShowRegisterAdminForm] = useState(false); // Estado para controlar la visibilidad del formulario de admin
+  const [showModifyModal, setShowModifyModal] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [peopleCount, setPeopleCount] = useState(4); // Valor inicial de 4 personas
 
 
   const { data: reservas = [], isLoading, isError } = useQuery({
@@ -49,6 +50,10 @@ export default function ProfilePage() {
   const reservasActivas = reservas.filter((reserva: any) => new Date(reserva.date) >= ahora);
   const reservasPasadas = reservas.filter((reserva: any) => new Date(reserva.date) < ahora);
 
+
+  if (isLoadingUser || !user) {
+    return <div>Cargando...</div>;
+  }
 
   function handleLogOut() {
     localStorage.removeItem("token");
@@ -89,20 +94,37 @@ export default function ProfilePage() {
 
   const isAdmin = user.role === 'admin';
   const isStudent = user.role === 'student';
+  function handleModifyPeople(increment) {
+    const newCount = peopleCount + increment;
+    if (newCount >= 1 && newCount <= 6) {
+      setPeopleCount(newCount);
+    }
+  }
+
+  function confirmModify() {
+    // Aquí iría la lógica para guardar el cambio en el backend
+    setShowModifyModal(false);
+  }
+
+  function confirmCancel() {
+    // Aquí iría la lógica para cancelar la reserva en el backend
+    setShowCancelModal(false);
+  }
+
 
   return (
     <div className={styles.profileContainer}>
-      {/* Encabezado con botón de edición y cerrar sesión */}
+      {/* Encabezado con botón de edición */}
       <div className={styles.logOutContainer}>
         <button className={styles.logOut} onClick={handleLogOut}>Cerrar Sesion</button>
       </div>
       <div className={styles.headerContainer}>
         <h1 className={styles.welcomeTitle}>Bienvenido</h1>
         <Link href="/profile/edit" className={styles.editLink}>
-          <Image
-            src="/images/Lapiz.png"
-            alt="Editar perfil"
-            width={24}
+          <Image 
+            src="/images/Lapiz.png" 
+            alt="Editar perfil" 
+            width={24} 
             height={24}
             className={styles.editIcon}
           />
@@ -123,13 +145,10 @@ export default function ProfilePage() {
             <h3 className={styles.detailLabel}>Apellido</h3>
             <p className={styles.detailValue}>{user.lastName}</p>
           </div>
-          {/* Condición para mostrar la Carrera solo si es student */}
-          {isStudent && (
-            <div className={styles.detailItem}>
-              <h3 className={styles.detailLabel}>Carrera</h3>
-              <p className={styles.detailValue}>{user.career}</p>
-            </div>
-          )}
+          <div className={styles.detailItem}>
+            <h3 className={styles.detailLabel}>Carrera</h3>
+            <p className={styles.detailValue}>{user.career}</p>
+          </div>
         </div>
       </div>
 
@@ -199,24 +218,66 @@ export default function ProfilePage() {
             </div>
           </div> */}
         </>
+      {/* Modal para modificar cantidad de personas */}
+      {showModifyModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.peopleModal}>
+            <h2 className={styles.modalTitle}>Modificar cantidad de personas</h2>
+            <div className={styles.peopleCounter}>
+              <button 
+                className={styles.counterButton} 
+                onClick={() => handleModifyPeople(-1)}
+                disabled={peopleCount <= 1}
+              >
+                -
+              </button>
+              <span className={styles.peopleCount}>{peopleCount}</span>
+              <button 
+                className={styles.counterButton} 
+                onClick={() => handleModifyPeople(1)}
+                disabled={peopleCount >= 6}
+              >
+                +
+              </button>
+            </div>
+            <div className={styles.modalButtons}>
+              <button 
+                className={styles.confirmButton}
+                onClick={confirmModify}
+              >
+                Confirmar
+              </button>
+              <button 
+                className={styles.cancelModalButton}
+                onClick={() => setShowModifyModal(false)}
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
-      {/* Sección para registrar administradores - Solo si el usuario actual es admin */}
-      {isAdmin && (
-        <div className={styles.adminSection}>
-          <h3 className={styles.sectionTitle}>Administración de Usuarios</h3>
-          <button
-            className={styles.adminActionButton} // Puedes crear un estilo para este botón
-            onClick={() => setShowRegisterAdminForm(!showRegisterAdminForm)}
-          >
-            {showRegisterAdminForm ? "Ocultar Formulario de Registro de Admin" : "Registrar Nuevo Administrador"}
-          </button>
-
-          {showRegisterAdminForm && (
-            <div className={styles.registerAdminFormContainer}>
-              <RegisterForm />
+      {/* Modal para cancelar reserva */}
+      {showCancelModal && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.cancelModal}>
+            <h2 className={styles.modalTitle}>¿Seguro que quieres cancelar la reserva?</h2>
+            <div className={styles.modalButtons}>
+              <button 
+                className={styles.noButton}
+                onClick={() => setShowCancelModal(false)}
+              >
+                No
+              </button>
+              <button 
+                className={styles.yesButton}
+                onClick={confirmCancel}
+              >
+                Sí, estoy seguro
+              </button>
             </div>
-          )}
+          </div>
         </div>
       )}
     </div>
