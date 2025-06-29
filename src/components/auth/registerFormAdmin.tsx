@@ -45,7 +45,7 @@ export default function RegisterForm() {
           email,
           //telefono,
           password,
-          career: "",
+          career: "Administrador",
           //genero,
           role: "admin",
         }),
@@ -61,7 +61,7 @@ export default function RegisterForm() {
     onSuccess: (data) => {
       console.log("Registro exitoso:", data);
       alert("Registro exitoso, ahora inicia sesión");
-      router.push("/login");  // redirige al login despues de registrarse
+      // router.push("/login");  // redirige al login despues de registrarse
     },
     onError: (error: Error) => {
       console.error("Error en registro:", error);
