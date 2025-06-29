@@ -171,8 +171,11 @@
 
 .reservationActions {
   display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   gap: 1rem;
   margin-top: 1.5rem;
+  margin: 10px;
 }
 
 .actionButton, .cancelButton {
@@ -253,11 +256,13 @@
 .reservationCard {
   position: relative;
   transition: transform 0.3s ease;
+  margin-bottom: 40px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .reservationCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .adminSection {
@@ -423,20 +428,20 @@
   background-color: #d0d0d0;
 }
 
-.noButton {
+.yesButton {
   background-color: #ff4444;
   color: white;
 }
 
-.noButton:hover {
+.yesButton:hover {
   background-color: #ee3333;
 }
 
-.yesButton {
+.noButton {
   background-color: #e0e0e0;
   color: #555;
 }
 
-.yesButton:hover {
+.noButton:hover {
   background-color: #d0d0d0;
 }

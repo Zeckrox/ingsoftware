@@ -1,17 +1,19 @@
+// app/profile/page.tsx o .jsx
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import styles from '../../../components/styles/Profile/profile.module.css';
-import { useUser } from '@/context/userContext';
+import { useState } from 'react'; // Necesitarás useState para controlar la visibilidad del formulario
+import styles from '../../../components/styles/Profile/profile.module.css'; // Asumiendo que esta es la ruta a tu CSS del perfil
+import RegisterForm from '../../../components/auth/registerFormAdmin'; // Importa el RegisterForm
+import { useUser } from '@/context/userContext'; // Asegúrate de que userContext provee el role del usuario
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isLoadingUser } = useUser();
+  const [showRegisterAdminForm, setShowRegisterAdminForm] = useState(false); // Estado para controlar la visibilidad del formulario de admin
   const [showModifyModal, setShowModifyModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [peopleCount, setPeopleCount] = useState(4); // Valor inicial de 4 personas
@@ -20,7 +22,7 @@ export default function ProfilePage() {
   const { data: reservas = [], isLoading, isError } = useQuery({
     queryKey: ['reservas', user?._id], 
     queryFn: async () => {
-      const res = await fetch(`http://localhost:3000/reservations/reservas-user/${user._id}`);
+      const res = await fetch(`https://backendsoftware.vercel.app/reservations/reservas-user/${user?._id}`);
       if (!res.ok) throw new Error('error al cargar reserv');
       return res.json();
     },
@@ -51,13 +53,26 @@ export default function ProfilePage() {
   const reservasPasadas = reservas.filter((reserva: any) => new Date(reserva.date) < ahora);
 
 
-  if (isLoadingUser || !user) {
-    return <div>Cargando...</div>;
-  }
-
   function handleLogOut() {
     localStorage.removeItem("token");
     router.push("/");
+  }
+  
+  function handleModifyPeople(increment: number) {
+    const newCount = peopleCount + increment;
+    if (newCount >= 1 && newCount <= 6) {
+      setPeopleCount(newCount);
+    }
+  }
+
+    function confirmModify() {
+    // Aquí iría la lógica para guardar el cambio en el backend
+    setShowModifyModal(false);
+  }
+
+  function confirmCancel() {
+    // Aquí iría la lógica para cancelar la reserva en el backend
+    setShowCancelModal(false);
   }
 
   // mejor hacer una card para acortar codigo (pagina lentaaa)
@@ -87,6 +102,22 @@ export default function ProfilePage() {
           <p><strong>Sala:</strong> {reserva.room}</p>
           <p><strong>Personas:</strong> {reserva.floorNumber}</p>
         </div>
+        {/* Botones en Reservas Activas */}
+          <div className={styles.reservationActions}>
+            <button 
+              className={styles.actionButton} 
+              onClick={() => setShowModifyModal(true)}
+            >
+              Modificar cant. personas
+            </button>
+            <button 
+              className={styles.cancelButton} 
+              onClick={() => setShowCancelModal(true)}
+            >
+              Cancelar reserva
+            </button>
+          </div>
+        {/* END Botones en Reservas Activas */}
       </div>
     );
   };
@@ -94,37 +125,20 @@ export default function ProfilePage() {
 
   const isAdmin = user.role === 'admin';
   const isStudent = user.role === 'student';
-  function handleModifyPeople(increment) {
-    const newCount = peopleCount + increment;
-    if (newCount >= 1 && newCount <= 6) {
-      setPeopleCount(newCount);
-    }
-  }
-
-  function confirmModify() {
-    // Aquí iría la lógica para guardar el cambio en el backend
-    setShowModifyModal(false);
-  }
-
-  function confirmCancel() {
-    // Aquí iría la lógica para cancelar la reserva en el backend
-    setShowCancelModal(false);
-  }
-
 
   return (
     <div className={styles.profileContainer}>
-      {/* Encabezado con botón de edición */}
+      {/* Encabezado con botón de edición y cerrar sesión */}
       <div className={styles.logOutContainer}>
         <button className={styles.logOut} onClick={handleLogOut}>Cerrar Sesion</button>
       </div>
       <div className={styles.headerContainer}>
         <h1 className={styles.welcomeTitle}>Bienvenido</h1>
         <Link href="/profile/edit" className={styles.editLink}>
-          <Image 
-            src="/images/Lapiz.png" 
-            alt="Editar perfil" 
-            width={24} 
+          <Image
+            src="/images/Lapiz.png"
+            alt="Editar perfil"
+            width={24}
             height={24}
             className={styles.editIcon}
           />
@@ -145,10 +159,13 @@ export default function ProfilePage() {
             <h3 className={styles.detailLabel}>Apellido</h3>
             <p className={styles.detailValue}>{user.lastName}</p>
           </div>
-          <div className={styles.detailItem}>
-            <h3 className={styles.detailLabel}>Carrera</h3>
-            <p className={styles.detailValue}>{user.career}</p>
-          </div>
+          {/* Condición para mostrar la Carrera solo si es student */}
+          {isStudent && (
+            <div className={styles.detailItem}>
+              <h3 className={styles.detailLabel}>Carrera</h3>
+              <p className={styles.detailValue}>{user.career}</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -163,6 +180,8 @@ export default function ProfilePage() {
             {reservasActivas.map((reserva: any) => renderReservaCard(reserva))}
           </div>
         )}
+
+
           {/* <h3 className={styles.sectionTitle}>Reservas Activas</h3>
           <div className={styles.reservationSection}>
             <div className={styles.reservationCard}>
@@ -218,7 +237,29 @@ export default function ProfilePage() {
             </div>
           </div> */}
         </>
-      {/* Modal para modificar cantidad de personas */}
+      )}
+
+      {/* Sección para registrar administradores - Solo si el usuario actual es admin */}
+      {isAdmin && (
+        <div className={styles.adminSection}>
+          <h3 className={styles.sectionTitle}>Administración de Usuarios</h3>
+          <button
+            className={styles.adminActionButton} // Puedes crear un estilo para este botón
+            onClick={() => setShowRegisterAdminForm(!showRegisterAdminForm)}
+          >
+            {showRegisterAdminForm ? "Ocultar Formulario de Registro de Admin" : "Registrar Nuevo Administrador"}
+          </button>
+
+          {showRegisterAdminForm && (
+            <div className={styles.registerAdminFormContainer}>
+              <RegisterForm />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* MODALS */}
+            {/* Modal para modificar cantidad de personas */}
       {showModifyModal && (
         <div className={styles.modalOverlay}>
           <div className={styles.peopleModal}>
@@ -280,6 +321,7 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
     </div>
   );
 }
