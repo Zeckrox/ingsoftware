@@ -5,13 +5,6 @@ import Modal from 'react-modal';
 import { useMutation } from '@tanstack/react-query';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { createClient } from "smtpexpress"
-
-export const smtpexpressClient = createClient({
-  projectId: "sm0pid--Gzb4OpIr-U5r7ze249pBxKtZ",
-  projectSecret: "13e29329764e9550083833d00b029aec0ededf6972b69f6f5b"
-});
-
 
 export default function HistorialReserva() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -60,32 +53,6 @@ export default function HistorialReserva() {
     });
 
     const avisarCancelacion = async () => {
-      try {
-        // Sending an email using SMTP
-        await smtpexpressClient.sendApi.sendMail({
-          // Subject of the email
-          subject: "Tu reserva ha sido cancelada",
-          // Body of the email
-          message: `<h2>Lamentamos Informar que tu reserva ha sido cancelada.</h2>
-          <h3>Reserva de tú ${userInfo.tipo} el dia ${userInfo.fecha} de ${userInfo.hora}`,
-          // Sender's details
-          sender: {
-            // Sender's name
-            name: "Booki",
-            // Sender's email address
-            email: "booki-e7fa70@smtpexpress.email",
-          },
-          // Recipient's details
-          recipients: {
-            // Recipient's email address (obtained from the form)
-            email: userInfo.email,
-          },
-        });
-        console.log("Notificacion enviada con exito!")
-      } catch (error) {
-        console.log("Oops! Something went wrong. Please try again later.", error);
-      }
-
   };
 
     function filtrarReservas(reservas: any){

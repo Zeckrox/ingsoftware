@@ -126,7 +126,7 @@ export default function ProfilePage() {
     setShowCancelModal(false);
   }
 
-  const timeblocksjson = {
+  const timeblocksjson:any = {
     1: {
       startT: '8:00 a.m.',
       endT: '8:30 p.m.'
