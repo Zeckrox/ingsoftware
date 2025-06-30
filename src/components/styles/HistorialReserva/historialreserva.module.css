@@ -37,6 +37,33 @@
   gap: 1rem;
 }
 
+.datePicker input{
+  background-color: #f1f1f1;
+  border: none;
+  border-radius: 8px;
+  padding: .5rem .5rem;
+  font-family: Poppins, sans-serif;
+  font-size: 1rem;
+}
+
+.fechaHeader{
+  display: flex;
+  justify-content: space-between;
+}
+
+.fechaHeader button{
+  color: #fff;
+  cursor: pointer;
+  background-color: #454545;
+  border: none;
+  border-radius: 6px;
+  margin-right: 5px;
+  padding: 4px 10px;
+  margin-left: 10px;
+  font-family: Poppins, sans-serif;
+  font-size: 10px;
+}
+
 .filtroGrupo {
   display: flex;
   flex-direction: column;
@@ -101,13 +128,25 @@
   justify-content: center;  
   margin: 2rem auto;
   overflow-x: auto;
+  flex-direction: column;
+}
+
+.tablaContainer div{
+  background-color: #e6e6e6;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 20px 0;
+  color: #797979;
+  width: 100%;
 }
 
 .tablaReservas {
-  width: 1400px;
+  width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
   background-color: #e6e6e6;
+  color: black;
+  font-weight: 400;
 }
 
 .tablaReservas th,

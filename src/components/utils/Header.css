@@ -1,7 +1,4 @@
 /* Estilos base */
-*{
-  color: #989898;
-}
 .header-container {
   display: flex;
   justify-content: space-between;
