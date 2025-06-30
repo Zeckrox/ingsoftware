@@ -2,34 +2,44 @@
 import React, { useEffect, useState } from 'react';
 import styles from '../../components/styles/HistorialReserva/historialreserva.module.css';
 import Modal from 'react-modal';
-import { useRouter } from "next/navigation";
 import { useMutation } from '@tanstack/react-query';
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 export default function HistorialReserva() {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [reservations, setReservations] = useState([]);
+    const [startDate, setStartDate] = useState(new Date());
+    const [reservasFiltradas, setReservasFiltradas] = useState([]);
+    const [filters, setFilters] = useState({
+      reservas: "todas",
+      tipo: "todos",
+      fecha: "todas",
+      busqueda: ""
+    });
+
     const [users, setUsers] = useState([]);
-     const times: string[] = [
-        '08:00 a.m.',
-        '08:30 a.m.',
-        '09:00 a.m.',
-        '09:30 a.m.',
-        '10:00 a.m.',
-        '10:30 a.m.',
-        '11:00 a.m.',
-        '11:30 a.m.',
-        '12:00 p.m.',
-        '12:30 p.m.',
-        '01:00 p.m.',
-        '01:30 p.m.',
-        '02:00 p.m.',
-        '02:30 p.m.',
-        '03:00 p.m.',
-        '03:30 p.m.',
-        '04:00 p.m.',
-        '04:30 p.m.',
-        '05:00 p.m.',
-        ];
+    const times: string[] = [
+      '08:00 a.m.',
+      '08:30 a.m.',
+      '09:00 a.m.',
+      '09:30 a.m.',
+      '10:00 a.m.',
+      '10:30 a.m.',
+      '11:00 a.m.',
+      '11:30 a.m.',
+      '12:00 p.m.',
+      '12:30 p.m.',
+      '01:00 p.m.',
+      '01:30 p.m.',
+      '02:00 p.m.',
+      '02:30 p.m.',
+      '03:00 p.m.',
+      '03:30 p.m.',
+      '04:00 p.m.',
+      '04:30 p.m.',
+      '05:00 p.m.',
+      ];
 
     const [infoModalIsOpen, setInfoModalIsOpen] = useState(false);
     const [userInfo, setUserInfo] = useState({
@@ -38,9 +48,56 @@ export default function HistorialReserva() {
         fecha: "",
         email: "",
         hora: "",
-        cantidad: 5,
+        cantidad: 0,
         reservaId: ""
     });
+
+    const avisarCancelacion = async () => {
+  };
+
+    function filtrarReservas(reservas: any){
+      let resultado = reservas
+      // Filtrado por estado de reservas
+      if (filters.reservas != "todas"){
+      resultado = resultado.filter((reserva: any)=>{
+        if (filters.reservas == "activas") return new Date(reserva.date) > new Date()
+        else return new Date(reserva.date) < new Date()
+      })
+      }
+
+      // Filtrado por tipo de espacio
+      if (filters.tipo != "todos"){
+      resultado = resultado.filter((reserva: any)=>{
+        console.log(reserva.tableId)
+        if (filters.tipo == "mesa") return reserva.tableId
+        else return reserva.cubicleId
+      })
+      }
+
+      // Filtrado por fechas
+      if (filters.fecha != "todas"){
+      resultado = resultado.filter((reserva: any)=>{
+        console.log(new Date(reserva.date).toISOString().slice(0, 10))
+        console.log(startDate.toISOString().slice(0, 10))
+        return new Date(reserva.date).toISOString().slice(0, 10) == startDate.toISOString().slice(0, 10)
+      })
+      }
+
+      // Filtrado por busqueda
+      if (filters.busqueda){
+      resultado = resultado.filter((reserva: any)=>{
+        let user: any = users.find((user: any)=> user._id == reserva.userId)
+        return user.email.toLowerCase().includes(filters.busqueda.toLocaleLowerCase())
+      })
+      }
+
+      return resultado
+    }
+
+    useEffect(() => {
+      setReservasFiltradas(filtrarReservas(reservations))
+    }, [filters, reservations, startDate]);
+
 
        //GET
     const getReservations = useMutation({
@@ -116,6 +173,7 @@ export default function HistorialReserva() {
             let newReservas = reservations
             newReservas = newReservas.filter((reserva: any) =>  reserva._id != data._id )
             setReservations(newReservas)
+            avisarCancelacion()
           },
           onError: (error: any) => {
             console.error('error en la consulta:', error);
@@ -135,7 +193,6 @@ export default function HistorialReserva() {
     const closeModal = () => setModalIsOpen(false);
 
     const closeInfoModal = () => setInfoModalIsOpen(false);
-
     
     const handleCalendariomClick = () => {
         deleteReservation.mutate(userInfo.reservaId)
@@ -166,32 +223,42 @@ export default function HistorialReserva() {
         <div className={styles.filtroContainer}>
             <div className={styles.filtroGrupo}>
                 <span>Reservas:</span>
-                <select>
-                <option value="activas">Activas</option>
-                <option value="inactivas">Inactivas</option>
+                <select onChange={(e)=> setFilters({...filters, reservas: e.target.value})}>
+                  <option value="todas">Todas</option>
+                  <option value="activas">Activas</option>
+                  <option value="inactivas">Inactivas</option>
                 </select>
             </div>
 
             <div className={styles.filtroGrupo}>
                 <span>Tipo de espacio:</span>
-                <select>
+                <select onChange={(e)=> setFilters({...filters, tipo: e.target.value})}>
+                <option value="todos">Todos</option>
                 <option value="mesa">Mesa</option>
                 <option value="cubiculo">Cubículo</option>
                 </select>
             </div>
 
             <div className={styles.filtroGrupo}>
-                <span>Fecha:</span>
-                <select>
-                <option value="fecha">Fecha</option>
-                </select>
+                <div className={styles.fechaHeader} style={filters.fecha != "todas"? {marginBottom:"5px"}: {}}>
+                  <span>Fecha:</span>
+                  {filters.fecha != "todas" && <button onClick={()=> setFilters({...filters, fecha: "todas"})}>Todas</button>}
+                </div>
+                {filters.fecha == "todas" && <select onChange={(e)=> setFilters({...filters, fecha: e.target.value})}>
+                  <option value="todas">Todas</option>
+                  <option value="personalizada">Personalizada</option>
+                </select>}
+                {filters.fecha != "todas" && <div className={styles.datePicker}>
+                  <DatePicker selected={startDate} onChange={(date:any) => setStartDate(date)} />
+                  </div>}
+                
             </div>
 
             <div className={styles.buscador}>
                 <span className={styles.iconoLupa}>🔍</span>
-                <input type="text" placeholder="Buscar nombre de estudiante"/>
+                <input  onChange={(e)=> setFilters({...filters, busqueda: e.target.value})}
+                type="text" placeholder="Buscar nombre de estudiante"/>
             </div>
-
             <div className={styles.tablaContainer}>
                 <table className={styles.tablaReservas}>
                     <thead>
@@ -206,20 +273,20 @@ export default function HistorialReserva() {
                         </tr>
                     </thead>
                     <tbody>
-                        {reservations.map((reserva: any)=>{
+                        {reservasFiltradas.map((reserva: any)=>{
                             let tempUser: any = users.find((user: any)=> user._id == reserva.userId)
                             let fecha: Date = new Date(reserva.date)
                             let tempData = {
-                                estado: fecha < new Date()? "Terminada": "Activa",
+                                estado: fecha < new Date()? "Inactiva": "Activa",
                                 tipo: reserva.cubicleId? "Cubículo": "Mesa",
                                 fecha: fecha.toISOString().slice(0, 10),
                                 email: tempUser?.email,
                                 hora: `${times[reserva.timeblocks[0]]} a ${times[reserva.timeblocks[reserva.timeblocks.length-1]]}`,
-                                cantidad: 5,
+                                cantidad: reserva.people,
                                 reservaId: reserva._id
                             }
-                            return <tr key={tempData.reservaId}>
-                                <td>{tempData.estado}</td>
+                            return <tr key={tempData.reservaId} >
+                                <td style={tempData.estado=="Activa"?{color:"#166109", fontWeight:"bold"}:{color:"#8d0000", fontWeight:"bold"}}>{tempData.estado}</td>
                                 <td>{tempData.tipo}</td>
                                 <td>{tempData.fecha}</td>
                                 <td>{tempData.email}</td>
@@ -232,17 +299,19 @@ export default function HistorialReserva() {
                                     >
                                     Más Info
                                     </button>
-                                    <button 
+                                    {tempData.estado=="Activa" && <button 
                                     className={styles.btnCancelar}
                                     onClick={()=>openModal(tempData)}>
                                         Cancelar
                                     </button>
+                                    }
                                 </td>
                             </tr>
                         })}
 
                     </tbody>
                 </table>
+                    {reservasFiltradas.length == 0 && <div>No se han encontrado resultados para estos filtros...</div>}
             </div>
 
         </div>

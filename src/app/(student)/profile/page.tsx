@@ -8,28 +8,75 @@ import styles from '../../../components/styles/Profile/profile.module.css'; // A
 import RegisterForm from '../../../components/auth/registerFormAdmin'; // Importa el RegisterForm
 import { useUser } from '@/context/userContext'; // Asegúrate de que userContext provee el role del usuario
 import { useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isLoadingUser } = useUser();
+  const queryClient = useQueryClient();
   const [showRegisterAdminForm, setShowRegisterAdminForm] = useState(false); // Estado para controlar la visibilidad del formulario de admin
   const [showModifyModal, setShowModifyModal] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [peopleCount, setPeopleCount] = useState(4); // Valor inicial de 4 personas
-
+  const [selectedReservaId, setSelectedReservaId] = useState<string | null>(null);
 
   const { data: reservas = [], isLoading, isError } = useQuery({
     queryKey: ['reservas', user?._id], 
     queryFn: async () => {
-      const res = await fetch(`https://backendsoftware.vercel.app/reservations/reservas-user/${user?._id}`);
+      if (!user?._id) return []; // AQUI caso donde no hay user._id
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}reservations/reservas-user/${user?._id}`);
       if (!res.ok) throw new Error('error al cargar reserv');
       return res.json();
     },
-    enabled: !!user, 
+    enabled: !!user?._id, 
   });
 
-    if (isLoadingUser) {
+  const deleteReservaMutation = useMutation({
+  mutationFn: async (id: string) => {
+    const res = await fetch(`https://backendsoftware.vercel.app/reservations/${id}`, {
+      method: 'DELETE',
+    });
+    if (!res.ok) {
+      throw new Error('Error al cancelar la reserva');
+    }
+    return res.json();
+  },
+  onSuccess: () => {
+    queryClient.invalidateQueries({ queryKey: ['reservas', user?._id] });
+  },
+  onError: (error) => {
+    console.error(error);
+    alert('Hubo un error al cancelar la reserva');
+  },
+  });
+
+  const updatePeopleMutation = useMutation({
+    mutationFn: async ({ id, people }: { id: string; people: number }) => {
+      console.log("corre updatePeopleMutation con id d reserva:", id, "y people:", people);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}reservations/update-people/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ people }),
+      });
+      if (!res.ok) {
+        throw new Error('error al actualizar la cant de personas');
+      }
+      return res.json();
+    },
+    onSuccess: (data) => {
+      console.log("reserva actualizada bieeeeen:", data);
+      queryClient.invalidateQueries({ queryKey: ['reservas', user?._id] });
+      alert("cantidad de personas actualizada!!");
+    },
+    onError: (error) => {
+      console.error(error);
+      alert('error al actualizar la cantidad de personas');
+    },
+  });
+
+  if (isLoadingUser) {
     return <div>Cargando...</div>;
   }
 
@@ -38,9 +85,8 @@ export default function ProfilePage() {
     return <div>Usuario no autenticado</div>;
   }
 
-  
-  if (isLoadingUser || isLoading || !user) {
-    return <div>Cargando...</div>;
+  if (isLoading) {
+    return <div>Cargando reservas...</div>;
   }
 
   if (isError) {
@@ -49,8 +95,8 @@ export default function ProfilePage() {
 
   // para separar reservas activas y el histirial de las pasadas comparando fechas
   const ahora = new Date();
-  const reservasActivas = reservas.filter((reserva: any) => new Date(reserva.date) >= ahora);
-  const reservasPasadas = reservas.filter((reserva: any) => new Date(reserva.date) < ahora);
+  const reservasActivas = reservas.filter((reserva: any) =>  new Date(reserva.date).setUTCHours(0,0,0,0) >= ahora.setUTCHours(0,0,0,0));
+  const reservasPasadas = reservas.filter((reserva: any) => new Date(reserva.date).setUTCHours(0,0,0,0) < ahora.setUTCHours(0,0,0,0));
 
 
   function handleLogOut() {
@@ -66,22 +112,107 @@ export default function ProfilePage() {
   }
 
     function confirmModify() {
-    // Aquí iría la lógica para guardar el cambio en el backend
+    if (!selectedReservaId) return;
+      console.log("modificando reserva:", selectedReservaId, "a personas:", peopleCount);
+      updatePeopleMutation.mutate({id: selectedReservaId, people: peopleCount,
+      });
     setShowModifyModal(false);
   }
 
   function confirmCancel() {
-    // Aquí iría la lógica para cancelar la reserva en el backend
+    console.log("id de reserva a borrar:", selectedReservaId);
+    if (!selectedReservaId) return;
+    deleteReservaMutation.mutate(selectedReservaId);
     setShowCancelModal(false);
   }
 
+  const timeblocksjson:any = {
+    1: {
+      startT: '8:00 a.m.',
+      endT: '8:30 p.m.'
+    },
+    2: {
+      startT: '8:30 a.m.',
+      endT: '9:00 a.m.'
+    },
+    3: {
+      startT: '9:00 a.m.',
+      endT: '9:30 a.m.'
+    },
+    4: {
+      startT: '9:30 a.m.',
+      endT: '10:00 a.m.'
+    },
+    5: {
+      startT: '10:00 a.m.',
+      endT: '10:30 a.m.'
+    },
+    6: {
+      startT: '10:30 a.m.',
+      endT: '11:00 a.m.'
+    },
+    7: {
+      startT: '11:00 a.m.',
+      endT: '11:30 a.m.'
+    },
+    8: {
+      startT: '11:30 a.m.',
+      endT: '12:00 p.m.'
+    },
+    9: {
+      startT: '12:00 p.m.',
+      endT: '12:30 p.m.'
+    },
+    10: {
+      startT: '12:30 p.m.',
+      endT: '1:00 p.m.'
+    },
+    11: {
+      startT: '1:00 p.m.',
+      endT: '1:30 p.m.'
+    },
+    12: {
+      startT: '1:30 p.m.',
+      endT: '2:00 p.m.'
+    },
+    13: {
+      startT: '2:00 p.m.',
+      endT: '2:30 p.m.'
+    },
+    14: {
+      startT: '2:30 p.m.',
+      endT: '3:00 p.m.'
+    },
+    15: {
+      startT: '3:00 p.m.',
+      endT: '3:30 p.m.'
+    },
+    16: {
+      startT: '3:30 p.m.',
+      endT: '4:00 p.m.'
+    },
+    17: {
+      startT: '4:00 p.m.',
+      endT: '4:30 p.m.'
+    },
+    18: {
+      startT: '4:30 p.m.',
+      endT: '5:00 p.m.'
+    }
+  };
+
   // mejor hacer una card para acortar codigo (pagina lentaaa)
   const renderReservaCard = (reserva: any) => {
-    const fecha = new Date(reserva.date).toLocaleDateString();
-    const horaInicio = reserva.timeblocks?.[0] || 10;
-    // hacer logica bien de horaaaa!!! y abajo cambiar
-    const horaFin = reserva.timeblocks?.[reserva.timeblocks.length - 1] + 1 || 12;
+    const fecha = new Date(reserva.date).toLocaleDateString('es-ES', { timeZone: 'UTC' });
 
+    const timeblockInicial = reserva.timeblocks[0];
+    const timeblockFinal = reserva.timeblocks.at(-1);
+    // console.log(timeblocksjson[1].endT)
+    const horaI = timeblocksjson[timeblockInicial].startT;
+    const horaF = timeblocksjson[timeblockFinal].endT  //sirve aunque se subraye en rojo!!!
+    // console.log(horaI);
+    // console.log(horaF);
+    
     return (
       <div key={reserva._id} className={styles.reservationCard}>
         <div className={styles.reservationImageContainer}>
@@ -97,22 +228,28 @@ export default function ProfilePage() {
         </div>
         <div className={styles.reservationDetails}>
           <p><strong>Fecha:</strong> {fecha}</p>
-          {/* AQUI CAMBIAR HORAAAAAA */}
-          <p><strong>Horario:</strong> {horaInicio}:00 - {horaFin}:00</p> 
-          <p><strong>Sala:</strong> {reserva.room}</p>
-          <p><strong>Personas:</strong> {reserva.floorNumber}</p>
+          <p><strong>Horario:</strong> {horaI} - {horaF}</p> 
+          <p><strong>Sala:</strong> {reserva?.[reserva.tableId ? "tableId" : "cubicleId"]?.room}</p>
+          <p><strong>Personas:</strong> {reserva.people}</p>
         </div>
         {/* Botones en Reservas Activas */}
           <div className={styles.reservationActions}>
             <button 
               className={styles.actionButton} 
-              onClick={() => setShowModifyModal(true)}
+              onClick={() => {
+                setSelectedReservaId(reserva._id);
+                setPeopleCount(reserva.people);
+                setShowModifyModal(true);}}
             >
-              Modificar cant. personas
+              Modificar cantidad de personas
             </button>
             <button 
               className={styles.cancelButton} 
-              onClick={() => setShowCancelModal(true)}
+              onClick={() => {
+                console.log("cancelar reserva:", reserva._id);
+                setSelectedReservaId(reserva._id);
+                setShowCancelModal(true);
+              }}
             >
               Cancelar reserva
             </button>
@@ -130,10 +267,10 @@ export default function ProfilePage() {
     <div className={styles.profileContainer}>
       {/* Encabezado con botón de edición y cerrar sesión */}
       <div className={styles.logOutContainer}>
-        <button className={styles.logOut} onClick={handleLogOut}>Cerrar Sesion</button>
+        <button className={styles.logOut} onClick={handleLogOut}>Cerrar sesión</button>
       </div>
       <div className={styles.headerContainer}>
-        <h1 className={styles.welcomeTitle}>Bienvenido</h1>
+        <h1 className={styles.welcomeTitle}>Mi perfil</h1>
         <Link href="/profile/edit" className={styles.editLink}>
           <Image
             src="/images/Lapiz.png"
@@ -174,7 +311,7 @@ export default function ProfilePage() {
         <>
         <h3 className={styles.sectionTitle}>Reservas activas</h3>
         {reservasActivas.length === 0 ? (
-          <p className={styles.noReservations}>No tienes reservas activas actualmente</p>
+          <p className={styles.noReservations}>No tienes reservas activas actualmente.</p>
         ) : (
           <div className={styles.reservationSection}>
             {reservasActivas.map((reserva: any) => renderReservaCard(reserva))}
@@ -208,9 +345,9 @@ export default function ProfilePage() {
           </div> */}
 
           {/* Historial (estudiantes)) */}
-          <h3 className={styles.sectionTitle}>Historial</h3>
+          <h3 className={styles.sectionTitle}>Historial de reservas pasadas</h3>
           {reservasPasadas.length === 0 ? (
-            <p className={styles.noReservations}>No tienes reservas pasadas. Empieza a reservar con nosotros</p>
+            <p className={styles.noReservations}>No tienes reservas pasadas. ¡Empieza a reservar con nosotros!</p>
           ) : (
             <div className={styles.reservationSection}>
               {reservasPasadas.map((reserva: any) => renderReservaCard(reserva))}
@@ -247,7 +384,7 @@ export default function ProfilePage() {
             className={styles.adminActionButton} // Puedes crear un estilo para este botón
             onClick={() => setShowRegisterAdminForm(!showRegisterAdminForm)}
           >
-            {showRegisterAdminForm ? "Ocultar Formulario de Registro de Admin" : "Registrar Nuevo Administrador"}
+            {showRegisterAdminForm ? "Ocultar Formulario de Registro de Administrador" : "Registrar Nuevo Administrador"}
           </button>
 
           {showRegisterAdminForm && (

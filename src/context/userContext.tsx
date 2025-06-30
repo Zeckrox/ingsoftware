@@ -8,6 +8,8 @@ interface User {
   email: string;
   role: "student" | "admin";
   career: string;
+  phoneNumber: string;
+  gender: string
 }
 
 interface UserContextType {
@@ -44,7 +46,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const { data: user, isLoading: isLoadingUser, refetch } = useQuery({
     queryKey: ['user', token],
     queryFn: async () => {
-      console.log('pene', token)
+      // console.log(token)
       if (!token) return null;
       let url = `https://backendsoftware.vercel.app/users/findMyUser/${token}`
       const res = await fetch(url);
@@ -57,6 +59,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         email: data.email,
         role: data.role,
         career: data.career,
+        phoneNumber: data.phoneNumber,
+        gender: data.gender
       };
     },
     enabled: !!token, // solo corre si hay token
