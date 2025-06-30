@@ -432,7 +432,7 @@ const Inside = () => {
   //POST
     const createReserv = useMutation({
       mutationFn: async () => {
-        const res = await fetch('https://backendsoftware.vercel.app/reservations/createReservation', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}reservations/createReservation`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -443,7 +443,8 @@ const Inside = () => {
             type: 'cubicle', //CAMBIAR !! en cubiculo
             date: date,
             startTime: horaInicio,   //sale del form
-            duration: duracion  //sale del form
+            duration: duracion,  //sale del form
+            people: cantidadPersonas
           }),
         });
 
@@ -627,6 +628,7 @@ const Inside = () => {
       alert("Debes iniciar sesión.");
       return;
     }
+    
     createReserv.mutate();
 
     const queryParams = new URLSearchParams();

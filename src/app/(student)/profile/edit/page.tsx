@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import styles from "../../../../components/styles/Profile/editForm.module.css";
 import { useUser } from '@/context/userContext';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 type ProfileData = {
   nombre: string;
@@ -13,24 +13,23 @@ type ProfileData = {
   genero: string;
 };
 
-
 export default function EditProfilePage() {
   const router = useRouter();
   const { user, isLoadingUser } = useUser();
+  const queryClient = useQueryClient();
 
   
-  if (!user || !user.role) {
-    // router.push("/login"); // Podrías redirigir al login si no hay usuario
-    return <div>Usuario no autenticado o rol no definido.</div>;
-  }
+  // if (!user || !user.role) {
+  //   // router.push("/login"); // Podrías redirigir al login si no hay usuario
+  //   return <div>Usuario no autenticado o rol no definido.</div>;
+  // }
 
-  const isStudent = user.role === 'student';
-
+  const isStudent = user?.role === 'student';
 
   const updateUser = useMutation({
     mutationFn: async () => {
 
-      const res = await fetch(`https://backendsoftware.vercel.app/users/${user?._id}`, {  
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}users/${user?._id}`, {  
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -38,9 +37,9 @@ export default function EditProfilePage() {
         body: JSON.stringify({
           firstName: formData.nombre,
           lastName: formData.apellido,
-          // telefono,
+          phoneNumber: formData.telefono,
           career: formData.carrera,
-          // genero,
+          gender: formData.genero,
         }),
       });
 
@@ -52,8 +51,9 @@ export default function EditProfilePage() {
       return res.json();
     },
     onSuccess: (data) => {
-      console.log("Cambio exitoso:", data);
+      // console.log("Cambio exitoso:", data);
       alert("Cambiado con exito");
+      queryClient.invalidateQueries({ queryKey: ['user'] });
       router.push("/profile"); 
     },
     onError: (error: any) => {
@@ -102,7 +102,7 @@ export default function EditProfilePage() {
             "Ingeniería Química",
             "Ciencias Administrativas",
             "Economía Empresarial",
-            "Contaduria Pública",
+            "Contaduría Pública",
             "Psicología",    
             "Matemáticas Industriales",  
             "Educación",    
@@ -119,25 +119,21 @@ export default function EditProfilePage() {
     nombre: user?.firstName || '', 
     apellido: user?.lastName || '',
     carrera: user?.career || '',
-    telefono: '',
-    genero: 'Mujer'
+    telefono: user?.phoneNumber || '',
+    genero: user?.gender || "Hombre"
   });
 
     useEffect(()=>{
       if (user) {
-        setFormData({nombre: user?.firstName, 
-    apellido: user?.lastName,
-    telefono: '',
-    carrera: user?.career,
-  genero: 'Mujer'})
+      setFormData({nombre: user?.firstName, 
+        apellido: user?.lastName,
+        telefono: user?.phoneNumber,
+        carrera: user?.career,
+        genero: user?.gender})
       }
     }, [user])
   
-    if (isLoadingUser || !user) {
-      return <div>Cargando...</div>;
-    }
-
-    console.log(user._id)
+    // console.log(user._id)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -158,7 +154,7 @@ export default function EditProfilePage() {
     // patchMutation.mutate()
   };
 
-  return (
+  return isLoadingUser || !user? (<div>Cargando...</div>): (
     <div className={styles.editContainer}>
       <h1 className={styles.editTitle}>Editar Perfil</h1>
       
@@ -173,7 +169,7 @@ export default function EditProfilePage() {
               name="nombre"
               value={formData.nombre}  
               onChange={handleChange}
-              placeholder={"Ej: Luis"}
+              placeholder={"Nombre"}
               maxLength={15}
               required
             />
@@ -188,7 +184,7 @@ export default function EditProfilePage() {
               name="apellido"
               value={formData.apellido} 
               onChange={handleChange}
-              placeholder="Ej: Arrieta"
+              placeholder="Apellido"
               maxLength={15}
               required
             />

@@ -33,7 +33,8 @@ export default function RegisterForm() {
        if (password !== confirmPassword) {
         throw new Error("Las contraseñas no coinciden");
       }
-      let url = "https://backendsoftware.vercel.app/users/create"
+      // let url = "https://backendsoftware.vercel.app/users/create"
+      let url = `${process.env.NEXT_PUBLIC_API_ROOT_URL}users/create`
       const res = await fetch(url, {  
         method: "POST",
         headers: {
@@ -43,10 +44,10 @@ export default function RegisterForm() {
           firstName: nombre,
           lastName: apellido,
           email,
-          //telefono,
+          phoneNumber: telefono,
           password,
           career: carrera,
-          //genero,
+          gender: genero,
           role: "student",
         }),
       });

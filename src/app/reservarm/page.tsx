@@ -406,7 +406,7 @@ function Inside() {
     //POST
     const createReserv = useMutation({
       mutationFn: async () => {
-        const res = await fetch('https://backendsoftware.vercel.app/reservations/createReservation', {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_ROOT_URL}reservations/createReservation`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -417,7 +417,8 @@ function Inside() {
             type: 'table', //CAMBIAR !! en cubiculo
             date: date,
             startTime: horaInicio,   //sale del form
-            duration: duracion  //sale del form
+            duration: duracion,  //sale del form
+            people: cantidadPersonas
           }),
         });
 
@@ -429,9 +430,7 @@ function Inside() {
         return res.json();
       },
       onSuccess: () => {
-        const queryParams = new URLSearchParams();
         alert('reserva exitosa');
-        router.push(`/confirmation?${queryParams.toString()}`);
         closeConfirmReservationModal();
       },
       onError: (error: any) => {
@@ -685,6 +684,8 @@ function Inside() {
   const handleConfirmReservation = () => {
     // Las validaciones ya se hicieron en `openConfirmReservationModal`
     // Aquí solo se procede si ya se abrió el modal, implicando que las validaciones pasaron.
+    createReserv.mutate();
+    
     const queryParams = new URLSearchParams();
     queryParams.append('mesa', String(seleccionada));
     queryParams.append('sala', selectedSala);
@@ -692,8 +693,9 @@ function Inside() {
     queryParams.append('horaInicio', horaInicio);
     queryParams.append('horaFin', horaFin);
     queryParams.append('cantidadPersonas', String(cantidadPersonas));
+
+    router.push(`/confirmation?${queryParams.toString()}`);
     
-    createReserv.mutate();
   };
 
   // Función para renderizar el componente de mapa correcto
