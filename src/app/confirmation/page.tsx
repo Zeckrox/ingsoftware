@@ -4,6 +4,7 @@ import styles from '../../components/styles/Confirmation/confirmation.module.css
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@/context/userContext'; 
+import Link from 'next/link';
 
 function Inside(){
   const searchParams = useSearchParams();
@@ -124,7 +125,9 @@ function Inside(){
         </div>
 
         <div className={styles.confirmButtonContainer}>
+          <Link  href="/profile">
           <button className={styles.confirmButton}>Aceptar</button>
+          </Link>
         </div>
 
         <div className={styles.remindersSection}>

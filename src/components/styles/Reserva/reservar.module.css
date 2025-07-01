@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 48px;
+  gap: 150px;
   padding: 40px;
   flex-wrap: wrap;
   margin-bottom: 7rem;
@@ -65,10 +65,10 @@
 
 .subtituloForm {
   text-align: center;
-  font-size: 20px;
+  font-size: 0.10 em;
   font-weight: 600;
   margin-bottom: 12px;
-  color: #000;
+  color: #666;
 }
 
 .formPreguntas {
@@ -144,6 +144,13 @@
 
 
 /* Seccion derecha*/
+
+.adminTextDescription {
+  font-size: 0.5em;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.4;
+}
 
 .pisoSala {
   display: flex;

@@ -45,13 +45,18 @@ export default function SeccionUno() {
             <p className={styles.pedroGrases}>Biblioteca Pedro Grases</p>
             <br></br>
 
-            <button className={styles.botonReservar} onClick={user ? openModal : () => router.push("/login")}>
-              Reservar
-            </button>
+            {user && user.role !== 'admin' && ( 
+                <button
+                    className={styles.botonReservar} 
+                    onClick={openModal} 
+                >
+                    Reservar
+                </button>
+            )}
             <br></br>
             <p className={styles.lunes}><strong>Lunes a Viernes</strong></p>
             <p className={styles.horario}>
-              <strong>Horario: </strong> 07:00 am – 10:00 pm
+              <strong>Horario: </strong> 07:00 am – 5:30 pm
             </p>
           </div>
 
