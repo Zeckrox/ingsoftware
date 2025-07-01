@@ -457,7 +457,7 @@ const Inside = () => {
         return res.json();
       },
       onSuccess: () => {
-        toast.success('reserva exitosa');
+        // toast.success('reserva exitosa');
         closeModal();
       },
       onError: (error: any) => {
@@ -641,7 +641,7 @@ const Inside = () => {
     queryParams.append('cantidadPersonas', String(cantidadPersonas));
 
     router.push(`/confirmation?${queryParams.toString()}`);
-    toast.success("Reserva realizada con éxito!");
+    toast.success("¡Reserva realizada con éxito!");
     closeModal();
   };
 

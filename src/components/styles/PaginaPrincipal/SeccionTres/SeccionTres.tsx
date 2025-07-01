@@ -54,7 +54,15 @@ export default function SeccionTres() {
         >
         <div className={styles.modalContent}>
             <button className={styles.closeButton} onClick={closeModal}>×</button>
+            {user && user.role === 'admin' ? (
+            <>
+            <h2 className={styles.modalTitle}>Gestionar</h2>
+            </>
+          ):(
+            <>
             <h2 className={styles.modalTitle}>Reservar</h2>
+            </>
+          )}
         </div>
             <div className={styles.whiteSquare}>
                 <div className={styles.optionsContainer}>

@@ -433,7 +433,7 @@ function Inside() {
         return res.json();
       },
       onSuccess: () => {
-        toast.success('reserva exitosa');
+        // toast.success('reserva exitosa');
         closeConfirmReservationModal();
       },
       onError: (error: any) => {
