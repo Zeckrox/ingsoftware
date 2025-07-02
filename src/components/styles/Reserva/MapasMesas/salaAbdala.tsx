@@ -21,7 +21,9 @@ const SalaAbdala: React.FC<SalaAbdalaProps> = ({ seleccionada, toggleSeleccion, 
 
     let buttonClasses = `${baseStyle}`; // Estilo base de la mesa (e.g., styles.redonda o styles.mesa)
 
-    if (isDisabled) {
+    if(disabledMesas.has(numero)){
+      buttonClasses += ` ${styles.mesaDeshabilitada}`;
+    }else if (isDisabled) {
       buttonClasses += ` ${styles.mesaDisabled}`; // Clase para mesas deshabilitadas (rojo)
     } else if (isSelected && userRole !== 'admin') {
       buttonClasses += ` ${styles.mesaSeleccionada}`; // Clase para mesa seleccionada (naranja) solo si no es admin

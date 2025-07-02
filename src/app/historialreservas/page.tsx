@@ -285,9 +285,10 @@ export default function HistorialReserva() {
                                 cantidad: reserva.people,
                                 reservaId: reserva._id
                             }
+                            console.log(times[reserva.timeblocks[0]], reserva.number)
                             return <tr key={tempData.reservaId} >
                                 <td style={tempData.estado=="Activa"?{color:"#166109", fontWeight:"bold"}:{color:"#8d0000", fontWeight:"bold"}}>{tempData.estado}</td>
-                                <td>{tempData.tipo}</td>
+                                <td>{tempData.tipo} #{reserva.number}</td>
                                 <td>{tempData.fecha}</td>
                                 <td>{tempData.email}</td>
                                 <td>{tempData.hora}</td>

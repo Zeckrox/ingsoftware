@@ -11,6 +11,8 @@ import SalaHumanistica from "@/components/styles/Reserva/MapasMesas/salaHumanist
 import SalaRamon from "@/components/styles/Reserva/MapasMesas/salaRamonJV";
 import { useUser } from "@/context/userContext"; // Importar useUser
 import { useMutation } from "@tanstack/react-query";
+import toast from 'react-hot-toast';
+
 // Las opciones iniciales ahora serán los valores por defecto para los estados
 const initialStartTimeOptions = [
   "08:00 a.m.", "08:30 a.m.", "09:00 a.m.", "09:30 a.m.",
@@ -30,6 +32,7 @@ const initialDurationOptions = [
 ];
 
 const initialPeopleOptions = [
+  { label: "1 persona", value: 1 },
   { label: "2 personas", value: 2 },
   { label: "3 personas", value: 3 },
   { label: "4 personas", value: 4 },
@@ -430,7 +433,7 @@ function Inside() {
         return res.json();
       },
       onSuccess: () => {
-        alert('reserva exitosa');
+        // toast.success('reserva exitosa');
         closeConfirmReservationModal();
       },
       onError: (error: any) => {
@@ -635,7 +638,7 @@ function Inside() {
         setSeleccionada(prevSeleccionada => (prevSeleccionada === numero ? null : numero));
       } else {
         // En lugar de alert, establecer un mensaje de error visible
-        setAdminErrorMessage(`La mesa ${numero} está deshabilitada y no se puede seleccionar.`);
+        toast.error(`La mesa ${numero} está deshabilitada y no se puede seleccionar.`);
       }
     }
   };
@@ -643,15 +646,15 @@ function Inside() {
   const openConfirmReservationModal = () => {
     // Validaciones antes de abrir el modal de confirmación de reserva
     if (seleccionada === null) {
-      setAdminErrorMessage("Por favor, selecciona una mesa.");
+      toast.error("Por favor, selecciona una mesa.");
       return;
     }
     if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
-      setAdminErrorMessage("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
+      toast.error("Por favor, completa todos los campos de la reserva (hora, duración, personas).");
       return;
     }
     if (disabledMesas.has(seleccionada)) { // Asegurarse de que no se puede reservar una mesa deshabilitada
-      setAdminErrorMessage(`La mesa ${seleccionada} está deshabilitada y no se puede reservar.`);
+      toast.error(`La mesa ${seleccionada} está deshabilitada y no se puede reservar.`);
       setSeleccionada(null); // Deseleccionar la mesa
       return;
     }
@@ -695,7 +698,7 @@ function Inside() {
     queryParams.append('cantidadPersonas', String(cantidadPersonas));
 
     router.push(`/confirmation?${queryParams.toString()}`);
-    
+    toast.success("Reserva realizada con éxito!");
   };
 
   // Función para renderizar el componente de mapa correcto
@@ -734,100 +737,157 @@ function Inside() {
         <div className={styles.fondoNaranjaArriba}></div>
 
         <div className={styles.contenedorForm}>
-          <h2 className={styles.tituloForm}>Detalles</h2>
+          {user && user.role === 'admin' ? (
+              // CONTENIDO PARA ADMINISTRADOR
+              <>
+                  <h2 className={styles.tituloForm}>Administración de Horarios/Duraciones</h2>
+                  <div className={styles.subtituloForm}>
+                      Administre los horarios disponibles y las duraciones para todas las mesas. Puede eliminar o agregar horas de inicio y duraciones según coincidere.
+                  </div>
+                  <form className={styles.formPreguntas}>
+                      <div className={styles.titulosPreguntas}>
+                          <label htmlFor="horaInicio">Hora de inicio:</label>
+                          <select
+                              id="horaInicio"
+                              className={styles.detalleInput}
+                              value={horaInicio}
+                              onChange={(e) => handleSelectChange(e, 'start_time')}
+                          >
+                              <option value="">Selecciona la hora de inicio...</option>
+                              {editableStartTimes.map((option) => (
+                                  <option key={option} value={option}>
+                                      {option}
+                                  </option>
+                              ))}
+                              {user?.role === 'admin' && (
+                                  <option value="manage_options" className={styles.manageOption}>Administrar horarios...</option>
+                              )}
+                          </select>
+                      </div>
+                      <div className={styles.titulosPreguntas}>
+                          <label htmlFor="duracion">Duración:</label>
+                          <select
+                              id="duracion"
+                              className={styles.detalleInput}
+                              value={editableDurationOptions.find(opt => opt.value === duracion)?.label || ''}
+                              onChange={(e) => handleSelectChange(e, 'duration')}
+                          >
+                              <option value="">Selecciona la duración...</option>
+                              {editableDurationOptions.map((option) => (
+                                  <option key={option.value} value={option.label}>
+                                      {option.label}
+                                  </option>
+                              ))}
+                              {user?.role === 'admin' && (
+                                  <option value="manage_options" className={styles.manageOption}>Administrar duraciones...</option>
+                              )}
+                          </select>
+                      </div>
+                    </form>
+                  {adminErrorMessage && (
+                      <p className={styles.adminErrorMessage}>{adminErrorMessage}</p>
+                  )}
+              </>
+          ) : (
+              // CONTENIDO PARA ESTUDIANTE / USUARIO NORMAL
+              <>
+                  <h2 className={styles.tituloForm}>Detalles</h2>
 
-          <div className={styles.subtituloForm}>
-            Mesa {seleccionada !== null ? seleccionada : 'N/A'}
-            <br></br>
-            {displayFormattedDate}
-          </div>
+                  <div className={styles.subtituloForm}>
+                      Mesa {seleccionada !== null ? seleccionada : 'N/A'}
+                      <br></br>
+                      {displayFormattedDate}
+                  </div>
 
-          <form className={styles.formPreguntas}>
-            <div className={styles.titulosPreguntas}>
-              <label htmlFor="horaInicio">Hora de inicio:</label>
-              <select
-                id="horaInicio"
-                className={styles.detalleInput}
-                value={horaInicio}
-                onChange={(e) => handleSelectChange(e, 'start_time')}
-              >
-                <option value="">Selecciona la hora de inicio...</option>
-                {editableStartTimes.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-                {user?.role === 'admin' && (
-                  <option value="manage_options" className={styles.manageOption}>Administrar horarios...</option>
-                )}
-              </select>
-            </div>
+                  <form className={styles.formPreguntas}>
+                      <div className={styles.titulosPreguntas}>
+                          <label htmlFor="horaInicio">Hora de inicio:</label>
+                          <select
+                              id="horaInicio"
+                              className={styles.detalleInput}
+                              value={horaInicio}
+                              onChange={(e) => handleSelectChange(e, 'start_time')}
+                          >
+                              <option value="">Selecciona la hora de inicio...</option>
+                              {editableStartTimes.map((option) => (
+                                  <option key={option} value={option}>
+                                      {option}
+                                  </option>
+                              ))}
+                          </select>
+                      </div>
 
-            <div className={styles.titulosPreguntas}>
-              <label htmlFor="duracion">Duración:</label>
-              <select
-                id="duracion"
-                className={styles.detalleInput}
-                value={editableDurationOptions.find(opt => opt.value === duracion)?.label || ''}
-                onChange={(e) => handleSelectChange(e, 'duration')}
-              >
-                <option value="">Selecciona la duración...</option>
-                {editableDurationOptions.map((option) => (
-                  <option key={option.value} value={option.label}>
-                    {option.label}
-                  </option>
-                ))}
-                {user?.role === 'admin' && (
-                  <option value="manage_options" className={styles.manageOption}>Administrar duraciones...</option>
-                )}
-              </select>
-            </div>
+                      <div className={styles.titulosPreguntas}>
+                          <label htmlFor="duracion">Duración:</label>
+                          <select
+                              id="duracion"
+                              className={styles.detalleInput}
+                              value={editableDurationOptions.find(opt => opt.value === duracion)?.label || ''}
+                              onChange={(e) => handleSelectChange(e, 'duration')}
+                          >
+                              <option value="">Selecciona la duración...</option>
+                              {editableDurationOptions.map((option) => (
+                                  <option key={option.value} value={option.label}>
+                                      {option.label}
+                                  </option>
+                              ))}                          
+                          </select>
+                      </div>
 
-            <div className={styles.titulosPreguntas}>
-              <label htmlFor="horaFin">Hora de fin:</label>
-              <input
-                id="horaFin"
-                type="text"
-                className={styles.detalleInput}
-                placeholder="Hora de fin"
-                value={horaFin}
-                disabled={true}
-              />
-            </div>
+                      <div className={styles.titulosPreguntas}>
+                          <label htmlFor="horaFin">Hora de fin:</label>
+                          <input
+                              id="horaFin"
+                              type="text"
+                              className={styles.detalleInput}
+                              placeholder="Hora de fin"
+                              value={horaFin}
+                              disabled={true}
+                          />
+                      </div>
 
-            <div className={styles.titulosPreguntas}>
-              <label htmlFor="cantidadPersonas">Cantidad de personas:</label>
-              <select
-                id="cantidadPersonas"
-                className={styles.detalleInput}
-                value={cantidadPersonas ? `${cantidadPersonas} personas` : ''}
-                onChange={(e) => handleSelectChange(e, 'people')}
-              >
-                <option value="">Selecciona la cantidad de personas...</option>
-                {editablePeopleOptions.map((option) => (
-                  <option key={option.value} value={option.label}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+                      <div className={styles.titulosPreguntas}>
+                          <label htmlFor="cantidadPersonas">Cantidad de personas:</label>
+                          <select
+                              id="cantidadPersonas"
+                              className={styles.detalleInput}
+                              value={cantidadPersonas ? `${cantidadPersonas} personas` : ''}
+                              onChange={(e) => handleSelectChange(e, 'people')}
+                          >
+                              <option value="">Selecciona la cantidad de personas...</option>
+                              {editablePeopleOptions.map((option) => (
+                                  <option key={option.value} value={option.label}>
+                                      {option.label}
+                                  </option>
+                              ))}
+                          </select>
+                      </div>
+                    
+                        <button
+                            onClick={(e) => { 
+                                e.preventDefault();
+                                // Validación de campos antes de abrir el modal de confirmación
+                                if (!horaInicio || duracion === 0 || cantidadPersonas === 0) {
+                                    toast.error("Por favor, completa todos los campos de la reserva (hora de inicio, duración, cantidad de personas).");
+                                    return; // Detiene la ejecución si falta algún campo
+                                }
+                                // Si todo está bien, procede a abrir el modal de confirmación
+                                openConfirmReservationModal();
+                            }}
+                            type="button"
+                            className={styles.botonCambios}
+                        >
+                            Reservar
+                      </button>                  
+                  </form>
 
-            {/* Mostrar mensaje de error para el administrador */}
-            {adminErrorMessage && user?.role === 'admin' && (
-              <p className={styles.adminErrorMessage}>{adminErrorMessage}</p>
-            )}
-
-            {/* Ocultar el botón de reservar si es administrador */}
-            {user?.role !== 'admin' && ( // El botón de reservar solo se muestra para usuarios normales
-              <button onClick={openConfirmReservationModal} type="button" className={styles.botonCambios}>Reservar</button>
-            )}
-          </form>
-
-          <div className={styles.infoHorarios}>
-            <p className={styles.infoHorariosTexto}>
-              Los espacios de estudio en la biblioteca están disponibles de lunes a viernes, de 8:00 a.m a 5:00 p.m
-            </p>
-          </div>
+                  <div className={styles.infoHorarios}>
+                      <p className={styles.infoHorariosTexto}>
+                          Los espacios de estudio en la biblioteca están disponibles de lunes a viernes, de 8:00 a.m a 5:00 p.m
+                      </p>
+                  </div>
+              </>
+          )}
         </div>
       </div>
 
@@ -976,8 +1036,25 @@ function Inside() {
 
 
       <div className={styles.columnaDerecha}>
-        <h2 className={styles.tituloReserva}>Reservación de mesa</h2>
-
+        
+        <h2 className={styles.tituloReserva}>
+            {user && user.role === 'admin' ? (
+                // Si el usuario es administrador
+                <>
+                    Gestión de disponibilidad de mesas
+                    <p className={styles.adminTextDescription}> 
+                        Selecciona la mesa que quiera deshabilitar/habilitar. Esta se deshabilitará/habilitará durante tiempo indefinido hasta que manualmente se modifique la acción.
+                    </p>
+                </>
+            ) : (
+                // Si el usuario es estudiante o no está logeado
+                "Reservación de mesa"
+            )}
+        </h2>
+        <h3 className={styles.infoColores}>
+          <div/> Mesa deshabilitada
+          <div/> Mesa ocupada
+        </h3>
         <div className={styles.pisoSala}>
           <div className={styles.pisoSalaTexto}>
             <label htmlFor="piso">Piso:</label>
@@ -1011,7 +1088,7 @@ function Inside() {
 
         {/* Renderizado condicional del componente de mapa */}
         {user && user.role != 'admin' &&
-          <div onClick={()=> (!horaFin || !horaInicio || !duracion || !cantidadPersonas)? alert("Selecciona horarios y cantidad de personas primero!"): {}}>
+          <div onClick={()=> (!horaFin || !horaInicio || !duracion || !cantidadPersonas)? toast.error("Selecciona horarios y cantidad de personas primero!"): {}}>
             <div style={!horaFin || !horaInicio || !duracion || !cantidadPersonas? { pointerEvents: "none",opacity: 0.5}: {}}>
             {renderMapComponent()}
             </div>

@@ -104,9 +104,9 @@ export default function RegisterForm() {
       }
 
       // Validación de email
-      const emailRegex = /^[a-zA-Z0-9._-]+@(correo\.)?unimet\.edu\.ve$/;
+      const emailRegex = /^[a-zA-Z0-9._-]+@unimet\.edu\.ve$/;
       if (!emailRegex.test(email)) {
-        setEmailFormatError("El correo debe ser de @unimet.edu.ve o @correo.unimet.edu.ve");
+        setEmailFormatError("El correo debe ser de @unimet.edu.ve");
         hasErrors = true;
       }
 

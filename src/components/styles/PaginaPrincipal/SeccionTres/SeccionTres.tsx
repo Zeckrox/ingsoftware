@@ -32,10 +32,18 @@ export default function SeccionTres() {
   return (
     <section className={styles.fondoBibliotecaSillas}>
     <div className={styles.botonWrapper}>
-    <button className={styles.botonAzul} onClick={user ? openModal : () => router.push("/login")}>
-    <span className={styles.iconoBoton}>📋</span>
-    Ver espacios disponibles
-    </button>
+    
+    
+    
+    {user && user.role !== 'admin' && ( // <-- La condición clave aquí
+        <button
+            className={styles.botonAzul}
+            onClick={user ? openModal : () => router.push("/login")}
+        >
+            <span className={styles.iconoBoton}>📋</span>
+            Ver espacios disponibles
+        </button>
+    )}
     </div>
 
     <Modal
@@ -46,7 +54,15 @@ export default function SeccionTres() {
         >
         <div className={styles.modalContent}>
             <button className={styles.closeButton} onClick={closeModal}>×</button>
+            {user && user.role === 'admin' ? (
+            <>
+            <h2 className={styles.modalTitle}>Gestionar</h2>
+            </>
+          ):(
+            <>
             <h2 className={styles.modalTitle}>Reservar</h2>
+            </>
+          )}
         </div>
             <div className={styles.whiteSquare}>
                 <div className={styles.optionsContainer}>

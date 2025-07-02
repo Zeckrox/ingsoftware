@@ -21,7 +21,9 @@ const SalaCientifica: React.FC<SalaCientificaProps> = ({ seleccionada, toggleSel
 
     let buttonClasses = `${baseStyle}`;
 
-    if (isDisabled) {
+    if(disabledMesas.has(numero)){
+      buttonClasses += ` ${styles.mesaDeshabilitada}`;
+    }else if (isDisabled) {
       buttonClasses += ` ${styles.mesaDisabled}`;
     } else if (isSelected && userRole !== 'admin') {
       buttonClasses += ` ${styles.mesaSeleccionada}`;

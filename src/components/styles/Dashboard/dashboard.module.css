@@ -10,7 +10,7 @@
   font-size: 2.5rem;
   color: #ff6600; /* Color naranja distintivo */
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 0;
   font-weight: 700;
 }
 
@@ -107,6 +107,41 @@
 .updateDataButton:hover {
   background-color: #e65c00;
 }
+
+.coloresContainer{
+  margin-top: 1px;
+  display: flex;
+  justify-content: center;
+}
+
+.infoColores{
+  margin-top: 0;
+  display: flex;
+}
+
+.infoColores div:first-child{
+  display: flex;
+  border-radius: 20px;
+  height: 15px;
+  width: 15px;
+  background-color: #636363 !important;
+  border: 1px solid #636363 !important;
+  margin: auto;
+  margin-right: 4px;
+}
+
+.infoColores div:last-child{
+  display: flex;
+  border-radius: 20px;
+  height: 15px;
+  width: 15px;
+  background-color: #ff5c4c !important;
+  border: 1px solid #ff5c4c !important;
+  margin: auto;
+  margin-right: 4px;
+  margin-left: 20px
+}
+
 
 @media (max-width: 768px) {
   .dashboardContainer {

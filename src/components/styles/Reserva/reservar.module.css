@@ -2,7 +2,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 48px;
+  gap: 150px;
   padding: 40px;
   flex-wrap: wrap;
   margin-bottom: 7rem;
@@ -27,8 +27,36 @@
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   color: #1f1f1f;
-  margin-bottom: 24px;
+  margin-bottom: 0;
   text-align: center;
+}
+
+.infoColores{
+  margin-top: 0;
+  display: flex;
+}
+
+.infoColores div:first-child{
+  display: flex;
+  border-radius: 20px;
+  height: 15px;
+  width: 15px;
+  background-color: #636363 !important;
+  border: 1px solid #636363 !important;
+  margin: auto;
+  margin-right: 4px;
+}
+
+.infoColores div:last-child{
+  display: flex;
+  border-radius: 20px;
+  height: 15px;
+  width: 15px;
+  background-color: #ff5c4c !important;
+  border: 1px solid #ff5c4c !important;
+  margin: auto;
+  margin-right: 4px;
+  margin-left: 20px
 }
 
 .fondoNaranjaArriba {
@@ -65,10 +93,10 @@
 
 .subtituloForm {
   text-align: center;
-  font-size: 20px;
+  font-size: 0.10 em;
   font-weight: 600;
   margin-bottom: 12px;
-  color: #000;
+  color: #666;
 }
 
 .formPreguntas {
@@ -144,6 +172,13 @@
 
 
 /* Seccion derecha*/
+
+.adminTextDescription {
+  font-size: 0.5em;
+  color: #666;
+  margin-top: 10px;
+  line-height: 1.4;
+}
 
 .pisoSala {
   display: flex;
@@ -227,7 +262,14 @@
 }
 
 .mesaNoDisponible {
-  background-color: #e41212 !important; 
+  background-color: #ff5c4c !important; 
+  color: white;
+  cursor: not-allowed;
+}
+
+.mesaDeshabilitada {
+  background-color: #636363 ; 
+  opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
   color: white;
   cursor: not-allowed;
 }
@@ -654,11 +696,6 @@
   background-color: #5a6268;
 }
 
-/* Estilo para mesas/cubículos deshabilitados (Rojo) */
-.mesaDeshabilitada {
-  background-color: #ff0000 !important; /* Rojo brillante para deshabilitado */
-}
-
 .disableConfirmModal {
   position: fixed;
   top: 50%;
@@ -740,11 +777,18 @@
 
 /* Estilo para cubículos deshabilitados (Rojo) */
 .cubiculoDisabled {
-  background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  background-color: #ff5c4c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  color: white !important; /* Texto blanco para contraste */
+  cursor: not-allowed;
+  border: 1px solid #ff5c4c !important;
+}
+
+.cubiculoDeshabilitado {
+  background-color: #636363 !important; /* Rojo, usa !important si otros estilos son más específicos */
   color: white !important; /* Texto blanco para contraste */
   cursor: not-allowed;
   opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
-  border: 1px solid #c0392b !important;
+  border: 1px solid #636363 !important;
 }
 
 /* Puedes añadir un estilo para los cubículos habilitados si el admin los está habilitando */
@@ -756,7 +800,7 @@
 }
 
 .mesaOcupada {
-  background-color: #ff4d4f;
+  background-color: #ff5c4c;
   color: white;
   cursor: not-allowed;
   pointer-events: none;
@@ -770,11 +814,11 @@
 }
 /* Estilo para cubículos deshabilitados (Rojo) */
 .mesaDisabled {
-  background-color: #e74c3c !important; /* Rojo, usa !important si otros estilos son más específicos */
+  background-color: #ff5c4c !important; /* Rojo, usa !important si otros estilos son más específicos */
   color: white !important; /* Texto blanco para contraste */
   cursor: not-allowed;
   opacity: 0.7; /* Ligeramente transparente para indicar que está deshabilitado */
-  border: 1px solid #c0392b !important;
+  border: 1px solid #ff5c4c !important;
 }
 
 /* Puedes añadir un estilo para los cubículos habilitados si el admin los está habilitando */

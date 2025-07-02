@@ -7,6 +7,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useState } from 'react'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { UserProvider } from '@/context/userContext'; 
+import { Toaster } from 'react-hot-toast';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function MainLayout({
             <main>{children}</main>
             <Footer />
             <ReactQueryDevtools initialIsOpen={false} />
+            <Toaster />
           </UserProvider>
         </QueryClientProvider>
       </body>

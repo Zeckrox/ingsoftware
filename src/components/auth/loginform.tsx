@@ -11,7 +11,7 @@ import { useUser } from "@/context/userContext";
 export default function LoginForm() {
   const router = useRouter(); 
 
-    const { login } = useUser();
+  const { login, user } = useUser();
 
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -38,7 +38,11 @@ export default function LoginForm() {
       console.log("Token recibido:", data.access_token); //token recibido
       localStorage.setItem("token", data.access_token);  //se guarda token en local storage
       login(data.access_token)
-      router.push("/"); //ARREGLAR QUE SE REDIRIGA A MAINPAGE
+      if (user && user.role === 'admin') {
+        router.push("/historialreservas"); // Redirigir al historial de reserva para admins
+      } else {
+        router.push("/"); // Redirigir a la página principal para otros roles (estudiantes)
+      }
     },
     onError: (error) => {
       console.error("Fallo el login:", error);

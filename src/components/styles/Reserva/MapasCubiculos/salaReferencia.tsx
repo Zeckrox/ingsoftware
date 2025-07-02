@@ -30,8 +30,10 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({
 
           let mesonClasses = `${styles.meson}`;
 
-          if (isDisabled) {
-            mesonClasses += ` ${styles.mesaOcupada}`;
+          if(disabledCubiculos.has(numero)){
+               mesonClasses += ` ${styles.cubiculoDeshabilitado}`;
+          }else if (isDisabled) {
+            mesonClasses += ` ${styles.cubiculoDisabled}`; 
           } else if (isSelected && userRole !== 'admin') {
             mesonClasses += ` ${styles.mesaSeleccionada}`;
           }
