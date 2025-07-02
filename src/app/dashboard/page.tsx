@@ -4,7 +4,7 @@ import React, { useEffect, useState, Suspense } from "react";
 import styles from '../../components/styles/Dashboard/dashboard.module.css'; 
 import Modal from 'react-modal'; 
 import DashboardGraphs from "./graphs/DashboardGraphs";
-
+import { useMutation } from "@tanstack/react-query";
 // Importa tus componentes de mapa para MESAS
 import SalaReferenciaMesas from "@/components/styles/Reserva/MapasMesas/salaReferencia";
 import SalaCientificaMesas from "@/components/styles/Reserva/MapasMesas/salaCientifica";
@@ -40,18 +40,170 @@ const spaceTypes = [
 ];
 
 function DashboardContent() {
+  //
+  let hour = new Date("2025-07-22T09:00:00").getHours()
+  let minute =  new Date("2025-07-22T09:00:00").getMinutes()
+  let day = new Date("2025-07-22T09:00:00").toISOString().split("T")[0]
+  let ampm = "a.m."
+  if (hour >= 12) {
+    ampm = "p.m"
+    hour = hour-12
+  }
   const [selectedPiso, setSelectedPiso] = useState<string>('pb');
   const [availableSalas, setAvailableSalas] = useState<string[]>(allSalasMesas.pb); 
   const [selectedSala, setSelectedSala] = useState<string>('Sala Referencia');
   const [selectedSpaceType, setSelectedSpaceType] = useState<string>('mesa'); 
+  const [disabledCubiculos, setDisabledCubiculos] = useState<Set<number>>(new Set());
+  const [infoCubicles, setInfoCubicles] = useState<any[]>([]);
 
+  const [disabledMesas, setDisabledMesas] = useState<Set<number>>(new Set());
+  const [infoMesas, setInfoMesas] = useState<any[]>([]);
+  
+  const [numerosOcupados, setNumerosOcupados] = useState<{number: number}[]>([]);
+  const [numerosOcupadosC, setNumerosOcupadosC] = useState<{number: number}[]>([]);
   const [seleccionada, setSeleccionada] = useState<number | null>(null);
   const [occupiedSpaces, setOccupiedSpaces] = useState<Set<number>>(new Set()); 
   const [disabledSpaces, setDisabledSpaces] = useState<Set<number>>(new Set()); 
-
+  const [time, setTime] = useState({day: day,
+      hourMinuteString: `${hour <10? "0":""}${hour}:${minute>=30? "30": "00"} ${ampm}`
+    })
   const allDisabledOrOccupiedSpaces = new Set([...occupiedSpaces, ...disabledSpaces]);
 
+  const initialStartTimeOptions = [
+  "08:00 a.m.", "08:30 a.m.", "09:00 a.m.", "09:30 a.m.",
+  "10:00 a.m.", "10:30 a.m.", "11:00 a.m.", "11:30 a.m.",
+  "12:00 p.m.", "12:30 p.m.", "01:00 p.m.", "01:30 p.m.",
+  "02:00 p.m.", "02:30 p.m.", "03:00 p.m.", "03:30 p.m.",
+  "04:00 p.m.", "04:30 p.m.", "05:00 p.m."
+];
+  const getCubiclesInfo = useMutation({
+            mutationFn: async () => {
+              const res = await fetch('https://backendsoftware.vercel.app/cubicles', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              });
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'error al obtener espacios');
+              }
+              return res.json();
+            },
+            onSuccess: (data) => {
+             setInfoCubicles(data)
+             const newDisabled = new Set(disabledCubiculos);
+             for (let x of data){
+              if (!x.isAvailable){newDisabled.add(x.number)}
+             }
+             setDisabledCubiculos(newDisabled)
+            },
+            onError: (error: any) => {
+              console.error('error en la consulta:', error);
+            },
+          });
+    
+  const getTablesInfo = useMutation({
+              mutationFn: async () => {
+                const res = await fetch('https://backendsoftware.vercel.app/tables', {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  }
+                });
+                if (!res.ok) {
+                  const errorData = await res.json();
+                  throw new Error(errorData.message || 'error al obtener espacios');
+                }
+                return res.json();
+              },
+              onSuccess: (data) => {
+               setInfoMesas(data)
+               const newDisabled = new Set(disabledMesas);
+               for (let x of data){
+                if (!x.isAvailable){newDisabled.add(x.number)}
+               }
+               setDisabledMesas(newDisabled)
+              },
+              onError: (error: any) => {
+                console.error('error en la consulta:', error);
+              },
+            });
+
+   const getAvailableMesas = useMutation({
+            mutationFn: async () => {
+              const res = await fetch('https://backendsoftware.vercel.app/reservations/availableSpots', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  date: time.day,   //sale del url     
+                  type: 'table',        
+                  startTime: time.hourMinuteString,   //sale del form
+                  duration: 1  //sale del form
+                }),
+              });
+      
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'error al obtener espacios');
+              }
+      
+              return res.json();
+            },
+            onSuccess: (data) => {
+              // alert('Consulta exitosa');
+              const numeros = data.map((reserva: any) => reserva.number);
+              setNumerosOcupados(numeros);
+            },
+            onError: (error: any) => {
+              console.error('error en la consulta:', error);
+            },
+          });
+
+   const getAvailableCubicles = useMutation({
+            mutationFn: async () => {
+              const res = await fetch('https://backendsoftware.vercel.app/reservations/availableSpots', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  date: time.day,   //sale del url     
+                  type: 'cubicle',        
+                  startTime: time.hourMinuteString,   //sale del form
+                  duration: 1  //sale del form
+                }),
+              });
+      
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.message || 'error al obtener espacios');
+              }
+      
+              return res.json();
+            },
+            onSuccess: (data) => {
+              // alert('Consulta exitosa');
+              console.log('Espacios disponibles:', data);
+              const numeros = data.filter((reserva: any) => {
+                console.log(reserva.cubicleId)
+                return !!reserva.number})
+              console.log(numeros);
+              
+              setNumerosOcupadosC(numeros);
+            },
+            onError: (error: any) => {
+              console.error('error en la consulta:', error);
+            },
+        });
+  
   useEffect(() => {
+    getTablesInfo.mutate()
+    getAvailableMesas.mutate()
+    getCubiclesInfo.mutate()
+    getAvailableCubicles.mutate()
     if (typeof window !== 'undefined') {
       Modal.setAppElement(document.body);
     }
@@ -102,13 +254,13 @@ function DashboardContent() {
       toggleSeleccion: dummyToggleSeleccion, 
       userRole: 'admin', 
       spaceType: selectedSpaceType,
-      ocupados: [] // Modificar mas adelante
+      ocupados: numerosOcupados 
     };
 
     if (selectedSpaceType === 'mesa') {
       const mesaProps = {
         ...baseCommonProps,
-        disabledMesas: allDisabledOrOccupiedSpaces, 
+        disabledMesas: disabledMesas, 
       };
       switch (selectedSala) {
         case "Sala Referencia":
@@ -127,7 +279,8 @@ function DashboardContent() {
     } else if (selectedSpaceType === 'cubiculo') {
       const cubiculoProps = {
         ...baseCommonProps,
-        disabledCubiculos: allDisabledOrOccupiedSpaces, 
+        ocupados: numerosOcupadosC,
+        disabledCubiculos: disabledCubiculos, 
       };
       switch (selectedSala) {
         case "Sala Referencia":
@@ -144,9 +297,14 @@ function DashboardContent() {
   };
 
   return (
-    <div className={styles.dashboardContainer}>
+    <div className={styles.dashboardContainer} onClick={()=> console.log(numerosOcupados)}>
       <h1 className={styles.dashboardTitle}>Dashboard Reservas</h1>
-
+      <h3 className={styles.coloresContainer}>
+        <div className={styles.infoColores}>
+          <div/> Mesa deshabilitada
+          <div/> Mesa ocupada
+        </div>
+      </h3>
       <div className={styles.adminControls}>
         <div className={styles.selectGroup}>
           <label htmlFor="spaceType">Tipo de espacio:</label>

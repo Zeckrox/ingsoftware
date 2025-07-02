@@ -34,8 +34,10 @@ const SalaCientifica: React.FC<SalaCientificaProps> = ({
 
               let mesonClasses = `${styles.meson}`;
 
-              if (isDisabled) {
-                mesonClasses += ` ${styles.cubiculoDisabled}`;
+              if(disabledCubiculos.has(numero)){
+               mesonClasses += ` ${styles.cubiculoDeshabilitado}`;
+              }else if (isDisabled) {
+                mesonClasses += ` ${styles.cubiculoDisabled}`; 
               } else if (isSelected && userRole !== 'admin') {
                 mesonClasses += ` ${styles.mesaSeleccionada}`;
               }

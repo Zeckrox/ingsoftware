@@ -1051,6 +1051,10 @@ function Inside() {
                 "Reservación de mesa"
             )}
         </h2>
+        <h3 className={styles.infoColores}>
+          <div/> Mesa deshabilitada
+          <div/> Mesa ocupada
+        </h3>
         <div className={styles.pisoSala}>
           <div className={styles.pisoSalaTexto}>
             <label htmlFor="piso">Piso:</label>

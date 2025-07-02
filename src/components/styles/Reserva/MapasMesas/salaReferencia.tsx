@@ -18,7 +18,10 @@ const SalaReferencia: React.FC<SalaReferenciaProps> = ({ seleccionada, toggleSel
       : esRedonda
       ? styles.redonda
       : styles.mesa;
-    if (disabledMesas.has(numero) || ocupados.includes(numero)) {
+    if(disabledMesas.has(numero) ){
+      clase += ` ${styles.mesaDeshabilitada}`
+    }
+    else if (ocupados.includes(numero)) {
       clase += ` ${styles.mesaNoDisponible}`; // rojo
     }else if (seleccionada == numero && userRole !== 'admin') {
       clase += ` ${styles.mesaSeleccionada}`;

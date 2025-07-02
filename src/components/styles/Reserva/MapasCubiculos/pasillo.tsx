@@ -33,7 +33,9 @@ const Pasillo: React.FC<PasilloProps> = ({
 
               let mesonClasses = `${styles.meson}`; 
 
-              if (isDisabled) {
+              if(disabledCubiculos.has(numero)){
+               mesonClasses += ` ${styles.cubiculoDeshabilitado}`;
+              }else if (isDisabled) {
                 mesonClasses += ` ${styles.cubiculoDisabled}`; 
               } else if (isSelected && userRole !== 'admin') {
                 mesonClasses += ` ${styles.mesaSeleccionada}`; // Clase para mesa seleccionada por usuario normal
