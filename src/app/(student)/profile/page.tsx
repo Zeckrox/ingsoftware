@@ -126,93 +126,34 @@ export default function ProfilePage() {
     setShowCancelModal(false);
   }
 
-  const timeblocksjson:any = {
-    1: {
-      startT: '8:00 a.m.',
-      endT: '8:30 p.m.'
-    },
-    2: {
-      startT: '8:30 a.m.',
-      endT: '9:00 a.m.'
-    },
-    3: {
-      startT: '9:00 a.m.',
-      endT: '9:30 a.m.'
-    },
-    4: {
-      startT: '9:30 a.m.',
-      endT: '10:00 a.m.'
-    },
-    5: {
-      startT: '10:00 a.m.',
-      endT: '10:30 a.m.'
-    },
-    6: {
-      startT: '10:30 a.m.',
-      endT: '11:00 a.m.'
-    },
-    7: {
-      startT: '11:00 a.m.',
-      endT: '11:30 a.m.'
-    },
-    8: {
-      startT: '11:30 a.m.',
-      endT: '12:00 p.m.'
-    },
-    9: {
-      startT: '12:00 p.m.',
-      endT: '12:30 p.m.'
-    },
-    10: {
-      startT: '12:30 p.m.',
-      endT: '1:00 p.m.'
-    },
-    11: {
-      startT: '1:00 p.m.',
-      endT: '1:30 p.m.'
-    },
-    12: {
-      startT: '1:30 p.m.',
-      endT: '2:00 p.m.'
-    },
-    13: {
-      startT: '2:00 p.m.',
-      endT: '2:30 p.m.'
-    },
-    14: {
-      startT: '2:30 p.m.',
-      endT: '3:00 p.m.'
-    },
-    15: {
-      startT: '3:00 p.m.',
-      endT: '3:30 p.m.'
-    },
-    16: {
-      startT: '3:30 p.m.',
-      endT: '4:00 p.m.'
-    },
-    17: {
-      startT: '4:00 p.m.',
-      endT: '4:30 p.m.'
-    },
-    18: {
-      startT: '4:30 p.m.',
-      endT: '5:00 p.m.'
-    }
-  };
+  const timeblocksjson:any = [
+      '08:00 a.m.',
+      '08:30 a.m.',
+      '09:00 a.m.',
+      '09:30 a.m.',
+      '10:00 a.m.',
+      '10:30 a.m.',
+      '11:00 a.m.',
+      '11:30 a.m.',
+      '12:00 p.m.',
+      '12:30 p.m.',
+      '01:00 p.m.',
+      '01:30 p.m.',
+      '02:00 p.m.',
+      '02:30 p.m.',
+      '03:00 p.m.',
+      '03:30 p.m.',
+      '04:00 p.m.',
+      '04:30 p.m.',
+      '05:00 p.m.',
+      ];
 
   // mejor hacer una card para acortar codigo (pagina lentaaa)
   const renderReservaCard = (reserva: any) => {
     const fecha = new Date(reserva.date).toLocaleDateString('es-ES', { timeZone: 'UTC' });
+    const horaI = timeblocksjson[reserva.timeblocks[0]];
+    const horaF = timeblocksjson[reserva.timeblocks[reserva.timeblocks.length-1]]  //sirve aunque se subraye en rojo!!!
 
-    const timeblockInicial = reserva.timeblocks[0];
-    const timeblockFinal = reserva.timeblocks.at(-1);
-    // console.log(timeblocksjson[1].endT)
-    const horaI = timeblocksjson[timeblockInicial].startT;
-    const horaF = timeblocksjson[timeblockFinal].endT  //sirve aunque se subraye en rojo!!!
-    // console.log(horaI);
-    // console.log(horaF);
-    
     return (
       <div key={reserva._id} className={styles.reservationCard}>
         <div className={styles.reservationImageContainer}>
