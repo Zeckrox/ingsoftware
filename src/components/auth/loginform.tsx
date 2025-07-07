@@ -38,11 +38,7 @@ export default function LoginForm() {
       console.log("Token recibido:", data.access_token); //token recibido
       localStorage.setItem("token", data.access_token);  //se guarda token en local storage
       login(data.access_token)
-      if (user && user.role === 'admin') {
-        router.push("/historialreservas"); // Redirigir al historial de reserva para admins
-      } else {
-        router.push("/"); // Redirigir a la página principal para otros roles (estudiantes)
-      }
+      router.push("/"); // Redirigir a la página principal
     },
     onError: (error) => {
       console.error("Fallo el login:", error);
